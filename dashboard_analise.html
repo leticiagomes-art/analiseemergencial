@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análise Financeira — PROSTAFENSE & VIGORLON | Últimos 30 dias</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+
+  .header { background: linear-gradient(135deg, #1a1d2e 0%, #16213e 100%); border-bottom: 1px solid #2d3748; padding: 24px 32px; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+  .header .sub { font-size: 13px; color: #718096; margin-top: 4px; }
+  .header .badge { display: inline-block; background: #ff4444; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; margin-left: 10px; letter-spacing: 0.5px; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .kpi-card { background: #1a1d2e; border: 1px solid #2d3748; border-radius: 12px; padding: 20px; position: relative; overflow: hidden; }
+  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .kpi-card.red::before { background: #ff4444; }
+  .kpi-card.orange::before { background: #f6851f; }
+  .kpi-card.yellow::before { background: #ecc94b; }
+  .kpi-card.green::before { background: #48bb78; }
+  .kpi-label { font-size: 11px; color: #718096; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .kpi-value { font-size: 28px; font-weight: 700; color: #fff; }
+  .kpi-sub { font-size: 12px; color: #718096; margin-top: 4px; }
+  .kpi-tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-top: 6px; }
+  .kpi-tag.danger { background: rgba(255,68,68,0.15); color: #ff4444; }
+  .kpi-tag.warn { background: rgba(246,133,31,0.15); color: #f6851f; }
+  .kpi-tag.ok { background: rgba(72,187,120,0.15); color: #48bb78; }
+
+  /* SECTIONS */
+  .section { background: #1a1d2e; border: 1px solid #2d3748; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .section-title { font-size: 14px; font-weight: 700; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .section-title span { background: #2d3748; border-radius: 6px; padding: 3px 10px; font-size: 11px; color: #718096; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  /* CHARTS */
+  .chart-wrap { position: relative; height: 220px; }
+
+  /* ALERT BOX */
+  .alert { border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; border-left: 4px solid; }
+  .alert.critical { background: rgba(255,68,68,0.08); border-color: #ff4444; }
+  .alert.warn { background: rgba(246,133,31,0.08); border-color: #f6851f; }
+  .alert.info { background: rgba(66,153,225,0.08); border-color: #4299e1; }
+  .alert.ok { background: rgba(72,187,120,0.08); border-color: #48bb78; }
+  .alert-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .alert.critical .alert-title { color: #ff4444; }
+  .alert.warn .alert-title { color: #f6851f; }
+  .alert.info .alert-title { color: #63b3ed; }
+  .alert.ok .alert-title { color: #48bb78; }
+  .alert p { font-size: 13px; color: #a0aec0; line-height: 1.6; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 12px; color: #718096; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; border-bottom: 1px solid #2d3748; }
+  td { padding: 10px 12px; border-bottom: 1px solid #1e2433; color: #cbd5e0; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .pill.danger { background: rgba(255,68,68,0.15); color: #ff4444; }
+  .pill.warn { background: rgba(246,133,31,0.15); color: #f6851f; }
+  .pill.ok { background: rgba(72,187,120,0.15); color: #48bb78; }
+  .pill.muted { background: rgba(113,128,150,0.15); color: #718096; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #2d3748; }
+  .tl-item { position: relative; margin-bottom: 18px; }
+  .tl-item::before { content: ''; position: absolute; left: -20px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: #2d3748; }
+  .tl-item.danger::before { background: #ff4444; }
+  .tl-item.warn::before { background: #f6851f; }
+  .tl-item.ok::before { background: #48bb78; }
+  .tl-date { font-size: 11px; color: #718096; margin-bottom: 3px; }
+  .tl-text { font-size: 13px; color: #cbd5e0; line-height: 1.5; }
+  .tl-text strong { color: #fff; }
+
+  .divider { border: none; border-top: 1px solid #2d3748; margin: 20px 0; }
+
+  .footnote { font-size: 11px; color: #4a5568; text-align: center; margin-top: 32px; padding-bottom: 32px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 Análise Financeira — PROSTAFENSE & VIGORLON <span class="badge">⚠ ATENÇÃO</span></h1>
+  <div class="sub">Relatório gerado em 04/05/2026 · Dados dos últimos 30 dias (05/04 → 04/05) · 3 stores combinadas · 3.632 registros</div>
+</div>
+
+<div class="container">
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card red">
+      <div class="kpi-label">CB PROSTAFENSE (30 dias)</div>
+      <div class="kpi-value">10</div>
+      <div class="kpi-sub">R$ $2.297 em chargebacks</div>
+      <span class="kpi-tag danger">3 afiliados envolvidos</span>
+    </div>
+    <div class="kpi-card orange">
+      <div class="kpi-label">Refunds PROSTAFENSE</div>
+      <div class="kpi-value">148</div>
+      <div class="kpi-sub">de 1.099 pedidos</div>
+      <span class="kpi-tag warn">Taxa média 13,5%</span>
+    </div>
+    <div class="kpi-card yellow">
+      <div class="kpi-label">CB VIGORLON (30 dias)</div>
+      <div class="kpi-value">2</div>
+      <div class="kpi-sub">Apenas abr/05 e abr/07</div>
+      <span class="kpi-tag ok">Zerado depois</span>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">01/05 (Feriado BR)</div>
+      <div class="kpi-value">0</div>
+      <div class="kpi-sub">Refunds e CBs no dia</div>
+      <span class="kpi-tag ok">Volume 42 pedidos (-68% vs sex normais)</span>
+    </div>
+  </div>
+
+  <!-- ALERTA PRINCIPAL -->
+  <div class="section">
+    <div class="section-title">🚨 Diagnóstico — O que realmente aconteceu na Sexta 01/05</div>
+
+    <div class="alert critical">
+      <div class="alert-title">ESCLARECIMENTO CRÍTICO: Os CBs não ocorreram no dia 01/05 — eles foram REGISTRADOS em 01/05</div>
+      <p>Os dados mostram que os pedidos que geraram chargeback foram criados em <strong>09/04 (2 CBs da MaxWeb Sales)</strong>. A data de cancelamento/CB processing foi <strong>01/05/2026 às 12:15h</strong>. Ou seja: a métrica de 9,45% CB citada no relatório financeiro <strong>mede o processamento contábil do feriado, não a origin dos problemas</strong>. O feriado no Brasil não causou os chargebacks — apenas fez com que dois registros pendentes da MaxWeb Sales fossem processados nessa data sem a equipe ativa para interceptar.</p>
+    </div>
+
+    <div class="alert warn">
+      <div class="alert-title">VIGORLON: mesma lógica — CBs antigos de 05/04 e 07/04</div>
+      <p>Os 2 chargebacks do VIGORLON (Gestor One e Gabriel De Abreu) são de pedidos de <strong>05/04 e 07/04</strong>, ambos já encerrados. O produto não teve nenhum chargeback após 07/04 — os 30 dias seguintes estão limpos.</p>
+    </div>
+
+    <div class="alert info">
+      <div class="alert-title">Volume do dia 01/05: muito abaixo do normal por ser feriado BR</div>
+      <p>Com apenas <strong>42 pedidos no dia</strong> (vs. média de ~173 nas sextas normais de abril), o volume base estava baixíssimo. Isso amplia artificialmente qualquer taxa percentual. Se os 2 CBs da MaxWeb tivessem caído em uma sexta com 173 pedidos, a taxa seria de ~1,2% — não 9,45%. <strong>O denominador pequeno distorceu a percepção de risco.</strong></p>
+    </div>
+  </div>
+
+  <!-- GRÁFICO: LINHA DO TEMPO DE CBs -->
+  <div class="grid-2" style="margin-bottom:24px;">
+    <div class="section">
+      <div class="section-title">Chargebacks PROSTAFENSE — Linha do Tempo <span>Por data de criação do pedido</span></div>
+      <div class="chart-wrap">
+        <canvas id="chartCBTimeline"></canvas>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Taxa de Refund PROSTAFENSE — Diária <span>Últimos 30 dias</span></div>
+      <div class="chart-wrap">
+        <canvas id="chartRefundRate"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABELA CBs PROSTAFENSE -->
+  <div class="section">
+    <div class="section-title">🔍 Chargebacks PROSTAFENSE — Detalhamento Completo <span>10 registros · 3 afiliados</span></div>
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Data Pedido</th>
+          <th>Data CB Registrado</th>
+          <th>Intervalo</th>
+          <th>Afiliado</th>
+          <th>SKU / Produto</th>
+          <th>Valor</th>
+          <th>País</th>
+          <th>Padrão</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>8VWZ5PEX</td><td>09/04</td><td>20/04</td><td>11 dias</td>
+          <td>Alexandre Biasoli</td><td>pro3fnn2 · FT-3B</td><td>$216</td><td>🇺🇸 US</td>
+          <td><span class="pill danger">Par duplo</span></td>
+        </tr>
+        <tr>
+          <td>8VWZ5PF2</td><td>09/04</td><td>20/04</td><td>11 dias</td>
+          <td>Alexandre Biasoli</td><td>prof6_fnn2_up1_6b · UP1-6B</td><td>$234</td><td>🇺🇸 US</td>
+          <td><span class="pill danger">Par duplo</span></td>
+        </tr>
+        <tr>
+          <td>8VWZ5PJE</td><td>09/04</td><td>01/05 12:15h</td><td><strong>22 dias</strong></td>
+          <td><strong>MaxWeb Sales</strong></td><td>prof6_fnn2_up1_6b · UP1-6B</td><td>$234</td><td>🇹🇭 Thailand</td>
+          <td><span class="pill warn">Internacional</span></td>
+        </tr>
+        <tr>
+          <td>8VWZ5PJQ</td><td>09/04</td><td>01/05 12:15h</td><td><strong>22 dias</strong></td>
+          <td><strong>MaxWeb Sales</strong></td><td>prof9_fnn2_up2 · UP2-9B</td><td>$261</td><td>🇹🇭 Thailand</td>
+          <td><span class="pill warn">Internacional</span></td>
+        </tr>
+        <tr>
+          <td>8VWZ5R7G</td><td>13/04</td><td>30/04 14:15h</td><td>17 dias</td>
+          <td>Rodrigo Passos</td><td>pro6fnn2 · FT-6B</td><td>$294</td><td>🇺🇸 US</td>
+          <td><span class="pill danger">Par duplo</span></td>
+        </tr>
+        <tr>
+          <td>8VWZ5R7K</td><td>13/04</td><td>30/04 12:15h</td><td>17 dias</td>
+          <td>Rodrigo Passos</td><td>prof6_fnn2_up1_6b · UP1-6B</td><td>$234</td><td>🇺🇸 US</td>
+          <td><span class="pill danger">Par duplo</span></td>
+        </tr>
+        <tr>
+          <td>8VWZ5RU7</td><td>15/04</td><td>26/04 14:15h</td><td>11 dias</td>
+          <td>Alexandre Biasoli</td><td>pro21fnn2 · FT-2B</td><td>$178</td><td>🇺🇸 US</td>
+          <td><span class="pill danger">Par duplo</span></td>
+        </tr>
+        <tr>
+          <td>8VWZ5RUB</td><td>15/04</td><td>27/04 01:15h</td><td>12 dias</td>
+          <td>Alexandre Biasoli</td><td>prof6_fnn2_up1_6b · UP1-6B</td><td>$234</td><td>🇺🇸 US</td>
+          <td><span class="pill danger">Par duplo</span></td>
+        </tr>
+        <tr>
+          <td>8VWZ5TOF</td><td>23/04</td><td>04/05 11:15h</td><td>11 dias</td>
+          <td><strong>MaxWeb Sales</strong></td><td>pro21fnn2 · FT-2B</td><td>$178</td><td>🇺🇸 US</td>
+          <td><span class="pill muted">Isolado</span></td>
+        </tr>
+        <tr>
+          <td>8VWZ5V8L</td><td>30/04</td><td>02/05 16:54h</td><td>2 dias</td>
+          <td>Rodrigo Passos</td><td>prof6_fnn2_up1_6b · UP1-6B</td><td>$234</td><td>🇺🇸 US</td>
+          <td><span class="pill warn">Dupla cobrança</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <hr class="divider">
+    <div class="alert info" style="margin-bottom:0;">
+      <div class="alert-title">Padrão identificado nos comentários (CB911)</div>
+      <p>Todos os CBs do Alexandre Biasoli e Rodrigo Passos têm o comentário automatizado <strong>"chargeback recorded by Agent (CB911)"</strong> seguido de <strong>"Order canceled automatically due to blacklisting the customer."</strong> — o sistema já está bloqueando esses clientes. Os 2 CBs da MaxWeb Sales de 09/04 (Tailândia) são os mais atípicos: clientes internacionais, sem histórico de comentário de CS, valor combinado de $495. Atenção especial aqui.</p>
+    </div>
+  </div>
+
+  <!-- ANÁLISE POR AFILIADO -->
+  <div class="section">
+    <div class="section-title">👥 Análise por Afiliado — PROSTAFENSE Chargebacks</div>
+    <div class="grid-3">
+      <div>
+        <div class="alert critical">
+          <div class="alert-title">Alexandre Biasoli (ID 17011) — 4 CBs · $862</div>
+          <p>Maior concentração: 09/04 (2 CB) e 15/04 (2 CB). Ambos os lotes são <strong>pares de pedidos do mesmo cliente</strong> — FT + UP1. Padrão claro de cliente que disputa o cartão após receber o up-sell. CB processado 11-12 dias após a compra. Clientes já blacklistados no sistema.</p>
+        </div>
+      </div>
+      <div>
+        <div class="alert warn">
+          <div class="alert-title">MaxWeb Sales (ID 21271) — 3 CBs · $673</div>
+          <p>Caso mais crítico: 2 CBs de <strong>clientes da Tailândia</strong> (09/04), sem comentário de CS, processados em 01/05. Sugere tráfego internacional possivelmente baixa intenção ou fraude. 1 CB adicional em 23/04 (US). Investigar segmentação geográfica do MaxWeb.</p>
+        </div>
+      </div>
+      <div>
+        <div class="alert warn">
+          <div class="alert-title">Rodrigo Passos (ID 22563) — 3 CBs · $762</div>
+          <p>13/04 (par duplo) + 30/04. No caso de 13/04, o cliente alegou <strong>"não reconhecer a cobrança"</strong> e mencionou pedido não recebido de março. CS tentou reter com 50% de desconto, sem sucesso. Em 30/04, cliente cobrado 2x (8VWZ5V8H e 8VWZ5V8L) — CB com reembolso já processado.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRÁFICO COMPARATIVO SEXTAS -->
+  <div class="section">
+    <div class="section-title">📅 Comparativo de Sextas em Abril + 01/05 <span>Volume e taxa de perda geral</span></div>
+    <div class="chart-wrap" style="height: 200px;">
+      <canvas id="chartFridays"></canvas>
+    </div>
+    <div class="alert info" style="margin-top: 16px; margin-bottom: 0;">
+      <div class="alert-title">Por que 01/05 parece tão ruim nos KPIs percentuais?</div>
+      <p>As sextas normais de abril tiveram entre <strong>105 e 199 pedidos</strong>. Em 01/05 (feriado BR), foram apenas <strong>42 pedidos</strong> — redução de ~79% no volume. Com denominador 4-5x menor, qualquer CB ou refund representa uma taxa muito maior. Os 2 CBs de MaxWeb que foram processados nesse dia representariam &lt;1,5% em uma sexta normal.</p>
+    </div>
+  </div>
+
+  <!-- DIAS SEGUINTES -->
+  <div class="section">
+    <div class="section-title">📆 Análise dos Dias Seguintes — Sábado 02/05, Domingo 03/05, Segunda 04/05</div>
+    <div class="grid-3">
+      <div>
+        <div style="background:#16213e; border-radius: 10px; padding: 16px;">
+          <div style="font-size: 13px; font-weight: 700; color: #63b3ed; margin-bottom: 12px;">📅 Sábado 02/05</div>
+          <table>
+            <tr><td style="color:#718096; padding: 4px 0;">Pedidos</td><td style="text-align:right; color: #fff;">46</td></tr>
+            <tr><td style="color:#718096; padding: 4px 0;">Receita</td><td style="text-align:right; color: #fff;">$10.584</td></tr>
+            <tr><td style="color:#718096; padding: 4px 0;">Refunds</td><td style="text-align:right; color: #f6851f;">2 (4,3%)</td></tr>
+            <tr><td style="color:#718096; padding: 4px 0;">Chargebacks</td><td style="text-align:right; color: #48bb78;">0</td></tr>
+          </table>
+          <div style="margin-top: 10px; font-size: 12px; color: #718096;">1 refund PROSTAFENSE (UP1-6B · Rodrigo Passos) | 1 refund VIGORLON (UP1-6B) · CB do 23/04 da MaxWeb registrado hoje</div>
+        </div>
+      </div>
+      <div>
+        <div style="background:#16213e; border-radius: 10px; padding: 16px;">
+          <div style="font-size: 13px; font-weight: 700; color: #63b3ed; margin-bottom: 12px;">📅 Domingo 03/05</div>
+          <table>
+            <tr><td style="color:#718096; padding: 4px 0;">Pedidos</td><td style="text-align:right; color: #fff;">47</td></tr>
+            <tr><td style="color:#718096; padding: 4px 0;">Receita</td><td style="text-align:right; color: #fff;">$11.254</td></tr>
+            <tr><td style="color:#718096; padding: 4px 0;">Refunds</td><td style="text-align:right; color: #48bb78;">0</td></tr>
+            <tr><td style="color:#718096; padding: 4px 0;">Chargebacks</td><td style="text-align:right; color: #48bb78;">0</td></tr>
+          </table>
+          <div style="margin-top: 10px; font-size: 12px; color: #718096;">Dia limpo. Leve alta vs sábado. Pedidos concentrados em PROSTAFENSE FT-6B (16 pedidos = maior dia da semana para esse SKU).</div>
+        </div>
+      </div>
+      <div>
+        <div style="background:#16213e; border-radius: 10px; padding: 16px;">
+          <div style="font-size: 13px; font-weight: 700; color: #63b3ed; margin-bottom: 12px;">📅 Segunda 04/05 (parcial)</div>
+          <table>
+            <tr><td style="color:#718096; padding: 4px 0;">Pedidos</td><td style="text-align:right; color: #fff;">6 (parcial)</td></tr>
+            <tr><td style="color:#718096; padding: 4px 0;">Receita</td><td style="text-align:right; color: #fff;">$1.411</td></tr>
+            <tr><td style="color:#718096; padding: 4px 0;">Refunds</td><td style="text-align:right; color: #48bb78;">0</td></tr>
+            <tr><td style="color:#718096; padding: 4px 0;">Chargebacks</td><td style="text-align:right; color: #f6851f;">1 pendente</td></tr>
+          </table>
+          <div style="margin-top: 10px; font-size: 12px; color: #718096;">CB de 23/04 (MaxWeb · pro21fnn2 · $178) registrado 04/05 11:15h. Dados do dia ainda incompletos no momento da extração.</div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="alert warn">
+      <div class="alert-title">⚠️ Previsão para Segunda 05/05 e Terça 06/05 — Acúmulo de feriado prolongado</div>
+      <p>Com sexta (feriado BR) + sab/dom com volume reduzido, há 3 dias de pedidos represados. Com base nas médias históricas de abril, espere <strong>150–200 pedidos na segunda</strong> e um volume similar ou maior na terça. A equipe de CS precisa estar preparada para processar o backlog de tickets abertos no fim de semana. Monitorar especialmente os reembolsos retroativos de pedidos feitos em semanas anteriores — o intervalo médio de 11–17 dias nos CBs identificados significa que pedidos de 19–24/04 ainda estão na janela de risco de CB.</p>
+    </div>
+  </div>
+
+  <!-- TIMELINE REEMBOLSOS RETROATIVOS -->
+  <div class="section">
+    <div class="section-title">⏱ Intervalos de Reembolso — Pedidos ainda em janela de risco</div>
+    <div class="grid-2">
+      <div>
+        <p style="font-size: 13px; color: #a0aec0; margin-bottom: 16px;">Com base nos 10 CBs identificados, o intervalo entre <strong>criação do pedido e processamento do CB</strong> foi de <strong>2 a 22 dias</strong> (média ~13 dias). Os pedidos abaixo ainda estão dentro dessa janela e devem ser monitorados:</p>
+        <div class="timeline">
+          <div class="tl-item danger">
+            <div class="tl-date">Pedidos de 22–26/04 · Janela expira ~04–08/05</div>
+            <div class="tl-text">⚡ Prioridade máxima — exatamente na janela de pico de CB. Verificar especialmente <strong>MaxWeb Sales</strong> e qualquer cliente com comentário de "não reconhece a cobrança" ou tráfego do Tailândia.</div>
+          </div>
+          <div class="tl-item warn">
+            <div class="tl-date">Pedidos de 27/04–01/05 · Janela expira ~08–14/05</div>
+            <div class="tl-text">Monitoramento ativo. Inclui pedidos do feriado — volume menor reduz risco absoluto, mas CBs podem surgir durante a semana que vem.</div>
+          </div>
+          <div class="tl-item ok">
+            <div class="tl-date">Pedidos de 02–04/05 · Ainda muito cedo</div>
+            <div class="tl-text">Fora da janela de risco por enquanto. Acompanhar no final da semana que vem.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p style="font-size: 13px; color: #a0aec0; margin-bottom: 16px;"><strong>Verificação de reembolsos retroativos</strong> — pedidos solicitando reembolso de compras anteriores a 30 dias:</p>
+        <div class="alert critical">
+          <div class="alert-title">Caso Rodrigo Passos — 13/04 (ordem 8VWZ5R7G)</div>
+          <p>Cliente alegou <em>"not receive the order last March 26"</em> — ou seja, pedido de <strong>26/03</strong> sendo contestado em <strong>13/04</strong> (18 dias). É o caso mais claro de retroatividade. CS tentou 50% de PR mas cliente foi ao banco mesmo assim. Investigar se há outros clientes de Rodrigo Passos com mesmo padrão.</p>
+        </div>
+        <div class="alert warn" style="margin-top: 12px;">
+          <div class="alert-title">Caso MaxWeb Sales — Tailândia (09/04)</div>
+          <p>Sem qualquer interação de CS registrada. CBs processados 22 dias depois, sem aviso prévio. Perfil: clientes internacionais sem contato — altamente suspeito de fraude organizada. Solicitar ao MaxWeb o detalhamento da origem do tráfego da Tailândia.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOLUME GERAL MAIO -->
+  <div class="section">
+    <div class="section-title">📊 Volume Geral — Comparativo Abril vs Início de Maio</div>
+    <div class="chart-wrap" style="height:200px;">
+      <canvas id="chartVolume"></canvas>
+    </div>
+  </div>
+
+  <!-- RECOMENDAÇÕES -->
+  <div class="section">
+    <div class="section-title">✅ Ações Prioritárias — CS e Financeiro</div>
+    <div class="grid-2">
+      <div>
+        <div class="alert critical">
+          <div class="alert-title">🔴 IMEDIATO (hoje)</div>
+          <p>
+            1. <strong>MaxWeb Sales</strong>: solicitar origem do tráfego da Tailândia dos dias 09/04. Bloquear CPF/email/IP dos 2 clientes se ainda não blacklistados.<br><br>
+            2. Verificar se há pedidos de <strong>24–26/04 com comentários de CS</strong> indicando insatisfação, ameaça de disputa ou não-recebimento — estes são os que entrarão em CB nos próximos dias.<br><br>
+            3. Checar pedido <strong>8VWZ5VBK / HelpGrid Calls</strong> (01/05): comentário indica cliente que tentou ligar para a operadora do cartão após 30 minutos — acompanhar se virará CB.
+          </p>
+        </div>
+      </div>
+      <div>
+        <div class="alert warn">
+          <div class="alert-title">🟡 ESTA SEMANA</div>
+          <p>
+            1. <strong>Alexandre Biasoli</strong>: revisar todos os pedidos com upsell (FT + UP1 no mesmo cliente). Padrão de CB é sistemático nesses pares — avaliar se o fluxo de upsell está sendo percebido como dupla cobrança.<br><br>
+            2. Preparar equipe para <strong>segunda e terça pesadas</strong> — acúmulo de 3 dias de feriado prolongado. Priorizar tickets com palavras-chave: "didn't order", "bank dispute", "charge not recognized".<br><br>
+            3. Cruzar <strong>taxa de refund de abr/14 (23% PROSTAFENSE)</strong> — foi o pico do mês, investigar o que aconteceu nessa data específica.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footnote">Dashboard gerado automaticamente · Dados: 3 arquivos OrdersItems_05-04-2026 · 3.632 registros válidos · Período 05/04/2026–04/05/2026</div>
+
+<script>
+// Chart: CB Timeline PROSTAFENSE
+const ctx1 = document.getElementById('chartCBTimeline').getContext('2d');
+new Chart(ctx1, {
+  type: 'bar',
+  data: {
+    labels: ['09/04','13/04','15/04','23/04','30/04'],
+    datasets: [
+      { label: 'Alexandre Biasoli', data: [2,0,2,0,0], backgroundColor: 'rgba(255,68,68,0.7)', borderRadius: 4 },
+      { label: 'MaxWeb Sales', data: [2,0,0,1,0], backgroundColor: 'rgba(246,133,31,0.7)', borderRadius: 4 },
+      { label: 'Rodrigo Passos', data: [0,2,0,0,1], backgroundColor: 'rgba(236,201,75,0.7)', borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#a0aec0', font: { size: 11 } } } },
+    scales: {
+      x: { stacked: true, ticks: { color: '#718096' }, grid: { color: '#2d3748' } },
+      y: { stacked: true, ticks: { color: '#718096', stepSize: 1 }, grid: { color: '#2d3748' }, beginAtZero: true }
+    }
+  }
+});
+
+// Chart: Refund Rate PROSTAFENSE daily
+const ctx2 = document.getElementById('chartRefundRate').getContext('2d');
+const days = ['05/4','06/4','07/4','08/4','09/4','10/4','11/4','12/4','13/4','14/4','15/4','16/4','17/4','18/4','19/4','20/4','21/4','22/4','23/4','24/4','25/4','26/4','27/4','28/4','29/4','30/4','01/5','02/5','03/5','04/5'];
+const refRates = [14.3,11.1,9.1,12.5,21.1,13.6,16.7,7.7,13.0,22.9,7.1,21.3,26.3,22.4,21.9,10.0,12.1,11.4,12.5,15.4,5.3,5.4,5.0,0.0,6.9,5.1,0.0,3.8,0.0,0.0];
+const cbRates = [0,0,0,0,7.0,0,0,0,2.6,0,4.8,0,0,0,0,0,0,0,3.1,0,0,0,0,0,0,2.6,0,0,0,0];
+new Chart(ctx2, {
+  type: 'line',
+  data: {
+    labels: days,
+    datasets: [
+      { label: 'Taxa Refund %', data: refRates, borderColor: '#f6851f', backgroundColor: 'rgba(246,133,31,0.08)', fill: true, tension: 0.3, pointRadius: 3, borderWidth: 2 },
+      { label: 'Taxa CB %', data: cbRates, borderColor: '#ff4444', backgroundColor: 'rgba(255,68,68,0.08)', fill: true, tension: 0.3, pointRadius: 4, borderWidth: 2, borderDash: [4,2] }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#a0aec0', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#718096', font: { size: 10 }, maxRotation: 45 }, grid: { color: '#2d3748' } },
+      y: { ticks: { color: '#718096', callback: v => v+'%' }, grid: { color: '#2d3748' }, beginAtZero: true }
+    }
+  }
+});
+
+// Chart: Fridays comparison
+const ctx3 = document.getElementById('chartFridays').getContext('2d');
+new Chart(ctx3, {
+  type: 'bar',
+  data: {
+    labels: ['Sex 10/04','Sex 17/04','Sex 24/04','Sex 01/05 (Feriado BR)'],
+    datasets: [
+      { label: 'Pedidos', data: [199, 121, 105, 42], backgroundColor: 'rgba(66,153,225,0.7)', borderRadius: 4, yAxisID: 'y' },
+      { label: 'Taxa Perda %', data: [8.5, 9.1, 4.8, 0], backgroundColor: 'rgba(246,133,31,0.7)', borderRadius: 4, yAxisID: 'y2' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#a0aec0', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#718096' }, grid: { color: '#2d3748' } },
+      y: { ticks: { color: '#718096' }, grid: { color: '#2d3748' }, beginAtZero: true, position: 'left', title: { display: true, text: 'Pedidos', color: '#718096' } },
+      y2: { ticks: { color: '#f6851f', callback: v => v+'%' }, grid: { display: false }, beginAtZero: true, position: 'right', title: { display: true, text: 'Taxa Perda', color: '#f6851f' } }
+    }
+  }
+});
+
+// Chart: Volume geral
+const ctx4 = document.getElementById('chartVolume').getContext('2d');
+const allDays = ['05/4','06/4','07/4','08/4','09/4','10/4','11/4','12/4','13/4','14/4','15/4','16/4','17/4','18/4','19/4','20/4','21/4','22/4','23/4','24/4','25/4','26/4','27/4','28/4','29/4','30/4','01/5','02/5','03/5','04/5'];
+const allOrders = [130,106,167,165,158,199,177,249,234,173,167,149,121,117,181,138,121,132,83,105,121,108,50,38,48,54,42,46,47,6];
+const allRefunds = [11,5,13,15,19,17,16,17,27,26,8,14,11,11,16,6,11,10,7,5,3,3,2,0,2,2,0,2,0,0];
+new Chart(ctx4, {
+  type: 'bar',
+  data: {
+    labels: allDays,
+    datasets: [
+      { label: 'Pedidos', data: allOrders, backgroundColor: allDays.map(d => ['01/5','02/5','03/5','04/5'].includes(d) ? 'rgba(72,187,120,0.6)' : 'rgba(66,153,225,0.4)'), borderRadius: 3 },
+      { label: 'Refunds', data: allRefunds, backgroundColor: 'rgba(255,68,68,0.7)', borderRadius: 3 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#a0aec0', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#718096', font: { size: 10 }, maxRotation: 45 }, grid: { color: '#2d3748' } },
+      y: { ticks: { color: '#718096' }, grid: { color: '#2d3748' }, beginAtZero: true }
+    }
+  }
+});
+</script>
+</body>
+</html>
