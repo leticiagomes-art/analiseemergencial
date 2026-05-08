@@ -1,216 +1,272 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Consolidado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Epilogue:wght@400;600;800;900&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@400;500;700&display=swap');
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-:root {
-  --bg: #050507;
-  --bg1: #0a0a0f;
-  --bg2: #111118;
-  --bg3: #18181f;
-  --border: rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.10);
-  --text: #e2e2e8;
-  --text2: #888899;
-  --text3: #55556a;
-  --blue: #4d9fff;
-  --blue-dim: rgba(77,159,255,0.12);
-  --green: #3dd68c;
-  --green-dim: rgba(61,214,140,0.10);
-  --red: #ff5f5f;
-  --red-dim: rgba(255,95,95,0.10);
-  --amber: #f5a623;
-  --amber-dim: rgba(245,166,35,0.10);
-  --purple: #a78bfa;
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'Syne', sans-serif;
+[data-theme="dark"] {
+  --bg:      #06060a;
+  --bg1:     #0d0d14;
+  --bg2:     #12121c;
+  --bg3:     #1a1a28;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text:    #eeeef8;
+  --text2:   #8080a8;
+  --text3:   #48486a;
+  --blue:    #5aabff;
+  --blue-d:  rgba(90,171,255,0.13);
+  --green:   #3dd68c;
+  --green-d: rgba(61,214,140,0.11);
+  --red:     #ff6060;
+  --red-d:   rgba(255,96,96,0.11);
+  --amber:   #f5a623;
+  --amber-d: rgba(245,166,35,0.11);
+  --shadow:  0 2px 20px rgba(0,0,0,0.55);
+  --grid:    rgba(255,255,255,0.04);
+  --tick:    #48486a;
+}
+[data-theme="light"] {
+  --bg:      #f2f2f8;
+  --bg1:     #ffffff;
+  --bg2:     #f8f8fc;
+  --bg3:     #ebebf4;
+  --border:  rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.15);
+  --text:    #111122;
+  --text2:   #4a4a70;
+  --text3:   #9090b8;
+  --blue:    #1a7aef;
+  --blue-d:  rgba(26,122,239,0.10);
+  --green:   #179057;
+  --green-d: rgba(23,144,87,0.10);
+  --red:     #d43030;
+  --red-d:   rgba(212,48,48,0.10);
+  --amber:   #bf7600;
+  --amber-d: rgba(191,118,0,0.10);
+  --shadow:  0 2px 14px rgba(0,0,0,0.08);
+  --grid:    rgba(0,0,0,0.06);
+  --tick:    #9090b8;
 }
 
 body {
-  background: var(--bg);
-  font-family: var(--sans);
-  color: var(--text);
-  min-height: 100vh;
-  padding: 0;
+  background: var(--bg); font-family: 'Epilogue', sans-serif;
+  color: var(--text); min-height: 100vh;
+  transition: background .3s, color .3s;
 }
 
-/* ── HEADER ── */
+/* HEADER */
 .header {
-  border-bottom: 1px solid var(--border);
-  padding: 20px 28px 0;
-  background: var(--bg1);
-  position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid var(--border2); padding: 18px 28px 0;
+  background: var(--bg1); position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow); transition: background .3s, box-shadow .3s;
 }
-.header-top {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px;
-}
+.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .logo {
-  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--text3); font-family: var(--mono);
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--text3);
 }
+.header-right { display: flex; align-items: center; gap: 10px; }
 .date-badge {
-  font-family: var(--mono); font-size: 11px; color: var(--text3);
-  background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
-  padding: 3px 10px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3);
+  background: var(--bg3); border: 1px solid var(--border2); border-radius: 5px; padding: 3px 10px;
 }
+.theme-btn {
+  background: var(--bg3); border: 1px solid var(--border2); border-radius: 6px;
+  padding: 5px 10px; cursor: pointer; font-size: 15px; line-height: 1;
+  color: var(--text2); transition: border-color .18s, color .18s;
+}
+.theme-btn:hover { border-color: var(--blue); color: var(--blue); }
 
-/* main tabs */
-.main-tabs { display: flex; gap: 0; }
+/* MAIN TABS */
+.main-tabs { display: flex; }
 .main-tab {
-  font-family: var(--sans); font-size: 13px; font-weight: 500;
-  padding: 10px 22px; cursor: pointer; border: none; background: transparent;
-  color: var(--text3); position: relative; transition: color .2s;
-  border-top-left-radius: 6px; border-top-right-radius: 6px;
-  letter-spacing: .01em;
+  font-family: 'Epilogue', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: .01em; padding: 10px 24px 12px; cursor: pointer;
+  border: none; background: transparent; color: var(--text3);
+  position: relative; transition: color .2s;
 }
 .main-tab::after {
-  content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px;
-  background: transparent; transition: background .2s;
+  content: ''; position: absolute; bottom: 0; left: 8px; right: 8px; height: 2px;
+  background: transparent; transition: background .2s; border-radius: 2px;
 }
 .main-tab.active { color: var(--text); }
 .main-tab.active::after { background: var(--blue); }
 .main-tab:hover:not(.active) { color: var(--text2); }
 
-/* ── CONTENT ── */
-.content { padding: 24px 28px; }
+/* CONTENT */
+.content { padding: 26px 28px 48px; }
 .main-panel { display: none; }
 .main-panel.active { display: block; }
 
-/* sub-tabs */
-.sub-tabs {
-  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px;
-}
+/* SUB TABS */
+.sub-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 26px; }
 .sub-btn {
-  font-family: var(--mono); font-size: 11px; letter-spacing: .04em; text-transform: uppercase;
-  padding: 6px 16px; border: 1px solid var(--border2); border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase;
+  padding: 6px 16px; border: 1px solid var(--border2); border-radius: 5px;
   background: transparent; color: var(--text3); cursor: pointer; transition: all .18s;
 }
-.sub-btn.active {
-  background: var(--blue-dim); border-color: var(--blue); color: var(--blue);
-}
-.sub-btn:hover:not(.active) { border-color: var(--border2); color: var(--text2); }
+.sub-btn.active { background: var(--blue-d); border-color: var(--blue); color: var(--blue); }
+.sub-btn:hover:not(.active) { color: var(--text2); }
 
-/* sub-panels */
+/* PANELS */
 .sub-panel { display: none; }
-.sub-panel.active { display: block; animation: fadeIn .2s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.sub-panel.active { display: block; animation: fadeUp .22s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
-/* ── METRICS ── */
+/* PANEL HEADER */
+.panel-header {
+  font-size: 24px; font-weight: 900; letter-spacing: -.03em; line-height: 1.1;
+  color: var(--text); margin-bottom: 22px; display: flex; align-items: center; gap: 10px;
+}
+
+/* METRIC CARDS */
 .metrics-row {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;
-  margin-bottom: 14px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 10px;
+  margin-bottom: 12px;
 }
 .metric {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
-  padding: 14px 16px;
+  background: var(--bg1); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; transition: border-color .18s, background .3s;
 }
-.metric-label { font-size: 11px; color: var(--text3); font-family: var(--mono); letter-spacing: .04em; margin-bottom: 6px; }
-.metric-val { font-size: 20px; font-weight: 700; color: var(--text); font-family: var(--mono); line-height: 1; }
-.metric-sub { font-size: 11px; color: var(--text3); font-family: var(--mono); margin-top: 5px; }
-.metric-val.good { color: var(--green); }
-.metric-val.warn { color: var(--red); }
-.metric-val.info { color: var(--blue); }
+.metric:hover { border-color: var(--border2); }
+.metric-label {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--text3); margin-bottom: 7px;
+}
+.metric-val {
+  font-family: 'Epilogue', sans-serif; font-size: 22px; font-weight: 900;
+  letter-spacing: -.04em; color: var(--text); line-height: 1;
+}
+.metric-sub {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); margin-top: 5px;
+}
+.metric-val.good  { color: var(--green); }
+.metric-val.warn  { color: var(--red); }
+.metric-val.info  { color: var(--blue); }
 .metric-val.amber { color: var(--amber); }
 
-/* section title */
+/* SECTION TITLE */
 .sec-title {
-  font-size: 10px; font-family: var(--mono); letter-spacing: .1em; text-transform: uppercase;
-  color: var(--text3); margin: 22px 0 12px; padding-left: 2px;
-  border-left: 2px solid var(--blue); padding-left: 8px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+  letter-spacing: .13em; text-transform: uppercase; color: var(--text3);
+  margin: 26px 0 13px; padding-left: 10px; border-left: 3px solid var(--blue);
 }
 
-/* ── BAR ROWS ── */
-.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
-.bar-label { font-size: 11px; font-family: var(--mono); color: var(--text2); min-width: 42px; text-align: right; }
-.bar-bg { flex: 1; background: var(--bg3); border-radius: 3px; height: 22px; overflow: hidden; }
-.bar-fill {
-  height: 100%; border-radius: 3px; display: flex; align-items: center;
-  justify-content: flex-end; padding-right: 8px;
-  font-size: 11px; font-weight: 500; font-family: var(--mono); color: #fff;
-  transition: width .5s cubic-bezier(.25,.46,.45,.94);
-}
-.bar-val { font-size: 11px; font-family: var(--mono); color: var(--text3); min-width: 80px; }
-
-/* ── TABLE ── */
-.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-thead tr { border-bottom: 1px solid var(--border2); }
-th { padding: 10px 14px; text-align: left; font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); }
-td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; color: var(--text2); }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--bg3); }
-td.num { color: var(--text); font-weight: 500; }
-td.good { color: var(--green); }
-td.warn { color: var(--red); }
-td.amber { color: var(--amber); }
-td.info { color: var(--blue); }
-
-/* ── CHART CONTAINERS ── */
-.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
-@media (max-width: 700px) { .charts-grid { grid-template-columns: 1fr; } }
-.chart-card {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
-  padding: 16px 18px;
-}
-.chart-title {
-  font-size: 11px; font-family: var(--mono); letter-spacing: .07em; text-transform: uppercase;
-  color: var(--text3); margin-bottom: 14px;
-}
-.chart-full { margin-top: 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; }
-.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; }
-.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; font-family: var(--mono); color: var(--text3); }
-.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-
-/* divider */
-.divider { height: 1px; background: var(--border); margin: 20px 0; }
-
-/* tag */
-.tag {
-  display: inline-block; font-size: 10px; font-family: var(--mono); letter-spacing: .06em;
-  padding: 2px 7px; border-radius: 3px; margin-left: 8px; vertical-align: middle; text-transform: uppercase;
-}
-.tag-blue { background: var(--blue-dim); color: var(--blue); }
-.tag-green { background: var(--green-dim); color: var(--green); }
-.tag-red { background: var(--red-dim); color: var(--red); }
-.tag-amber { background: var(--amber-dim); color: var(--amber); }
-
-/* panel header */
-.panel-header {
-  font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 18px;
-  display: flex; align-items: center; gap: 4px;
-}
-
-/* overview insight */
-.insight {
-  background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--blue);
-  border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 10px;
-  font-size: 13px; color: var(--text2); line-height: 1.6;
-}
-.insight strong { color: var(--text); font-weight: 500; }
-
-/* breakdown cards */
+/* BREAKDOWN CARDS */
 .breakdown-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 8px;
-  margin-bottom: 6px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 8px;
+  margin-bottom: 4px;
 }
 .breakdown-card {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
-  padding: 12px 14px; border-top-width: 2px;
+  background: var(--bg1); border: 1px solid var(--border);
+  border-top: 3px solid var(--border2); border-radius: 10px;
+  padding: 14px 16px; transition: background .3s, border-color .18s;
 }
+.breakdown-card:hover { border-color: var(--border2); }
 .bc-total { border-top-color: var(--text3); }
 .bc-up    { border-top-color: var(--blue); }
 .bc-dw    { border-top-color: var(--amber); }
-.bc-main  { border-top-color: rgba(255,255,255,0.15); }
-.bc-head  { font-size: 10px; font-family: var(--mono); letter-spacing:.06em; text-transform:uppercase; color: var(--text3); margin-bottom: 6px; }
-.bc-val   { font-size: 22px; font-weight: 700; font-family: var(--mono); color: var(--text); line-height: 1; margin-bottom: 4px; }
-.bc-pct   { font-size: 10px; font-family: var(--mono); color: var(--text3); margin-bottom: 4px; }
-.bc-money { font-size: 11px; font-family: var(--mono); color: var(--text2); }
+.bc-main  { border-top-color: var(--green); }
+.bc-head {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px;
+}
+.bc-val {
+  font-family: 'Epilogue', sans-serif; font-size: 30px; font-weight: 900;
+  letter-spacing: -.05em; color: var(--text); line-height: 1; margin-bottom: 6px;
+}
+.bc-pct-main {
+  font-family: 'Epilogue', sans-serif; font-size: 14px; font-weight: 800;
+  letter-spacing: -.01em; margin-bottom: 2px;
+}
+.bc-pct-sub {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); margin-bottom: 5px;
+}
+.bc-money { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; color: var(--text2); }
+.bc-total .bc-pct-main { color: var(--text2); }
+.bc-up    .bc-pct-main { color: var(--blue); }
+.bc-dw    .bc-pct-main { color: var(--amber); }
+.bc-main  .bc-pct-main { color: var(--green); }
+
+/* BAR ROWS */
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+.bar-label {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600;
+  color: var(--text2); min-width: 44px; text-align: right;
+}
+.bar-bg { flex: 1; background: var(--bg3); border-radius: 4px; height: 22px; overflow: hidden; }
+.bar-fill {
+  height: 100%; border-radius: 4px; display: flex; align-items: center;
+  justify-content: flex-end; padding-right: 8px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; color: #fff;
+  transition: width .55s cubic-bezier(.25,.46,.45,.94);
+}
+.bar-val { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); min-width: 80px; }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; margin-top: 6px; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { border-bottom: 1px solid var(--border2); }
+th {
+  padding: 10px 14px; text-align: left; white-space: nowrap;
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--text3);
+}
+td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text2);
+  transition: background .15s;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg3); }
+td.num   { color: var(--text); font-weight: 600; }
+td.good  { color: var(--green); font-weight: 600; }
+td.warn  { color: var(--red); font-weight: 600; }
+td.amber { color: var(--amber); font-weight: 600; }
+td.info  { color: var(--blue); font-weight: 600; }
+
+/* CHARTS */
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; }
+@media (max-width: 680px) { .charts-grid { grid-template-columns: 1fr; } }
+.chart-card, .chart-full {
+  background: var(--bg1); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px 18px; transition: background .3s;
+}
+.chart-full { margin-top: 14px; }
+.chart-title {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 14px;
+}
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); }
+.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAGS */
+.tag {
+  display: inline-block; font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 4px;
+}
+.tag-blue  { background: var(--blue-d);  color: var(--blue); }
+.tag-amber { background: var(--amber-d); color: var(--amber); }
+.tag-green { background: var(--green-d); color: var(--green); }
+
+/* INSIGHTS */
+.insight {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-left: 3px solid var(--blue); border-radius: 0 10px 10px 0;
+  padding: 12px 16px; margin-bottom: 10px;
+  font-size: 13px; line-height: 1.65; color: var(--text2);
+  transition: background .3s;
+}
+.insight strong { color: var(--text); font-weight: 700; }
 </style>
 </head>
 <body>
@@ -218,7 +274,10 @@ td.info { color: var(--blue); }
 <div class="header">
   <div class="header-top">
     <span class="logo">Dashboard Consolidado</span>
-    <span class="date-badge">Jan–Abr 2026</span>
+    <div class="header-right">
+      <span class="date-badge">Jan–Abr 2026</span>
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">☀</button>
+    </div>
   </div>
   <div class="main-tabs">
     <button class="main-tab active" onclick="switchMain(this,'empresa')">Dashboard da Empresa</button>
@@ -228,7 +287,6 @@ td.info { color: var(--blue); }
 
 <div class="content">
 
-<!-- ══════════════════════════════ EMPRESA ══════════════════════════════ -->
 <div id="main-empresa" class="main-panel active">
   <div class="sub-tabs">
     <button class="sub-btn active" onclick="switchSub(this,'empresa','jan')">Janeiro</button>
@@ -237,33 +295,30 @@ td.info { color: var(--blue); }
     <button class="sub-btn" onclick="switchSub(this,'empresa','abr')">Abril</button>
     <button class="sub-btn" onclick="switchSub(this,'empresa','all')">Visão Geral</button>
   </div>
-
   <div id="emp-jan" class="sub-panel active"></div>
   <div id="emp-fev" class="sub-panel"></div>
   <div id="emp-mar" class="sub-panel"></div>
   <div id="emp-abr" class="sub-panel"></div>
   <div id="emp-all" class="sub-panel"></div>
-
-  <div class="charts-grid" style="margin-top:24px;">
+  <div class="charts-grid">
     <div class="chart-card">
       <div class="chart-title">Vendas Front vs. Back por mês</div>
-      <div style="position:relative;height:200px;"><canvas id="ec1"></canvas></div>
+      <div style="position:relative;height:200px;"><canvas id="ec1" role="img" aria-label="Vendas front e back por mês"></canvas></div>
       <div class="legend" id="ec1-leg"></div>
     </div>
     <div class="chart-card">
       <div class="chart-title">Net Profit vs. Refunds vs. Chargebacks ($)</div>
-      <div style="position:relative;height:200px;"><canvas id="ec2"></canvas></div>
+      <div style="position:relative;height:200px;"><canvas id="ec2" role="img" aria-label="Net profit, refunds e chargebacks por mês"></canvas></div>
       <div class="legend" id="ec2-leg"></div>
     </div>
   </div>
   <div class="chart-full">
     <div class="chart-title">Taxas de Refund & Chargeback (% do faturamento)</div>
-    <div style="position:relative;height:200px;"><canvas id="ec3"></canvas></div>
+    <div style="position:relative;height:200px;"><canvas id="ec3" role="img" aria-label="Taxas de refund e chargeback em porcentagem"></canvas></div>
     <div class="legend" id="ec3-leg"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════ BUYGOODS ══════════════════════════════ -->
 <div id="main-buygoods" class="main-panel">
   <div class="sub-tabs">
     <button class="sub-btn active" onclick="switchSub(this,'buygoods','jan')">Janeiro</button>
@@ -272,361 +327,240 @@ td.info { color: var(--blue); }
     <button class="sub-btn" onclick="switchSub(this,'buygoods','abr')">Abril</button>
     <button class="sub-btn" onclick="switchSub(this,'buygoods','all')">Visão Geral</button>
   </div>
-
   <div id="bg-jan" class="sub-panel active"></div>
   <div id="bg-fev" class="sub-panel"></div>
   <div id="bg-mar" class="sub-panel"></div>
   <div id="bg-abr" class="sub-panel"></div>
   <div id="bg-all" class="sub-panel"></div>
-
-  <div class="charts-grid" style="margin-top:24px;">
+  <div class="charts-grid">
     <div class="chart-card">
       <div class="chart-title">Total de vendas & upsells por mês</div>
-      <div style="position:relative;height:200px;"><canvas id="bc1"></canvas></div>
+      <div style="position:relative;height:200px;"><canvas id="bc1" role="img" aria-label="Total de vendas e upsells"></canvas></div>
       <div class="legend" id="bc1-leg"></div>
     </div>
     <div class="chart-card">
       <div class="chart-title">Receita upsell vs. valor reembolsado ($)</div>
-      <div style="position:relative;height:200px;"><canvas id="bc2"></canvas></div>
+      <div style="position:relative;height:200px;"><canvas id="bc2" role="img" aria-label="Receita de upsell vs valor reembolsado"></canvas></div>
       <div class="legend" id="bc2-leg"></div>
     </div>
   </div>
   <div class="chart-full">
     <div class="chart-title">% Upsell e % Reembolso sobre total de vendas</div>
-    <div style="position:relative;height:200px;"><canvas id="bc3"></canvas></div>
+    <div style="position:relative;height:200px;"><canvas id="bc3" role="img" aria-label="Porcentagem de upsell e reembolso"></canvas></div>
     <div class="legend" id="bc3-leg"></div>
   </div>
 </div>
 
-</div><!-- end content -->
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-
-/* ─────────────── DATA ─────────────── */
 const empData = {
-  jan: { label:'Janeiro', tag:'tag-blue', tagTxt:'Jan', faturamento:683512.35, front_sales:2572, front_rev:630268.73, back_sales:385, back_rev:52631.98, refunds:85142.68, chargebacks:4554.15, net_profit:54652.03, impostos:29334.01, plataforma:50810.78, comissoes:420001.48, cogs:68351.24, aov_bruto:265.25, aov_liq:234.59, up1:277, up1r:49000, dw1:57, dw1r:6000, up2:87, up2r:11000, up3:45, up3r:5000 },
-  fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Fev', faturamento:2172249.79, front_sales:8026, front_rev:1956587.45, back_sales:1519, back_rev:214229.77, refunds:230952.06, chargebacks:12995.68, net_profit:298553.53, impostos:91320.64, plataforma:161592.34, comissoes:1250931.2, cogs:217224.98, aov_bruto:270.35, aov_liq:239.14, up1:985, up1r:191000, dw1:202, dw1r:25000, up2:334, up2r:46000, up3:146, up3r:20000 },
-  mar: { label:'Março', tag:'tag-blue', tagTxt:'Mar', faturamento:2722613.70, front_sales:9319, front_rev:2385943.39, back_sales:2361, back_rev:335900.77, refunds:344887.03, chargebacks:18737.97, net_profit:276584.19, impostos:116746.76, plataforma:187888.74, comissoes:1622254.4, cogs:272261.37, aov_bruto:294.65, aov_liq:259.47, up1:1186, up1r:271000, dw1:164, dw1r:28000, up2:322, up2r:68000, up3:116, up3r:18000 },
-  abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', faturamento:2802332.91, front_sales:7670, front_rev:2144069.73, back_sales:3567, back_rev:657642.48, refunds:444262.33, chargebacks:28970.67, net_profit:464126.28, impostos:169205.09, plataforma:185764.76, comissoes:1398975.58, cogs:280233.29, aov_bruto:364.83, aov_liq:319.08, up1:2292, up1r:576000, dw1:75, dw1r:21000, up2:292, up2r:71000, up3:113, up3r:20000 }
+  jan: { label:'Janeiro', tag:'tag-blue', tagTxt:'Jan', faturamento:683512.35, front_sales:2572, front_rev:630268.73, back_sales:385, back_rev:52631.98, refunds:85142.68, chargebacks:4554.15, net_profit:54652.03, impostos:29334.01, plataforma:50810.78, comissoes:420001.48, cogs:68351.24, aov_bruto:265.25, aov_liq:234.59, up1:277, dw1:57, up2:87, up3:45 },
+  fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Fev', faturamento:2172249.79, front_sales:8026, front_rev:1956587.45, back_sales:1519, back_rev:214229.77, refunds:230952.06, chargebacks:12995.68, net_profit:298553.53, impostos:91320.64, plataforma:161592.34, comissoes:1250931.2, cogs:217224.98, aov_bruto:270.35, aov_liq:239.14, up1:985, dw1:202, up2:334, up3:146 },
+  mar: { label:'Março', tag:'tag-blue', tagTxt:'Mar', faturamento:2722613.70, front_sales:9319, front_rev:2385943.39, back_sales:2361, back_rev:335900.77, refunds:344887.03, chargebacks:18737.97, net_profit:276584.19, impostos:116746.76, plataforma:187888.74, comissoes:1622254.4, cogs:272261.37, aov_bruto:294.65, aov_liq:259.47, up1:1186, dw1:164, up2:322, up3:116 },
+  abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', faturamento:2802332.91, front_sales:7670, front_rev:2144069.73, back_sales:3567, back_rev:657642.48, refunds:444262.33, chargebacks:28970.67, net_profit:464126.28, impostos:169205.09, plataforma:185764.76, comissoes:1398975.58, cogs:280233.29, aov_bruto:364.83, aov_liq:319.08, up1:2292, dw1:75, up2:292, up3:113 }
 };
-
 const bgData = {
-  jan: { label:'Janeiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:6043, revenue:1294545.80, upsells:827, upsell_pct:13.7, downsells:239, refunds:693, refund_pct:11.5, chargebacks:34, refund_value:152428, upsell_rev:134471,
-    ref_up:169, ref_up_val:29666, ref_dw:30, ref_dw_val:4134, ref_main:494, ref_main_val:118628,
-    cb_up:11,  cb_up_val:1836,  cb_dw:0,  cb_dw_val:0,     cb_main:23, cb_main_val:5356 },
-  fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:8151, revenue:1751633.80, upsells:639, upsell_pct:7.8, downsells:176, refunds:934, refund_pct:11.5, chargebacks:48, refund_value:207261, upsell_rev:120657,
-    ref_up:140, ref_up_val:27325, ref_dw:23, ref_dw_val:2903, ref_main:771, ref_main_val:177033,
-    cb_up:7,   cb_up_val:1443,  cb_dw:0,  cb_dw_val:0,     cb_main:41, cb_main_val:9636 },
-  mar: { label:'Março', tag:'tag-blue', tagTxt:'Funil Padrão', total:11253, revenue:2453869.90, upsells:1255, upsell_pct:11.2, downsells:310, refunds:1294, refund_pct:11.5, chargebacks:66, refund_value:292596, upsell_rev:259431,
-    ref_up:241, ref_up_val:50230, ref_dw:28, ref_dw_val:3729, ref_main:1025, ref_main_val:238637,
-    cb_up:12,  cb_up_val:2565,  cb_dw:1,  cb_dw_val:99,    cb_main:53, cb_main_val:13700 },
-  abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', total:11352, revenue:2603693.80, upsells:2292, upsell_pct:20.2, downsells:244, refunds:1263, refund_pct:11.1, chargebacks:71, refund_value:299839, upsell_rev:522684,
-    ref_up:492, ref_up_val:113858, ref_dw:25, ref_dw_val:3900, ref_main:746, ref_main_val:182081,
-    cb_up:19,  cb_up_val:4386,  cb_dw:0,  cb_dw_val:0,     cb_main:52, cb_main_val:12997 }
+  jan: { label:'Janeiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:6043, revenue:1294545.80, upsells:827, upsell_pct:13.7, downsells:239, refunds:693, refund_pct:11.5, chargebacks:34, refund_value:152428, upsell_rev:134471, ref_up:169, ref_up_val:29666, ref_dw:30, ref_dw_val:4134, ref_main:494, ref_main_val:118628, cb_up:11, cb_up_val:1836, cb_dw:0, cb_dw_val:0, cb_main:23, cb_main_val:5356 },
+  fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:8151, revenue:1751633.80, upsells:639, upsell_pct:7.8, downsells:176, refunds:934, refund_pct:11.5, chargebacks:48, refund_value:207261, upsell_rev:120657, ref_up:140, ref_up_val:27325, ref_dw:23, ref_dw_val:2903, ref_main:771, ref_main_val:177033, cb_up:7, cb_up_val:1443, cb_dw:0, cb_dw_val:0, cb_main:41, cb_main_val:9636 },
+  mar: { label:'Março', tag:'tag-blue', tagTxt:'Funil Padrão', total:11253, revenue:2453869.90, upsells:1255, upsell_pct:11.2, downsells:310, refunds:1294, refund_pct:11.5, chargebacks:66, refund_value:292596, upsell_rev:259431, ref_up:241, ref_up_val:50230, ref_dw:28, ref_dw_val:3729, ref_main:1025, ref_main_val:238637, cb_up:12, cb_up_val:2565, cb_dw:1, cb_dw_val:99, cb_main:53, cb_main_val:13700 },
+  abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', total:11352, revenue:2603693.80, upsells:2292, upsell_pct:20.2, downsells:244, refunds:1263, refund_pct:11.1, chargebacks:71, refund_value:299839, upsell_rev:522684, ref_up:492, ref_up_val:113858, ref_dw:25, ref_dw_val:3900, ref_main:746, ref_main_val:182081, cb_up:19, cb_up_val:4386, cb_dw:0, cb_dw_val:0, cb_main:52, cb_main_val:12997 }
 };
-
 const keys = ['jan','fev','mar','abr'];
 
-/* ─────────────── HELPERS ─────────────── */
-const $ = id => document.getElementById(id);
-const fmtD = v => '$' + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmtDK = v => '$' + (v/1000).toFixed(1) + 'K';
-const fmtN = v => v.toLocaleString('pt-BR');
-const fmtP = v => v.toFixed(1) + '%';
-const refPct = d => d.refunds/d.faturamento*100;
-const cbPct  = d => d.chargebacks/d.faturamento*100;
-const backPct= d => d.back_sales/(d.front_sales+d.back_sales)*100;
-const netPct = d => d.net_profit/d.faturamento*100;
-const pClass = p => p > 14 ? 'warn' : p > 10 ? 'amber' : 'good';
+const $   = id => document.getElementById(id);
+const fD  = v => '$' + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fDK = v => '$' + (v/1000).toFixed(1) + 'K';
+const fN  = v => v.toLocaleString('pt-BR');
+const fP  = v => v.toFixed(1) + '%';
+const refPct  = d => d.refunds/d.faturamento*100;
+const cbPct   = d => d.chargebacks/d.faturamento*100;
+const backPct = d => d.back_sales/(d.front_sales+d.back_sales)*100;
+const netPct  = d => d.net_profit/d.faturamento*100;
+const pCls    = p => p > 14 ? 'warn' : p > 10 ? 'amber' : 'good';
 
-function barRowHTML(label, val, base, color) {
+function barRow(label, val, base, color) {
   const pct = Math.min(val/base*100, 100);
-  return `<div class="bar-row">
-    <span class="bar-label">${label}</span>
-    <div class="bar-bg"><div class="bar-fill" style="width:${pct.toFixed(1)}%;background:${color};">${pct.toFixed(1)}%</div></div>
-    <span class="bar-val">${fmtN(val)} vendas</span>
+  return `<div class="bar-row"><span class="bar-label">${label}</span><div class="bar-bg"><div class="bar-fill" style="width:${pct.toFixed(1)}%;background:${color};">${pct.toFixed(1)}%</div></div><span class="bar-val">${fN(val)} vendas</span></div>`;
+}
+
+function bcCard(cls, head, val, pctOfSales, pctOfGroup, groupLabel, money) {
+  return `<div class="breakdown-card ${cls}">
+    <div class="bc-head">${head}</div>
+    <div class="bc-val">${fN(val)}</div>
+    <div class="bc-pct-main">${fP(pctOfSales)} das vendas</div>
+    <div class="bc-pct-sub">${fP(pctOfGroup)} ${groupLabel}</div>
+    <div class="bc-money">${money > 0 ? fDK(money) : '—'}</div>
   </div>`;
 }
 
-/* ─────────────── EMPRESA PANELS ─────────────── */
 function buildEmpPanel(key) {
   const d = empData[key];
-  const rp = refPct(d), cp = cbPct(d), bp = backPct(d), np = netPct(d);
-  return `
-  <div class="panel-header">${d.label} <span class="tag ${d.tag}">${d.tagTxt}</span></div>
+  const rp=refPct(d), cp=cbPct(d), bp=backPct(d), np=netPct(d);
+  return `<div class="panel-header">${d.label} <span class="tag ${d.tag}">${d.tagTxt}</span></div>
   <div class="metrics-row">
-    <div class="metric"><div class="metric-label">Faturamento</div><div class="metric-val info">${fmtDK(d.faturamento)}</div><div class="metric-sub">${fmtD(d.faturamento)}</div></div>
-    <div class="metric"><div class="metric-label">Net Profit</div><div class="metric-val good">${fmtDK(d.net_profit)}</div><div class="metric-sub">${fmtP(np)} do faturamento</div></div>
-    <div class="metric"><div class="metric-label">AOV Bruto</div><div class="metric-val">${fmtD(d.aov_bruto)}</div><div class="metric-sub">Líquido: ${fmtD(d.aov_liq)}</div></div>
-    <div class="metric"><div class="metric-label">Vendas Front</div><div class="metric-val">${fmtN(d.front_sales)}</div><div class="metric-sub">${fmtDK(d.front_rev)}</div></div>
-    <div class="metric"><div class="metric-label">Vendas Back</div><div class="metric-val info">${fmtN(d.back_sales)}</div><div class="metric-sub">${fmtP(bp)} do total</div></div>
+    <div class="metric"><div class="metric-label">Faturamento</div><div class="metric-val info">${fDK(d.faturamento)}</div><div class="metric-sub">${fD(d.faturamento)}</div></div>
+    <div class="metric"><div class="metric-label">Net Profit</div><div class="metric-val good">${fDK(d.net_profit)}</div><div class="metric-sub">${fP(np)} do faturamento</div></div>
+    <div class="metric"><div class="metric-label">AOV Bruto</div><div class="metric-val">${fD(d.aov_bruto)}</div><div class="metric-sub">Líquido: ${fD(d.aov_liq)}</div></div>
+    <div class="metric"><div class="metric-label">Vendas Front</div><div class="metric-val">${fN(d.front_sales)}</div><div class="metric-sub">${fDK(d.front_rev)}</div></div>
+    <div class="metric"><div class="metric-label">Vendas Back</div><div class="metric-val info">${fN(d.back_sales)}</div><div class="metric-sub">${fP(bp)} do total</div></div>
   </div>
   <div class="metrics-row">
-    <div class="metric"><div class="metric-label">Reembolsos</div><div class="metric-val ${pClass(rp)}">${fmtDK(d.refunds)}</div><div class="metric-sub">${fmtP(rp)} do faturamento</div></div>
-    <div class="metric"><div class="metric-label">Chargebacks</div><div class="metric-val ${cp>0.8?'warn':'amber'}">${fmtDK(d.chargebacks)}</div><div class="metric-sub">${fmtP(cp)} do faturamento</div></div>
-    <div class="metric"><div class="metric-label">Comissões</div><div class="metric-val warn">${fmtDK(d.comissoes)}</div><div class="metric-sub">${fmtP(d.comissoes/d.faturamento*100)} do fat.</div></div>
-    <div class="metric"><div class="metric-label">Impostos</div><div class="metric-val">${fmtDK(d.impostos)}</div><div class="metric-sub">${fmtP(d.impostos/d.faturamento*100)} do fat.</div></div>
-    <div class="metric"><div class="metric-label">Plataforma</div><div class="metric-val">${fmtDK(d.plataforma)}</div><div class="metric-sub">${fmtP(d.plataforma/d.faturamento*100)} do fat.</div></div>
+    <div class="metric"><div class="metric-label">Reembolsos</div><div class="metric-val ${pCls(rp)}">${fDK(d.refunds)}</div><div class="metric-sub">${fP(rp)} do faturamento</div></div>
+    <div class="metric"><div class="metric-label">Chargebacks</div><div class="metric-val ${cp>0.8?'warn':'amber'}">${fDK(d.chargebacks)}</div><div class="metric-sub">${fP(cp)} do faturamento</div></div>
+    <div class="metric"><div class="metric-label">Comissões</div><div class="metric-val warn">${fDK(d.comissoes)}</div><div class="metric-sub">${fP(d.comissoes/d.faturamento*100)} do fat.</div></div>
+    <div class="metric"><div class="metric-label">Impostos</div><div class="metric-val">${fDK(d.impostos)}</div><div class="metric-sub">${fP(d.impostos/d.faturamento*100)} do fat.</div></div>
+    <div class="metric"><div class="metric-label">Plataforma</div><div class="metric-val">${fDK(d.plataforma)}</div><div class="metric-sub">${fP(d.plataforma/d.faturamento*100)} do fat.</div></div>
   </div>
   <div class="sec-title">Funil de back-end (sobre vendas front)</div>
-  ${barRowHTML('UP1',d.up1,d.front_sales,'#4d9fff')}
-  ${barRowHTML('DW1',d.dw1,d.front_sales,'#55556a')}
-  ${barRowHTML('UP2',d.up2,d.front_sales,'#3dd68c')}
-  ${barRowHTML('UP3',d.up3,d.front_sales,'#f5a623')}`;
+  ${barRow('UP1',d.up1,d.front_sales,'#5aabff')}
+  ${barRow('DW1',d.dw1,d.front_sales,'#888')}
+  ${barRow('UP2',d.up2,d.front_sales,'#3dd68c')}
+  ${barRow('UP3',d.up3,d.front_sales,'#f5a623')}`;
 }
 
 function buildEmpAll() {
-  const rows = keys.map(k => {
-    const d = empData[k];
-    const rp = refPct(d), cp = cbPct(d), np = netPct(d);
-    return `<tr>
-      <td class="num">${d.label}</td>
-      <td class="num info">${fmtDK(d.faturamento)}</td>
-      <td class="num">${fmtN(d.front_sales)}</td>
-      <td class="num info">${fmtN(d.back_sales)} <span style="color:var(--text3);font-size:10px;">(${fmtP(backPct(d))})</span></td>
-      <td class="num good">${fmtDK(d.net_profit)} <span style="color:var(--text3);font-size:10px;">(${fmtP(np)})</span></td>
-      <td class="${pClass(rp)}">${fmtDK(d.refunds)} <span style="color:var(--text3);font-size:10px;">(${fmtP(rp)})</span></td>
-      <td class="${cp>0.8?'warn':'amber'}">${fmtDK(d.chargebacks)} <span style="color:var(--text3);font-size:10px;">(${fmtP(cp)})</span></td>
-      <td class="num">${fmtD(d.aov_bruto)}</td>
-    </tr>`;
+  const tF=keys.reduce((s,k)=>s+empData[k].faturamento,0);
+  const tN=keys.reduce((s,k)=>s+empData[k].net_profit,0);
+  const tR=keys.reduce((s,k)=>s+empData[k].refunds,0);
+  const tC=keys.reduce((s,k)=>s+empData[k].chargebacks,0);
+  const rows=keys.map(k=>{const d=empData[k];const rp=refPct(d),cp=cbPct(d),np=netPct(d);
+    return `<tr><td class="num">${d.label}</td><td class="num info">${fDK(d.faturamento)}</td><td class="num">${fN(d.front_sales)}</td><td class="num info">${fN(d.back_sales)} <span style="opacity:.45;font-size:10px;">(${fP(backPct(d))})</span></td><td class="num good">${fDK(d.net_profit)} <span style="opacity:.45;font-size:10px;">(${fP(np)})</span></td><td class="${pCls(rp)}">${fDK(d.refunds)} <span style="opacity:.5;font-size:10px;">(${fP(rp)})</span></td><td class="${cp>0.8?'warn':'amber'}">${fDK(d.chargebacks)} <span style="opacity:.5;font-size:10px;">(${fP(cp)})</span></td><td class="num">${fD(d.aov_bruto)}</td></tr>`;
   }).join('');
-
-  const totalFat = keys.reduce((s,k)=>s+empData[k].faturamento,0);
-  const totalNet = keys.reduce((s,k)=>s+empData[k].net_profit,0);
-  const totalRef = keys.reduce((s,k)=>s+empData[k].refunds,0);
-  const totalCB  = keys.reduce((s,k)=>s+empData[k].chargebacks,0);
-
-  return `
-  <div class="panel-header">Visão Geral — Jan a Abr 2026</div>
+  return `<div class="panel-header">Visão Geral <span class="tag tag-blue">Jan–Abr 2026</span></div>
   <div class="metrics-row">
-    <div class="metric"><div class="metric-label">Faturamento total</div><div class="metric-val info">${fmtDK(totalFat)}</div><div class="metric-sub">${fmtD(totalFat)}</div></div>
-    <div class="metric"><div class="metric-label">Net Profit total</div><div class="metric-val good">${fmtDK(totalNet)}</div><div class="metric-sub">${fmtP(totalNet/totalFat*100)} do faturamento</div></div>
-    <div class="metric"><div class="metric-label">Total reembolsos</div><div class="metric-val warn">${fmtDK(totalRef)}</div><div class="metric-sub">${fmtP(totalRef/totalFat*100)} do faturamento</div></div>
-    <div class="metric"><div class="metric-label">Total chargebacks</div><div class="metric-val amber">${fmtDK(totalCB)}</div><div class="metric-sub">${fmtP(totalCB/totalFat*100)} do faturamento</div></div>
+    <div class="metric"><div class="metric-label">Faturamento total</div><div class="metric-val info">${fDK(tF)}</div><div class="metric-sub">${fD(tF)}</div></div>
+    <div class="metric"><div class="metric-label">Net Profit total</div><div class="metric-val good">${fDK(tN)}</div><div class="metric-sub">${fP(tN/tF*100)} do faturamento</div></div>
+    <div class="metric"><div class="metric-label">Total reembolsos</div><div class="metric-val warn">${fDK(tR)}</div><div class="metric-sub">${fP(tR/tF*100)} do faturamento</div></div>
+    <div class="metric"><div class="metric-label">Total chargebacks</div><div class="metric-val amber">${fDK(tC)}</div><div class="metric-sub">${fP(tC/tF*100)} do faturamento</div></div>
   </div>
   <div class="insight"><strong>Abril</strong> fechou com o maior net profit ($464K, 16,6%) mesmo com refunds em alta absoluta. O crescimento do back-end (3.567 vendas, 32% do total) foi o principal driver.</div>
-  <div class="insight"><strong>Março</strong> apresenta o pior net profit relativo apesar do segundo maior faturamento — pico de comissões ($1,62M) e refunds ($344K) comprimiram a margem.</div>
-  <div class="insight">A taxa de refund cresce a cada mês em termos absolutos e percentuais: de <strong>12,5%</strong> em janeiro até <strong>15,9%</strong> em abril. Sinal de atenção com o aumento do funil agressivo.</div>
+  <div class="insight"><strong>Março</strong> apresenta o pior net profit relativo — pico de comissões ($1,62M) e refunds ($344K) comprimiram a margem mesmo com alto faturamento.</div>
+  <div class="insight">Taxa de refund cresceu de <strong>12,5% (jan)</strong> até <strong>15,9% (abr)</strong>. Sinal de atenção com o funil mais agressivo.</div>
   <div class="sec-title">Comparativo mensal</div>
-  <div class="table-wrap"><table>
-    <thead><tr><th>Mês</th><th>Faturamento</th><th>Front</th><th>Back (up+dw)</th><th>Net Profit</th><th>Refunds</th><th>Chargebacks</th><th>AOV Bruto</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table></div>`;
+  <div class="table-wrap"><table><thead><tr><th>Mês</th><th>Faturamento</th><th>Front</th><th>Back</th><th>Net Profit</th><th>Refunds</th><th>Chargebacks</th><th>AOV Bruto</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
-/* ─────────────── BUYGOODS PANELS ─────────────── */
 function buildBgPanel(key) {
   const d = bgData[key];
-  const rpct = d.refund_pct;
-  const cpct = (d.chargebacks/d.total*100);
-  const uRevVsRef = d.upsell_rev > d.refund_value;
-  const fmtV = v => v > 0 ? '$'+fmtN(v) : '—';
-  return `
-  <div class="panel-header">${d.label} <span class="tag ${d.tag}">${d.tagTxt}</span></div>
+  const rpct=d.refund_pct, cpct=d.chargebacks/d.total*100;
+  const rTotal=d.refunds, cbTotal=d.chargebacks;
+  return `<div class="panel-header">${d.label} <span class="tag ${d.tag}">${d.tagTxt}</span></div>
   <div class="metrics-row">
-    <div class="metric"><div class="metric-label">Total de vendas</div><div class="metric-val">${fmtN(d.total)}</div></div>
-    <div class="metric"><div class="metric-label">Faturamento</div><div class="metric-val info">$${(d.revenue/1e6).toFixed(2)}M</div><div class="metric-sub">${fmtD(d.revenue)}</div></div>
-    <div class="metric"><div class="metric-label">Upsells</div><div class="metric-val info">${fmtN(d.upsells)}</div><div class="metric-sub">${fmtP(d.upsell_pct)} do total</div></div>
-    <div class="metric"><div class="metric-label">Downsells</div><div class="metric-val">${fmtN(d.downsells)}</div><div class="metric-sub">${fmtP(d.downsells/d.total*100)} do total</div></div>
-    <div class="metric"><div class="metric-label">Receita upsell</div><div class="metric-val info">${fmtDK(d.upsell_rev)}</div></div>
+    <div class="metric"><div class="metric-label">Total de vendas</div><div class="metric-val">${fN(d.total)}</div></div>
+    <div class="metric"><div class="metric-label">Faturamento</div><div class="metric-val info">$${(d.revenue/1e6).toFixed(2)}M</div><div class="metric-sub">${fD(d.revenue)}</div></div>
+    <div class="metric"><div class="metric-label">Upsells</div><div class="metric-val info">${fN(d.upsells)}</div><div class="metric-sub">${fP(d.upsell_pct)} do total</div></div>
+    <div class="metric"><div class="metric-label">Downsells</div><div class="metric-val">${fN(d.downsells)}</div><div class="metric-sub">${fP(d.downsells/d.total*100)} do total</div></div>
+    <div class="metric"><div class="metric-label">Receita upsell</div><div class="metric-val info">${fDK(d.upsell_rev)}</div></div>
   </div>
-
   <div class="sec-title">Reembolsos — geral e por tipo de oferta</div>
   <div class="breakdown-grid">
-    <div class="breakdown-card bc-total">
-      <div class="bc-head">Total</div>
-      <div class="bc-val ${pClass(rpct)}">${fmtN(d.refunds)}</div>
-      <div class="bc-pct">${fmtP(rpct)} das vendas</div>
-      <div class="bc-money">${fmtDK(d.refund_value)}</div>
-    </div>
-    <div class="breakdown-card bc-up">
-      <div class="bc-head">↑ Upsell</div>
-      <div class="bc-val info">${fmtN(d.ref_up)}</div>
-      <div class="bc-pct">${fmtP(d.ref_up/d.refunds*100)} dos refunds</div>
-      <div class="bc-money">${fmtV(d.ref_up_val)}</div>
-    </div>
-    <div class="breakdown-card bc-dw">
-      <div class="bc-head">↓ Downsell</div>
-      <div class="bc-val">${fmtN(d.ref_dw)}</div>
-      <div class="bc-pct">${fmtP(d.ref_dw/d.refunds*100)} dos refunds</div>
-      <div class="bc-money">${fmtV(d.ref_dw_val)}</div>
-    </div>
-    <div class="breakdown-card bc-main">
-      <div class="bc-head">Front / Main</div>
-      <div class="bc-val">${fmtN(d.ref_main)}</div>
-      <div class="bc-pct">${fmtP(d.ref_main/d.refunds*100)} dos refunds</div>
-      <div class="bc-money">${fmtV(d.ref_main_val)}</div>
-    </div>
+    ${bcCard('bc-total','Total',      rTotal,   rpct,                  d.refunds/d.total*100,        'das vendas', d.refund_value)}
+    ${bcCard('bc-up',   '↑ Upsell',  d.ref_up, d.ref_up/d.total*100,  d.ref_up/rTotal*100,           'dos refunds',d.ref_up_val)}
+    ${bcCard('bc-dw',   '↓ Downsell',d.ref_dw, d.ref_dw/d.total*100,  d.ref_dw/rTotal*100,           'dos refunds',d.ref_dw_val)}
+    ${bcCard('bc-main', 'Front/Main', d.ref_main,d.ref_main/d.total*100,d.ref_main/rTotal*100,        'dos refunds',d.ref_main_val)}
   </div>
-
   <div class="sec-title">Chargebacks — geral e por tipo de oferta</div>
   <div class="breakdown-grid">
-    <div class="breakdown-card bc-total">
-      <div class="bc-head">Total</div>
-      <div class="bc-val ${cpct>1?'warn':'amber'}">${fmtN(d.chargebacks)}</div>
-      <div class="bc-pct">${fmtP(cpct)} das vendas</div>
-      <div class="bc-money">—</div>
-    </div>
-    <div class="breakdown-card bc-up">
-      <div class="bc-head">↑ Upsell</div>
-      <div class="bc-val info">${fmtN(d.cb_up)}</div>
-      <div class="bc-pct">${d.chargebacks>0?fmtP(d.cb_up/d.chargebacks*100):'—'} dos CBs</div>
-      <div class="bc-money">${fmtV(d.cb_up_val)}</div>
-    </div>
-    <div class="breakdown-card bc-dw">
-      <div class="bc-head">↓ Downsell</div>
-      <div class="bc-val">${fmtN(d.cb_dw)}</div>
-      <div class="bc-pct">${d.chargebacks>0?fmtP(d.cb_dw/d.chargebacks*100):'—'} dos CBs</div>
-      <div class="bc-money">${fmtV(d.cb_dw_val)}</div>
-    </div>
-    <div class="breakdown-card bc-main">
-      <div class="bc-head">Front / Main</div>
-      <div class="bc-val">${fmtN(d.cb_main)}</div>
-      <div class="bc-pct">${d.chargebacks>0?fmtP(d.cb_main/d.chargebacks*100):'—'} dos CBs</div>
-      <div class="bc-money">${fmtV(d.cb_main_val)}</div>
-    </div>
+    ${bcCard('bc-total','Total',       cbTotal,   cpct,                           cbTotal/d.total*100,           'das vendas', 0)}
+    ${bcCard('bc-up',   '↑ Upsell',   d.cb_up,   d.cb_up/d.total*100,            cbTotal>0?d.cb_up/cbTotal*100:0,  'dos CBs',d.cb_up_val)}
+    ${bcCard('bc-dw',   '↓ Downsell', d.cb_dw,   d.cb_dw/d.total*100,            cbTotal>0?d.cb_dw/cbTotal*100:0,  'dos CBs',d.cb_dw_val)}
+    ${bcCard('bc-main', 'Front/Main',  d.cb_main, d.cb_main/d.total*100,          cbTotal>0?d.cb_main/cbTotal*100:0,'dos CBs',d.cb_main_val)}
   </div>
-
-  <div class="sec-title">Cobertura upsell vs. reembolso total</div>
-  ${barRowHTML('Up. receita', d.upsell_rev, Math.max(d.upsell_rev,d.refund_value)*1.1, '#4d9fff')}
-  ${barRowHTML('Reembolso',  d.refund_value, Math.max(d.upsell_rev,d.refund_value)*1.1, '#ff5f5f')}`;
+  <div class="sec-title">Cobertura receita upsell vs. reembolso total</div>
+  ${barRow('Up. receita',d.upsell_rev,  Math.max(d.upsell_rev,d.refund_value)*1.1,'#5aabff')}
+  ${barRow('Reembolso',  d.refund_value,Math.max(d.upsell_rev,d.refund_value)*1.1,'#ff6060')}`;
 }
 
 function buildBgAll() {
-  const rows = keys.map(k => {
-    const d = bgData[k];
-    const uOk = d.upsell_rev > d.refund_value;
-    return `<tr>
-      <td class="num">${d.label}</td>
-      <td class="num">${fmtN(d.total)}</td>
-      <td class="num info">${fmtN(d.upsells)} <span style="color:var(--text3);font-size:10px;">(${fmtP(d.upsell_pct)})</span></td>
-      <td class="${pClass(d.refund_pct)}">${fmtN(d.refunds)} <span style="color:var(--text3);font-size:10px;">(${fmtP(d.refund_pct)})</span></td>
-      <td class="info" style="font-size:11px;">${fmtN(d.ref_up)} up / ${fmtN(d.ref_dw)} dw / ${fmtN(d.ref_main)} front</td>
-      <td class="${d.chargebacks>60?'warn':'good'}">${fmtN(d.chargebacks)}</td>
-      <td style="font-size:11px;color:var(--text3);">${fmtN(d.cb_up)} up / ${fmtN(d.cb_dw)} dw / ${fmtN(d.cb_main)} front</td>
-      <td class="num info">${fmtDK(d.upsell_rev)}</td>
-      <td class="${uOk?'good':'warn'}">${fmtDK(d.refund_value)}</td>
-    </tr>`;
+  const rows=keys.map(k=>{
+    const d=bgData[k]; const uOk=d.upsell_rev>d.refund_value; const cb=d.chargebacks;
+    const rt=`<span style="color:var(--blue);font-weight:600;">${fN(d.ref_up)}</span> <span style="opacity:.5;">(${fP(d.ref_up/d.refunds*100)}) up</span><br><span style="color:var(--amber);font-weight:600;">${fN(d.ref_dw)}</span> <span style="opacity:.5;">(${fP(d.ref_dw/d.refunds*100)}) dw</span><br><span style="color:var(--green);font-weight:600;">${fN(d.ref_main)}</span> <span style="opacity:.5;">(${fP(d.ref_main/d.refunds*100)}) front</span>`;
+    const ct=cb>0?`<span style="color:var(--blue);font-weight:600;">${fN(d.cb_up)}</span> <span style="opacity:.5;">(${fP(d.cb_up/cb*100)}) up</span><br><span style="color:var(--amber);font-weight:600;">${fN(d.cb_dw)}</span> <span style="opacity:.5;">(${fP(d.cb_dw/cb*100)}) dw</span><br><span style="color:var(--green);font-weight:600;">${fN(d.cb_main)}</span> <span style="opacity:.5;">(${fP(d.cb_main/cb*100)}) front</span>`:'—';
+    return `<tr><td class="num">${d.label}</td><td class="num">${fN(d.total)}</td><td class="num info">${fN(d.upsells)} <span style="opacity:.45;font-size:10px;">(${fP(d.upsell_pct)})</span></td><td class="${pCls(d.refund_pct)}">${fN(d.refunds)} <span style="opacity:.5;font-size:10px;">(${fP(d.refund_pct)})</span></td><td style="font-size:11px;line-height:1.8;">${rt}</td><td class="${cb>60?'warn':'good'}">${fN(cb)}</td><td style="font-size:11px;line-height:1.8;">${ct}</td><td class="num info">${fDK(d.upsell_rev)}</td><td class="${uOk?'good':'warn'}">${fDK(d.refund_value)}</td></tr>`;
   }).join('');
-
-  return `
-  <div class="panel-header">Visão Geral — BuyGoods Jan–Abr 2026</div>
+  return `<div class="panel-header">Visão Geral <span class="tag tag-blue">Jan–Abr 2026</span></div>
   <div class="metrics-row">
-    <div class="metric"><div class="metric-label">Total de vendas</div><div class="metric-val">${fmtN(keys.reduce((s,k)=>s+bgData[k].total,0))}</div></div>
-    <div class="metric"><div class="metric-label">Total upsells</div><div class="metric-val info">${fmtN(keys.reduce((s,k)=>s+bgData[k].upsells,0))}</div></div>
-    <div class="metric"><div class="metric-label">Total reembolsos</div><div class="metric-val amber">${fmtN(keys.reduce((s,k)=>s+bgData[k].refunds,0))}</div></div>
-    <div class="metric"><div class="metric-label">Total chargebacks</div><div class="metric-val">${fmtN(keys.reduce((s,k)=>s+bgData[k].chargebacks,0))}</div></div>
+    <div class="metric"><div class="metric-label">Total de vendas</div><div class="metric-val">${fN(keys.reduce((s,k)=>s+bgData[k].total,0))}</div></div>
+    <div class="metric"><div class="metric-label">Total upsells</div><div class="metric-val info">${fN(keys.reduce((s,k)=>s+bgData[k].upsells,0))}</div></div>
+    <div class="metric"><div class="metric-label">Total reembolsos</div><div class="metric-val amber">${fN(keys.reduce((s,k)=>s+bgData[k].refunds,0))}</div></div>
+    <div class="metric"><div class="metric-label">Total chargebacks</div><div class="metric-val">${fN(keys.reduce((s,k)=>s+bgData[k].chargebacks,0))}</div></div>
   </div>
-  <div class="insight">A taxa de reembolso ficou <strong>estável em ~11,5%</strong> nos quatro meses. O funil agressivo de abril <strong>não piorou</strong> a taxa de reembolso proporcional.</div>
-  <div class="insight">Em <strong>janeiro e fevereiro</strong> a receita de upsell era menor que o valor reembolsado — o upsell mal se pagava. Isso mudou em março e abril, onde a receita upsell superou os reembolsos.</div>
-  <div class="insight"><strong>Abril</strong>: upsells dobraram (7,8% → 20,2%), receita upsell saltou de $259K para $522K, enquanto o valor reembolsado cresceu apenas $7K. Margem positiva clara.</div>
+  <div class="insight">Taxa de reembolso ficou <strong>estável em ~11,5%</strong> nos quatro meses. O funil agressivo de abril <strong>não piorou</strong> a taxa proporcional.</div>
+  <div class="insight">Em <strong>jan e fev</strong> a receita de upsell era menor que o valor reembolsado. Inverteu em março e abril, com margem crescente.</div>
+  <div class="insight"><strong>Abril</strong>: upsells dobraram (7,8% → 20,2%), receita upsell saltou de $259K para $522K, enquanto valor reembolsado cresceu apenas $7K.</div>
   <div class="sec-title">Comparativo mensal</div>
-  <div class="table-wrap"><table>
-    <thead><tr><th>Mês</th><th>Vendas</th><th>Upsells</th><th>Reembolsos</th><th>Refund por tipo</th><th>Chargebacks</th><th>CB por tipo</th><th>Receita Up.</th><th>Reemb. ($)</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table></div>`;
+  <div class="table-wrap"><table><thead><tr><th>Mês</th><th>Vendas</th><th>Upsells</th><th>Reembolsos</th><th>Refund por tipo</th><th>Chargebacks</th><th>CB por tipo</th><th>Receita Up.</th><th>Reemb. ($)</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
-/* ─────────────── RENDER PANELS ─────────────── */
-keys.forEach(k => {
-  $('emp-'+k).innerHTML = buildEmpPanel(k);
-  $('bg-'+k).innerHTML  = buildBgPanel(k);
-});
-$('emp-all').innerHTML = buildEmpAll();
-$('bg-all').innerHTML  = buildBgAll();
+keys.forEach(k => { $('emp-'+k).innerHTML=buildEmpPanel(k); $('bg-'+k).innerHTML=buildBgPanel(k); });
+$('emp-all').innerHTML=buildEmpAll();
+$('bg-all').innerHTML=buildBgAll();
 
-/* ─────────────── TAB LOGIC ─────────────── */
-function switchMain(btn, tab) {
-  document.querySelectorAll('.main-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.main-tab').forEach(b => b.classList.remove('active'));
-  $('main-'+tab).classList.add('active');
-  btn.classList.add('active');
+function switchMain(btn,tab) {
+  document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.main-tab').forEach(b=>b.classList.remove('active'));
+  $('main-'+tab).classList.add('active'); btn.classList.add('active');
+}
+function switchSub(btn,prefix,key) {
+  const panel=$('main-'+prefix);
+  panel.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
+  panel.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active'));
+  $(prefix==='empresa'?'emp-'+key:'bg-'+key).classList.add('active'); btn.classList.add('active');
 }
 
-function switchSub(btn, prefix, key) {
-  const panel = $('main-'+prefix);
-  panel.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
-  panel.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
-  $(prefix === 'empresa' ? 'emp-'+key : 'bg-'+key).classList.add('active');
-  btn.classList.add('active');
+function toggleTheme() {
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme',isDark?'light':'dark');
+  $('themeBtn').textContent=isDark?'🌙':'☀';
+  updateChartColors();
 }
 
-/* ─────────────── CHARTS ─────────────── */
-Chart.defaults.color = '#55556a';
-Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
-const months = ['Jan','Fev','Mar','Abr'];
-const noLeg = { plugins:{ legend:{display:false} }, responsive:true, maintainAspectRatio:false };
-const gridOpts = { color:'rgba(255,255,255,0.04)' };
+/* CHARTS */
+const months=['Jan','Fev','Mar','Abr'];
+const getTick=()=>getComputedStyle(document.documentElement).getPropertyValue('--tick').trim();
+const getGrid=()=>getComputedStyle(document.documentElement).getPropertyValue('--grid').trim();
+const charts={};
+const noLeg={plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false};
 
-// EMPRESA chart 1 — front vs back
-new Chart($('ec1'), {
-  type:'bar',
-  data:{ labels:months, datasets:[
-    { label:'Front', data:keys.map(k=>empData[k].front_sales), backgroundColor:'#4d9fff', borderRadius:3 },
-    { label:'Back', data:keys.map(k=>empData[k].back_sales), backgroundColor:'#3dd68c', borderRadius:3 },
-  ]},
-  options:{ ...noLeg, scales:{ x:{grid:{display:false},ticks:{color:'#55556a'}}, y:{grid:gridOpts,ticks:{color:'#55556a',callback:v=>fmtN(v)}} }}
-});
-$('ec1-leg').innerHTML = [['#4d9fff','Front (vendas)'],['#3dd68c','Back — up+dw (vendas)']].map(([c,l])=>`<span class="legend-item"><span class="legend-dot" style="background:${c};"></span>${l}</span>`).join('');
+function scales(yfmt) {
+  return {
+    x:{grid:{display:false},ticks:{color:getTick(),font:{family:"'IBM Plex Mono'",size:11}}},
+    y:{grid:{color:getGrid()},ticks:{color:getTick(),font:{family:"'IBM Plex Mono'",size:11},callback:yfmt}}
+  };
+}
+function mk(id,cfg) { charts[id]=new Chart($(id),cfg); }
+function leg(id,pairs) { $(id).innerHTML=pairs.map(([c,l,b])=>`<span class="legend-item"><span class="legend-dot" style="background:${c};${b?'border:1px solid '+b:''};"></span>${l}</span>`).join(''); }
 
-// EMPRESA chart 2 — net profit vs refunds vs chargebacks
-new Chart($('ec2'), {
-  type:'bar',
-  data:{ labels:months, datasets:[
-    { label:'Net Profit', data:keys.map(k=>Math.round(empData[k].net_profit)), backgroundColor:'#3dd68c', borderRadius:3 },
-    { label:'Refunds', data:keys.map(k=>Math.round(empData[k].refunds)), backgroundColor:'#ff5f5f', borderRadius:3 },
-    { label:'Chargebacks', data:keys.map(k=>Math.round(empData[k].chargebacks)), backgroundColor:'#f5a623', borderRadius:3 },
-  ]},
-  options:{ ...noLeg, scales:{ x:{grid:{display:false},ticks:{color:'#55556a'}}, y:{grid:gridOpts,ticks:{color:'#55556a',callback:v=>'$'+(v/1000).toFixed(0)+'K'}} }}
-});
-$('ec2-leg').innerHTML = [['#3dd68c','Net Profit'],['#ff5f5f','Refunds'],['#f5a623','Chargebacks']].map(([c,l])=>`<span class="legend-item"><span class="legend-dot" style="background:${c};"></span>${l}</span>`).join('');
+mk('ec1',{type:'bar',data:{labels:months,datasets:[{label:'Front',data:keys.map(k=>empData[k].front_sales),backgroundColor:'#5aabff',borderRadius:4},{label:'Back',data:keys.map(k=>empData[k].back_sales),backgroundColor:'#3dd68c',borderRadius:4}]},options:{...noLeg,scales:scales(v=>fN(v))}});
+leg('ec1-leg',[['#5aabff','Front (vendas)'],['#3dd68c','Back — up+dw']]);
 
-// EMPRESA chart 3 — refund/chargeback %
-new Chart($('ec3'), {
-  type:'line',
-  data:{ labels:months, datasets:[
-    { label:'Refund %', data:keys.map(k=>parseFloat(refPct(empData[k]).toFixed(2))), borderColor:'#ff5f5f', backgroundColor:'rgba(255,95,95,0.08)', fill:true, tension:0.35, pointRadius:5, pointBackgroundColor:'#ff5f5f' },
-    { label:'Chargeback %', data:keys.map(k=>parseFloat(cbPct(empData[k]).toFixed(2))), borderColor:'#f5a623', backgroundColor:'rgba(245,166,35,0.08)', fill:true, tension:0.35, pointRadius:5, pointBackgroundColor:'#f5a623', borderDash:[5,4] },
-  ]},
-  options:{ ...noLeg, scales:{ x:{grid:{display:false},ticks:{color:'#55556a'}}, y:{grid:gridOpts,ticks:{color:'#55556a',callback:v=>v+'%'}} }}
-});
-$('ec3-leg').innerHTML = [['#ff5f5f','Refund % do faturamento'],['#f5a623','Chargeback % do faturamento']].map(([c,l])=>`<span class="legend-item"><span class="legend-dot" style="background:${c};"></span>${l}</span>`).join('');
+mk('ec2',{type:'bar',data:{labels:months,datasets:[{label:'Net Profit',data:keys.map(k=>Math.round(empData[k].net_profit)),backgroundColor:'#3dd68c',borderRadius:4},{label:'Refunds',data:keys.map(k=>Math.round(empData[k].refunds)),backgroundColor:'#ff6060',borderRadius:4},{label:'CBs',data:keys.map(k=>Math.round(empData[k].chargebacks)),backgroundColor:'#f5a623',borderRadius:4}]},options:{...noLeg,scales:scales(v=>'$'+(v/1000).toFixed(0)+'K')}});
+leg('ec2-leg',[['#3dd68c','Net Profit'],['#ff6060','Refunds'],['#f5a623','Chargebacks']]);
 
-// BUYGOODS chart 1 — vendas & upsells
-new Chart($('bc1'), {
-  type:'bar',
-  data:{ labels:months, datasets:[
-    { label:'Total vendas', data:keys.map(k=>bgData[k].total), backgroundColor:'rgba(77,159,255,0.25)', borderColor:'#4d9fff', borderWidth:1, borderRadius:3 },
-    { label:'Upsells', data:keys.map(k=>bgData[k].upsells), backgroundColor:'#4d9fff', borderRadius:3 },
-  ]},
-  options:{ ...noLeg, scales:{ x:{grid:{display:false},ticks:{color:'#55556a'}}, y:{grid:gridOpts,ticks:{color:'#55556a',callback:v=>fmtN(v)}} }}
-});
-$('bc1-leg').innerHTML = [['rgba(77,159,255,0.5)','Total vendas'],['#4d9fff','Upsells']].map(([c,l])=>`<span class="legend-item"><span class="legend-dot" style="background:${c};border:1px solid #4d9fff;"></span>${l}</span>`).join('');
+mk('ec3',{type:'line',data:{labels:months,datasets:[{data:keys.map(k=>parseFloat(refPct(empData[k]).toFixed(2))),borderColor:'#ff6060',backgroundColor:'rgba(255,96,96,0.08)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#ff6060'},{data:keys.map(k=>parseFloat(cbPct(empData[k]).toFixed(2))),borderColor:'#f5a623',backgroundColor:'rgba(245,166,35,0.07)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#f5a623',borderDash:[5,4]}]},options:{...noLeg,scales:scales(v=>v+'%')}});
+leg('ec3-leg',[['#ff6060','Refund % do faturamento'],['#f5a623','Chargeback %']]);
 
-// BUYGOODS chart 2 — upsell rev vs refunds
-new Chart($('bc2'), {
-  type:'bar',
-  data:{ labels:months, datasets:[
-    { label:'Receita upsell', data:keys.map(k=>bgData[k].upsell_rev), backgroundColor:'#4d9fff', borderRadius:3 },
-    { label:'Valor reembolsado', data:keys.map(k=>bgData[k].refund_value), backgroundColor:'rgba(255,95,95,0.3)', borderColor:'#ff5f5f', borderWidth:1, borderRadius:3 },
-  ]},
-  options:{ ...noLeg, scales:{ x:{grid:{display:false},ticks:{color:'#55556a'}}, y:{grid:gridOpts,ticks:{color:'#55556a',callback:v=>'$'+(v/1000).toFixed(0)+'K'}} }}
-});
-$('bc2-leg').innerHTML = [['#4d9fff','Receita upsell'],['rgba(255,95,95,0.5)','Valor reembolsado']].map(([c,l])=>`<span class="legend-item"><span class="legend-dot" style="background:${c};border:1px solid #ff5f5f;"></span>${l}</span>`).join('');
+mk('bc1',{type:'bar',data:{labels:months,datasets:[{data:keys.map(k=>bgData[k].total),backgroundColor:'rgba(90,171,255,0.22)',borderColor:'#5aabff',borderWidth:1,borderRadius:4},{data:keys.map(k=>bgData[k].upsells),backgroundColor:'#5aabff',borderRadius:4}]},options:{...noLeg,scales:scales(v=>fN(v))}});
+leg('bc1-leg',[['rgba(90,171,255,0.5)','Total vendas',,'#5aabff'],['#5aabff','Upsells']]);
 
-// BUYGOODS chart 3 — % upsell & % refund
-new Chart($('bc3'), {
-  type:'line',
-  data:{ labels:months, datasets:[
-    { label:'% upsell', data:keys.map(k=>bgData[k].upsell_pct), borderColor:'#4d9fff', backgroundColor:'rgba(77,159,255,0.1)', fill:true, tension:0.35, pointRadius:5, pointBackgroundColor:'#4d9fff' },
-    { label:'% reembolso', data:keys.map(k=>bgData[k].refund_pct), borderColor:'#ff5f5f', backgroundColor:'rgba(255,95,95,0.06)', fill:true, tension:0.35, pointRadius:5, pointBackgroundColor:'#ff5f5f', borderDash:[5,4] },
-    { label:'% chargeback', data:keys.map(k=>parseFloat((bgData[k].chargebacks/bgData[k].total*100).toFixed(2))), borderColor:'#f5a623', backgroundColor:'transparent', tension:0.35, pointRadius:4, pointBackgroundColor:'#f5a623', borderDash:[2,4] },
-  ]},
-  options:{ ...noLeg, scales:{ x:{grid:{display:false},ticks:{color:'#55556a'}}, y:{grid:gridOpts,ticks:{color:'#55556a',callback:v=>v.toFixed(1)+'%'}} }}
-});
-$('bc3-leg').innerHTML = [['#4d9fff','% upsell'],['#ff5f5f','% reembolso'],['#f5a623','% chargeback']].map(([c,l])=>`<span class="legend-item"><span class="legend-dot" style="background:${c};"></span>${l}</span>`).join('');
+mk('bc2',{type:'bar',data:{labels:months,datasets:[{data:keys.map(k=>bgData[k].upsell_rev),backgroundColor:'#5aabff',borderRadius:4},{data:keys.map(k=>bgData[k].refund_value),backgroundColor:'rgba(255,96,96,0.28)',borderColor:'#ff6060',borderWidth:1,borderRadius:4}]},options:{...noLeg,scales:scales(v=>'$'+(v/1000).toFixed(0)+'K')}});
+leg('bc2-leg',[['#5aabff','Receita upsell'],['rgba(255,96,96,0.5)','Valor reembolsado','#ff6060']]);
 
+mk('bc3',{type:'line',data:{labels:months,datasets:[{data:keys.map(k=>bgData[k].upsell_pct),borderColor:'#5aabff',backgroundColor:'rgba(90,171,255,0.09)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#5aabff'},{data:keys.map(k=>bgData[k].refund_pct),borderColor:'#ff6060',backgroundColor:'rgba(255,96,96,0.06)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#ff6060',borderDash:[5,4]},{data:keys.map(k=>parseFloat((bgData[k].chargebacks/bgData[k].total*100).toFixed(2))),borderColor:'#f5a623',tension:0.35,pointRadius:4,pointBackgroundColor:'#f5a623',borderDash:[2,4]}]},options:{...noLeg,scales:scales(v=>v.toFixed(1)+'%')}});
+leg('bc3-leg',[['#5aabff','% upsell'],['#ff6060','% reembolso'],['#f5a623','% chargeback']]);
+
+function updateChartColors() {
+  const tick=getTick(), grid=getGrid();
+  Object.values(charts).forEach(c=>{
+    c.options.scales.x.ticks.color=tick;
+    c.options.scales.y.ticks.color=tick;
+    c.options.scales.y.grid.color=grid;
+    c.update();
+  });
+}
 </script>
 </body>
 </html>
