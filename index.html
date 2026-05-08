@@ -275,13 +275,14 @@ td.info  { color: var(--blue); font-weight: 600; }
   <div class="header-top">
     <span class="logo">Dashboard Consolidado</span>
     <div class="header-right">
-      <span class="date-badge">Jan–Abr 2026</span>
+      <span class="date-badge">Jan–Mai 2026</span>
       <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">☀</button>
     </div>
   </div>
   <div class="main-tabs">
     <button class="main-tab active" onclick="switchMain(this,'empresa')">Dashboard da Empresa</button>
     <button class="main-tab" onclick="switchMain(this,'buygoods')">BuyGoods — 4 Meses</button>
+    <button class="main-tab" onclick="switchMain(this,'intervalo')">Intervalo do Pedido</button>
   </div>
 </div>
 
@@ -293,12 +294,14 @@ td.info  { color: var(--blue); font-weight: 600; }
     <button class="sub-btn" onclick="switchSub(this,'empresa','fev')">Fevereiro</button>
     <button class="sub-btn" onclick="switchSub(this,'empresa','mar')">Março</button>
     <button class="sub-btn" onclick="switchSub(this,'empresa','abr')">Abril</button>
+    <button class="sub-btn" onclick="switchSub(this,'empresa','mai')">Maio ∂</button>
     <button class="sub-btn" onclick="switchSub(this,'empresa','all')">Visão Geral</button>
   </div>
   <div id="emp-jan" class="sub-panel active"></div>
   <div id="emp-fev" class="sub-panel"></div>
   <div id="emp-mar" class="sub-panel"></div>
   <div id="emp-abr" class="sub-panel"></div>
+  <div id="emp-mai" class="sub-panel"></div>
   <div id="emp-all" class="sub-panel"></div>
   <div class="charts-grid">
     <div class="chart-card">
@@ -325,12 +328,14 @@ td.info  { color: var(--blue); font-weight: 600; }
     <button class="sub-btn" onclick="switchSub(this,'buygoods','fev')">Fevereiro</button>
     <button class="sub-btn" onclick="switchSub(this,'buygoods','mar')">Março</button>
     <button class="sub-btn" onclick="switchSub(this,'buygoods','abr')">Abril</button>
+    <button class="sub-btn" onclick="switchSub(this,'buygoods','mai')">Maio ∂</button>
     <button class="sub-btn" onclick="switchSub(this,'buygoods','all')">Visão Geral</button>
   </div>
   <div id="bg-jan" class="sub-panel active"></div>
   <div id="bg-fev" class="sub-panel"></div>
   <div id="bg-mar" class="sub-panel"></div>
   <div id="bg-abr" class="sub-panel"></div>
+  <div id="bg-mai" class="sub-panel"></div>
   <div id="bg-all" class="sub-panel"></div>
   <div class="charts-grid">
     <div class="chart-card">
@@ -351,23 +356,214 @@ td.info  { color: var(--blue); font-weight: 600; }
   </div>
 </div>
 
+<div id="main-intervalo" class="main-panel">
+  <div class="sub-tabs">
+    <button class="sub-btn active" onclick="switchSub(this,'intervalo','jan')">Janeiro</button>
+    <button class="sub-btn" onclick="switchSub(this,'intervalo','fev')">Fevereiro</button>
+    <button class="sub-btn" onclick="switchSub(this,'intervalo','mar')">Março</button>
+    <button class="sub-btn" onclick="switchSub(this,'intervalo','abr')">Abril</button>
+    <button class="sub-btn" onclick="switchSub(this,'intervalo','mai')">Maio ∂</button>
+    <button class="sub-btn" onclick="switchSub(this,'intervalo','all')">Visão Geral</button>
+  </div>
+  <div id="int-jan" class="sub-panel active"></div>
+  <div id="int-fev" class="sub-panel"></div>
+  <div id="int-mar" class="sub-panel"></div>
+  <div id="int-abr" class="sub-panel"></div>
+  <div id="int-mai" class="sub-panel"></div>
+  <div id="int-all" class="sub-panel"></div>
 </div>
 
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+
+/* ── INTERVAL DATA ── */
+const intData = {
+  jan: { label:'Janeiro', tag:'tag-blue', tagTxt:'Funil Padrão',
+    refund: {
+      upsell:   {'0-3d':52,'4-7d':11,'8-15d':23,'16-30d':38,'45d+':44},
+      downsell: {'0-3d':4, '4-7d':3, '8-15d':2, '16-30d':9, '45d+':12},
+      main:     {'0-3d':86,'4-7d':37,'8-15d':56,'16-30d':107,'45d+':208}
+    },
+    chargeback: {
+      upsell:   {'0-3d':0, '4-7d':0, '8-15d':3, '16-30d':2, '45d+':6},
+      downsell: {'0-3d':0, '4-7d':0, '8-15d':0, '16-30d':0, '45d+':0},
+      main:     {'0-3d':1, '4-7d':2, '8-15d':3, '16-30d':4, '45d+':13}
+    }
+  },
+  fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Funil Padrão',
+    refund: {
+      upsell:   {'0-3d':42,'4-7d':15,'8-15d':15,'16-30d':29,'45d+':39},
+      downsell: {'0-3d':0, '4-7d':1, '8-15d':4, '16-30d':6, '45d+':12},
+      main:     {'0-3d':128,'4-7d':57,'8-15d':103,'16-30d':190,'45d+':289}
+    },
+    chargeback: {
+      upsell:   {'0-3d':0, '4-7d':0, '8-15d':0, '16-30d':5, '45d+':2},
+      downsell: {'0-3d':0, '4-7d':0, '8-15d':0, '16-30d':0, '45d+':0},
+      main:     {'0-3d':1, '4-7d':1, '8-15d':10,'16-30d':11,'45d+':18}
+    }
+  },
+  mar: { label:'Março', tag:'tag-blue', tagTxt:'Funil Padrão',
+    refund: {
+      upsell:   {'0-3d':89,'4-7d':20,'8-15d':42,'16-30d':50,'45d+':40},
+      downsell: {'0-3d':8, '4-7d':2, '8-15d':3, '16-30d':6, '45d+':7},
+      main:     {'0-3d':250,'4-7d':102,'8-15d':194,'16-30d':283,'45d+':188}
+    },
+    chargeback: {
+      upsell:   {'0-3d':1, '4-7d':0, '8-15d':5, '16-30d':2, '45d+':4},
+      downsell: {'0-3d':0, '4-7d':0, '8-15d':0, '16-30d':1, '45d+':0},
+      main:     {'0-3d':2, '4-7d':5, '8-15d':12,'16-30d':19,'45d+':15}
+    }
+  },
+  abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo',
+    refund: {
+      upsell:   {'0-3d':320,'4-7d':54,'8-15d':71,'16-30d':42,'45d+':3},
+      downsell: {'0-3d':15, '4-7d':2, '8-15d':6, '16-30d':2, '45d+':0},
+      main:     {'0-3d':354,'4-7d':104,'8-15d':163,'16-30d':111,'45d+':8}
+    },
+    chargeback: {
+      upsell:   {'0-3d':2, '4-7d':0, '8-15d':9, '16-30d':8, '45d+':0},
+      downsell: {'0-3d':0, '4-7d':0, '8-15d':0, '16-30d':0, '45d+':0},
+      main:     {'0-3d':1, '4-7d':5, '8-15d':22,'16-30d':22,'45d+':2}
+    }
+  },
+  mai: { label:'Maio (1–8)', tag:'tag-green', tagTxt:'Parcial · 8 dias',
+    refund: {
+      upsell:   {'0-3d':46,'4-7d':2,'8-15d':0,'16-30d':0,'45d+':0},
+      downsell: {'0-3d':1, '4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},
+      main:     {'0-3d':70,'4-7d':5,'8-15d':0,'16-30d':0,'45d+':0}
+    },
+    chargeback: {
+      upsell:   {'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},
+      downsell: {'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},
+      main:     {'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0}
+    }
+  }
+};
+
+const BUCKETS   = ['0-3d','4-7d','8-15d','16-30d','45d+'];
+const BKT_LABEL = {'0-3d':'0–3 dias','4-7d':'4–7 dias','8-15d':'8–15 dias','16-30d':'16–30 dias','45d+':'45+ dias'};
+const BKT_COLOR = {'0-3d':'#3dd68c','4-7d':'#5aabff','8-15d':'#a78bfa','16-30d':'#f5a623','45d+':'#ff6060'};
+const OT_COLOR  = {upsell:'#5aabff', downsell:'#f5a623', main:'#3dd68c'};
+const OT_LABEL  = {upsell:'↑ Upsell', downsell:'↓ Downsell', main:'Front/Main'};
+
+function sumBuckets(obj) { return BUCKETS.reduce((s,b)=>s+(obj[b]||0),0); }
+
+function stackedBarHTML(offerType, data, total) {
+  const rowTotal = sumBuckets(data);
+  if (rowTotal === 0) return '';
+  const bars = BUCKETS.map(b => {
+    const v = data[b]||0; if (!v) return '';
+    const w = (v/Math.max(total,1)*100).toFixed(1);
+    const pct = (v/rowTotal*100).toFixed(0);
+    return `<div title="${BKT_LABEL[b]}: ${v} (${pct}% deste tipo)" style="width:${w}%;background:${BKT_COLOR[b]};height:100%;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;min-width:${w>4?'0':'0'}px;">${w>5?v:''}</div>`;
+  }).join('');
+  return `<div style="margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <span style="min-width:90px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:${OT_COLOR[offerType]};">${OT_LABEL[offerType]}</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);">${rowTotal} ocorrências</span>
+    </div>
+    <div style="display:flex;height:26px;border-radius:5px;overflow:hidden;background:var(--bg3);">${bars}</div>
+    <div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;">
+      ${BUCKETS.map(b=>{const v=data[b]||0; const p=(v/rowTotal*100).toFixed(0); return v>0?`<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);"><span style="display:inline-block;width:7px;height:7px;background:${BKT_COLOR[b]};border-radius:1px;margin-right:3px;vertical-align:middle;"></span>${BKT_LABEL[b]}: <strong style="color:var(--text2);">${v}</strong> <span style="opacity:.6;">(${p}%)</span></span>`:''}).join('')}
+    </div>
+  </div>`;
+}
+
+function buildIntPanel(key) {
+  const d = intData[key];
+  const rTotal = ['upsell','downsell','main'].reduce((s,ot)=>s+sumBuckets(d.refund[ot]),0);
+  const cTotal = ['upsell','downsell','main'].reduce((s,ot)=>s+sumBuckets(d.chargeback[ot]),0);
+
+  const bucketSummary = (event) => BUCKETS.map(b=>{
+    const tot = ['upsell','downsell','main'].reduce((s,ot)=>s+(d[event][ot][b]||0),0);
+    const pct = (event==='refund'?rTotal:cTotal)>0?(tot/(event==='refund'?rTotal:cTotal)*100).toFixed(1):'0';
+    return tot>0?`<div class="metric"><div class="metric-label">${BKT_LABEL[b]}</div><div class="metric-val" style="color:${BKT_COLOR[b]};">${tot}</div><div class="metric-sub">${pct}% do total</div></div>`:'';
+  }).join('');
+
+  return `<div class="panel-header">${d.label} <span class="tag ${d.tag}">${d.tagTxt}</span></div>
+
+  <div class="sec-title">Reembolsos por intervalo (total: ${rTotal})</div>
+  <div class="metrics-row" style="margin-bottom:18px;">${bucketSummary('refund')}</div>
+  <div style="background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:6px;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+      ${BUCKETS.map(b=>`<span style="display:flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);"><span style="width:8px;height:8px;background:${BKT_COLOR[b]};border-radius:2px;display:inline-block;"></span>${BKT_LABEL[b]}</span>`).join('')}
+    </div>
+    ${['upsell','downsell','main'].map(ot=>stackedBarHTML(ot, d.refund[ot], rTotal)).join('')}
+  </div>
+
+  <div class="sec-title" style="margin-top:28px;">Chargebacks por intervalo (total: ${cTotal})</div>
+  <div class="metrics-row" style="margin-bottom:18px;">${bucketSummary('chargeback')}</div>
+  <div style="background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:16px 18px;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+      ${BUCKETS.map(b=>`<span style="display:flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);"><span style="width:8px;height:8px;background:${BKT_COLOR[b]};border-radius:2px;display:inline-block;"></span>${BKT_LABEL[b]}</span>`).join('')}
+    </div>
+    ${['upsell','downsell','main'].map(ot=>stackedBarHTML(ot, d.chargeback[ot], cTotal)).join('')}
+  </div>`;
+}
+
+function buildIntAll() {
+  const months_arr = [['jan','Janeiro'],['fev','Fevereiro'],['mar','Março'],['abr','Abril']];
+  // Build combined stacked bar chart data per month per bucket for refunds
+  const refundRows = ['upsell','downsell','main'].map(ot => {
+    return `<tr>
+      <td class="num" style="color:${OT_COLOR[ot]};">${OT_LABEL[ot]}</td>
+      ${keys.map(k=>{
+        const d=intData[k]; const tot=sumBuckets(d.refund[ot]);
+        const all=['upsell','downsell','main'].reduce((s,o)=>s+sumBuckets(d.refund[o]),0);
+        return `<td><div style="display:flex;flex-direction:column;gap:2px;">${BUCKETS.map(b=>{const v=d.refund[ot][b]||0;const pct=tot>0?(v/tot*100).toFixed(0):0;return v>0?`<span style="font-size:10px;"><span style="color:${BKT_COLOR[b]};font-weight:600;">${v}</span><span style="opacity:.5;"> ${BKT_LABEL[b]} (${pct}%)</span></span>`:''}).join('')}</div></td>`;
+      }).join('')}
+    </tr>`;
+  }).join('');
+
+  const cbRows = ['upsell','downsell','main'].map(ot => {
+    return `<tr>
+      <td class="num" style="color:${OT_COLOR[ot]};">${OT_LABEL[ot]}</td>
+      ${keys.map(k=>{
+        const d=intData[k]; const tot=sumBuckets(d.chargeback[ot]);
+        return `<td><div style="display:flex;flex-direction:column;gap:2px;">${BUCKETS.map(b=>{const v=d.chargeback[ot][b]||0;const pct=tot>0?(v/tot*100).toFixed(0):0;return v>0?`<span style="font-size:10px;"><span style="color:${BKT_COLOR[b]};font-weight:600;">${v}</span><span style="opacity:.5;"> ${BKT_LABEL[b]} (${pct}%)</span></span>`:''}).join('')}</div></td>`;
+      }).join('')}
+    </tr>`;
+  }).join('');
+
+  // Insight: in April most upsell refunds are 0-3d (early regret signal)
+  const abrUp0_3 = intData.abr.refund.upsell['0-3d'];
+  const abrUpTot = sumBuckets(intData.abr.refund.upsell);
+
+  return `<div class="panel-header">Visão Geral — Intervalos <span class="tag tag-blue">Jan–Mai 2026</span></div>
+  <div class="insight">Em <strong>abril</strong>, ${abrUp0_3} de ${abrUpTot} reembolsos de upsell (${(abrUp0_3/abrUpTot*100).toFixed(0)}%) aconteceram em 0–3 dias — reflexo do funil mais agressivo gerando arrependimento imediato.</div>
+  <div class="insight">Os reembolsos de <strong>front/main</strong> são mais distribuídos ao longo do tempo — indicam insatisfação com o produto em si, não com a oferta do funil.</div>
+  <div class="insight"><strong>Chargebacks</strong> tendem a aparecer nos intervalos 8–15d e 16–30d, consistente com o tempo de processamento de disputa no cartão.</div>
+
+  <div class="sec-title">Reembolsos por tipo de oferta — distribuição de intervalos</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Tipo</th><th>Janeiro</th><th>Fevereiro</th><th>Março</th><th>Abril</th><th>Maio ∂</th></tr></thead>
+    <tbody>${refundRows}</tbody>
+  </table></div>
+
+  <div class="sec-title" style="margin-top:28px;">Chargebacks por tipo de oferta — distribuição de intervalos</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Tipo</th><th>Janeiro</th><th>Fevereiro</th><th>Março</th><th>Abril</th><th>Maio ∂</th></tr></thead>
+    <tbody>${cbRows}</tbody>
+  </table></div>`;
+}
+
 const empData = {
   jan: { label:'Janeiro', tag:'tag-blue', tagTxt:'Jan', faturamento:683512.35, front_sales:2572, front_rev:630268.73, back_sales:385, back_rev:52631.98, refunds:85142.68, chargebacks:4554.15, net_profit:54652.03, impostos:29334.01, plataforma:50810.78, comissoes:420001.48, cogs:68351.24, aov_bruto:265.25, aov_liq:234.59, up1:277, dw1:57, up2:87, up3:45 },
   fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Fev', faturamento:2172249.79, front_sales:8026, front_rev:1956587.45, back_sales:1519, back_rev:214229.77, refunds:230952.06, chargebacks:12995.68, net_profit:298553.53, impostos:91320.64, plataforma:161592.34, comissoes:1250931.2, cogs:217224.98, aov_bruto:270.35, aov_liq:239.14, up1:985, dw1:202, up2:334, up3:146 },
   mar: { label:'Março', tag:'tag-blue', tagTxt:'Mar', faturamento:2722613.70, front_sales:9319, front_rev:2385943.39, back_sales:2361, back_rev:335900.77, refunds:344887.03, chargebacks:18737.97, net_profit:276584.19, impostos:116746.76, plataforma:187888.74, comissoes:1622254.4, cogs:272261.37, aov_bruto:294.65, aov_liq:259.47, up1:1186, dw1:164, up2:322, up3:116 },
-  abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', faturamento:2802332.91, front_sales:7670, front_rev:2144069.73, back_sales:3567, back_rev:657642.48, refunds:444262.33, chargebacks:28970.67, net_profit:464126.28, impostos:169205.09, plataforma:185764.76, comissoes:1398975.58, cogs:280233.29, aov_bruto:364.83, aov_liq:319.08, up1:2292, dw1:75, up2:292, up3:113 }
+  abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', faturamento:2802332.91, front_sales:7670, front_rev:2144069.73, back_sales:3567, back_rev:657642.48, refunds:444262.33, chargebacks:28970.67, net_profit:464126.28, impostos:169205.09, plataforma:185764.76, comissoes:1398975.58, cogs:280233.29, aov_bruto:364.83, aov_liq:319.08, up1:2292, dw1:75, up2:292, up3:113 },
+  mai: { label:'Maio (1–8)', tag:'tag-green', tagTxt:'Parcial · 8 dias', faturamento:587022.69, front_sales:1666, front_rev:464234.57, back_sales:660, back_rev:122630.22, refunds:109349.13, chargebacks:11176.95, net_profit:63568.61, impostos:35860.30, plataforma:38096.66, comissoes:306129.07, cogs:58702.27, aov_bruto:351.78, aov_liq:307.96, up1:411, dw1:16, up2:68, up3:21 }
 };
 const bgData = {
   jan: { label:'Janeiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:6043, revenue:1294545.80, upsells:827, upsell_pct:13.7, downsells:239, refunds:693, refund_pct:11.5, chargebacks:34, refund_value:152428, upsell_rev:134471, ref_up:169, ref_up_val:29666, ref_dw:30, ref_dw_val:4134, ref_main:494, ref_main_val:118628, cb_up:11, cb_up_val:1836, cb_dw:0, cb_dw_val:0, cb_main:23, cb_main_val:5356 },
   fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:8151, revenue:1751633.80, upsells:639, upsell_pct:7.8, downsells:176, refunds:934, refund_pct:11.5, chargebacks:48, refund_value:207261, upsell_rev:120657, ref_up:140, ref_up_val:27325, ref_dw:23, ref_dw_val:2903, ref_main:771, ref_main_val:177033, cb_up:7, cb_up_val:1443, cb_dw:0, cb_dw_val:0, cb_main:41, cb_main_val:9636 },
   mar: { label:'Março', tag:'tag-blue', tagTxt:'Funil Padrão', total:11253, revenue:2453869.90, upsells:1255, upsell_pct:11.2, downsells:310, refunds:1294, refund_pct:11.5, chargebacks:66, refund_value:292596, upsell_rev:259431, ref_up:241, ref_up_val:50230, ref_dw:28, ref_dw_val:3729, ref_main:1025, ref_main_val:238637, cb_up:12, cb_up_val:2565, cb_dw:1, cb_dw_val:99, cb_main:53, cb_main_val:13700 },
-  abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', total:11352, revenue:2603693.80, upsells:2292, upsell_pct:20.2, downsells:244, refunds:1263, refund_pct:11.1, chargebacks:71, refund_value:299839, upsell_rev:522684, ref_up:492, ref_up_val:113858, ref_dw:25, ref_dw_val:3900, ref_main:746, ref_main_val:182081, cb_up:19, cb_up_val:4386, cb_dw:0, cb_dw_val:0, cb_main:52, cb_main_val:12997 }
+  abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', total:11352, revenue:2603693.80, upsells:2292, upsell_pct:20.2, downsells:244, refunds:1263, refund_pct:11.1, chargebacks:71, refund_value:299839, upsell_rev:522684, ref_up:492, ref_up_val:113858, ref_dw:25, ref_dw_val:3900, ref_main:746, ref_main_val:182081, cb_up:19, cb_up_val:4386, cb_dw:0, cb_dw_val:0, cb_main:52, cb_main_val:12997 },
+  mai: { label:'Maio (1–8)', tag:'tag-green', tagTxt:'Parcial · 8 dias', total:2188, revenue:505138.70, upsells:413, upsell_pct:18.9, downsells:41, refunds:124, refund_pct:5.7, chargebacks:0, refund_value:28817, upsell_rev:94892, ref_up:48, ref_up_val:11127, ref_dw:1, ref_dw_val:147, ref_main:75, ref_main_val:17542, cb_up:0, cb_up_val:0, cb_dw:0, cb_dw_val:0, cb_main:0, cb_main_val:0 }
 };
-const keys = ['jan','fev','mar','abr'];
+const keys = ['jan','fev','mar','abr','mai'];
+const keysEmp = ['jan','fev','mar','abr','mai'];
 
 const $   = id => document.getElementById(id);
 const fD  = v => '$' + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -421,14 +617,15 @@ function buildEmpPanel(key) {
 }
 
 function buildEmpAll() {
-  const tF=keys.reduce((s,k)=>s+empData[k].faturamento,0);
-  const tN=keys.reduce((s,k)=>s+empData[k].net_profit,0);
-  const tR=keys.reduce((s,k)=>s+empData[k].refunds,0);
-  const tC=keys.reduce((s,k)=>s+empData[k].chargebacks,0);
-  const rows=keys.map(k=>{const d=empData[k];const rp=refPct(d),cp=cbPct(d),np=netPct(d);
-    return `<tr><td class="num">${d.label}</td><td class="num info">${fDK(d.faturamento)}</td><td class="num">${fN(d.front_sales)}</td><td class="num info">${fN(d.back_sales)} <span style="opacity:.45;font-size:10px;">(${fP(backPct(d))})</span></td><td class="num good">${fDK(d.net_profit)} <span style="opacity:.45;font-size:10px;">(${fP(np)})</span></td><td class="${pCls(rp)}">${fDK(d.refunds)} <span style="opacity:.5;font-size:10px;">(${fP(rp)})</span></td><td class="${cp>0.8?'warn':'amber'}">${fDK(d.chargebacks)} <span style="opacity:.5;font-size:10px;">(${fP(cp)})</span></td><td class="num">${fD(d.aov_bruto)}</td></tr>`;
+  const tF=keysEmp.reduce((s,k)=>s+empData[k].faturamento,0);
+  const tN=keysEmp.reduce((s,k)=>s+empData[k].net_profit,0);
+  const tR=keysEmp.reduce((s,k)=>s+empData[k].refunds,0);
+  const tC=keysEmp.reduce((s,k)=>s+empData[k].chargebacks,0);
+  const rows=keysEmp.map(k=>{const d=empData[k];const rp=refPct(d),cp=cbPct(d),np=netPct(d);
+    const partial = k==='mai' ? ' <span style="color:var(--green);font-size:10px;">∂</span>' : '';
+    return `<tr><td class="num">${d.label}${partial}</td><td class="num info">${fDK(d.faturamento)}</td><td class="num">${fN(d.front_sales)}</td><td class="num info">${fN(d.back_sales)} <span style="opacity:.45;font-size:10px;">(${fP(backPct(d))})</span></td><td class="num good">${fDK(d.net_profit)} <span style="opacity:.45;font-size:10px;">(${fP(np)})</span></td><td class="${pCls(rp)}">${fDK(d.refunds)} <span style="opacity:.5;font-size:10px;">(${fP(rp)})</span></td><td class="${cp>0.8?'warn':'amber'}">${fDK(d.chargebacks)} <span style="opacity:.5;font-size:10px;">(${fP(cp)})</span></td><td class="num">${fD(d.aov_bruto)}</td></tr>`;
   }).join('');
-  return `<div class="panel-header">Visão Geral <span class="tag tag-blue">Jan–Abr 2026</span></div>
+  return `<div class="panel-header">Visão Geral <span class="tag tag-blue">Jan–Mai 2026</span></div>
   <div class="metrics-row">
     <div class="metric"><div class="metric-label">Faturamento total</div><div class="metric-val info">${fDK(tF)}</div><div class="metric-sub">${fD(tF)}</div></div>
     <div class="metric"><div class="metric-label">Net Profit total</div><div class="metric-val good">${fDK(tN)}</div><div class="metric-sub">${fP(tN/tF*100)} do faturamento</div></div>
@@ -436,9 +633,9 @@ function buildEmpAll() {
     <div class="metric"><div class="metric-label">Total chargebacks</div><div class="metric-val amber">${fDK(tC)}</div><div class="metric-sub">${fP(tC/tF*100)} do faturamento</div></div>
   </div>
   <div class="insight"><strong>Abril</strong> fechou com o maior net profit ($464K, 16,6%) mesmo com refunds em alta absoluta. O crescimento do back-end (3.567 vendas, 32% do total) foi o principal driver.</div>
-  <div class="insight"><strong>Março</strong> apresenta o pior net profit relativo — pico de comissões ($1,62M) e refunds ($344K) comprimiram a margem mesmo com alto faturamento.</div>
-  <div class="insight">Taxa de refund cresceu de <strong>12,5% (jan)</strong> até <strong>15,9% (abr)</strong>. Sinal de atenção com o funil mais agressivo.</div>
-  <div class="sec-title">Comparativo mensal</div>
+  <div class="insight"><strong>Maio (1–8)</strong>: refund de 18,6% do faturamento já nos primeiros 8 dias — acima da média histórica — e chargeback de 1,9%. Requer atenção no fechamento do mês.</div>
+  <div class="insight">Taxa de refund cresceu de <strong>12,5% (jan)</strong> até <strong>15,9% (abr)</strong>. Maio parcial já mostra <strong>18,6%</strong> — tendência preocupante.</div>
+  <div class="sec-title">Comparativo mensal <span style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;">∂ = mês parcial</span></div>
   <div class="table-wrap"><table><thead><tr><th>Mês</th><th>Faturamento</th><th>Front</th><th>Back</th><th>Net Profit</th><th>Refunds</th><th>Chargebacks</th><th>AOV Bruto</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
@@ -480,23 +677,25 @@ function buildBgAll() {
     const ct=cb>0?`<span style="color:var(--blue);font-weight:600;">${fN(d.cb_up)}</span> <span style="opacity:.5;">(${fP(d.cb_up/cb*100)}) up</span><br><span style="color:var(--amber);font-weight:600;">${fN(d.cb_dw)}</span> <span style="opacity:.5;">(${fP(d.cb_dw/cb*100)}) dw</span><br><span style="color:var(--green);font-weight:600;">${fN(d.cb_main)}</span> <span style="opacity:.5;">(${fP(d.cb_main/cb*100)}) front</span>`:'—';
     return `<tr><td class="num">${d.label}</td><td class="num">${fN(d.total)}</td><td class="num info">${fN(d.upsells)} <span style="opacity:.45;font-size:10px;">(${fP(d.upsell_pct)})</span></td><td class="${pCls(d.refund_pct)}">${fN(d.refunds)} <span style="opacity:.5;font-size:10px;">(${fP(d.refund_pct)})</span></td><td style="font-size:11px;line-height:1.8;">${rt}</td><td class="${cb>60?'warn':'good'}">${fN(cb)}</td><td style="font-size:11px;line-height:1.8;">${ct}</td><td class="num info">${fDK(d.upsell_rev)}</td><td class="${uOk?'good':'warn'}">${fDK(d.refund_value)}</td></tr>`;
   }).join('');
-  return `<div class="panel-header">Visão Geral <span class="tag tag-blue">Jan–Abr 2026</span></div>
+  return `<div class="panel-header">Visão Geral <span class="tag tag-blue">Jan–Mai 2026</span></div>
   <div class="metrics-row">
     <div class="metric"><div class="metric-label">Total de vendas</div><div class="metric-val">${fN(keys.reduce((s,k)=>s+bgData[k].total,0))}</div></div>
     <div class="metric"><div class="metric-label">Total upsells</div><div class="metric-val info">${fN(keys.reduce((s,k)=>s+bgData[k].upsells,0))}</div></div>
     <div class="metric"><div class="metric-label">Total reembolsos</div><div class="metric-val amber">${fN(keys.reduce((s,k)=>s+bgData[k].refunds,0))}</div></div>
     <div class="metric"><div class="metric-label">Total chargebacks</div><div class="metric-val">${fN(keys.reduce((s,k)=>s+bgData[k].chargebacks,0))}</div></div>
   </div>
-  <div class="insight">Taxa de reembolso ficou <strong>estável em ~11,5%</strong> nos quatro meses. O funil agressivo de abril <strong>não piorou</strong> a taxa proporcional.</div>
+  <div class="insight">Taxa de reembolso ficou <strong>estável em ~11,5%</strong> de jan a abr. Maio (parcial, 8 dias) mostra 5,7% — esperado, pois a maioria dos reembolsos ainda não foi solicitada.</div>
   <div class="insight">Em <strong>jan e fev</strong> a receita de upsell era menor que o valor reembolsado. Inverteu em março e abril, com margem crescente.</div>
   <div class="insight"><strong>Abril</strong>: upsells dobraram (7,8% → 20,2%), receita upsell saltou de $259K para $522K, enquanto valor reembolsado cresceu apenas $7K.</div>
   <div class="sec-title">Comparativo mensal</div>
   <div class="table-wrap"><table><thead><tr><th>Mês</th><th>Vendas</th><th>Upsells</th><th>Reembolsos</th><th>Refund por tipo</th><th>Chargebacks</th><th>CB por tipo</th><th>Receita Up.</th><th>Reemb. ($)</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
-keys.forEach(k => { $('emp-'+k).innerHTML=buildEmpPanel(k); $('bg-'+k).innerHTML=buildBgPanel(k); });
+keysEmp.forEach(k => { $('emp-'+k).innerHTML=buildEmpPanel(k); });
+keys.forEach(k => { $('bg-'+k).innerHTML=buildBgPanel(k); $('int-'+k).innerHTML=buildIntPanel(k); });
 $('emp-all').innerHTML=buildEmpAll();
 $('bg-all').innerHTML=buildBgAll();
+$('int-all').innerHTML=buildIntAll();
 
 function switchMain(btn,tab) {
   document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));
@@ -507,7 +706,9 @@ function switchSub(btn,prefix,key) {
   const panel=$('main-'+prefix);
   panel.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
   panel.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active'));
-  $(prefix==='empresa'?'emp-'+key:'bg-'+key).classList.add('active'); btn.classList.add('active');
+  const idMap = {empresa:'emp-', buygoods:'bg-', intervalo:'int-'};
+  $((idMap[prefix]||prefix+'-')+key).classList.add('active');
+  btn.classList.add('active');
 }
 
 function toggleTheme() {
@@ -519,7 +720,8 @@ function toggleTheme() {
 }
 
 /* CHARTS */
-const months=['Jan','Fev','Mar','Abr'];
+const months=['Jan','Fev','Mar','Abr','Mai ∂'];
+const monthsEmp=['Jan','Fev','Mar','Abr','Mai ∂'];
 const getTick=()=>getComputedStyle(document.documentElement).getPropertyValue('--tick').trim();
 const getGrid=()=>getComputedStyle(document.documentElement).getPropertyValue('--grid').trim();
 const charts={};
@@ -534,13 +736,13 @@ function scales(yfmt) {
 function mk(id,cfg) { charts[id]=new Chart($(id),cfg); }
 function leg(id,pairs) { $(id).innerHTML=pairs.map(([c,l,b])=>`<span class="legend-item"><span class="legend-dot" style="background:${c};${b?'border:1px solid '+b:''};"></span>${l}</span>`).join(''); }
 
-mk('ec1',{type:'bar',data:{labels:months,datasets:[{label:'Front',data:keys.map(k=>empData[k].front_sales),backgroundColor:'#5aabff',borderRadius:4},{label:'Back',data:keys.map(k=>empData[k].back_sales),backgroundColor:'#3dd68c',borderRadius:4}]},options:{...noLeg,scales:scales(v=>fN(v))}});
+mk('ec1',{type:'bar',data:{labels:monthsEmp,datasets:[{label:'Front',data:keysEmp.map(k=>empData[k].front_sales),backgroundColor:'#5aabff',borderRadius:4},{label:'Back',data:keysEmp.map(k=>empData[k].back_sales),backgroundColor:'#3dd68c',borderRadius:4}]},options:{...noLeg,scales:scales(v=>fN(v))}});
 leg('ec1-leg',[['#5aabff','Front (vendas)'],['#3dd68c','Back — up+dw']]);
 
-mk('ec2',{type:'bar',data:{labels:months,datasets:[{label:'Net Profit',data:keys.map(k=>Math.round(empData[k].net_profit)),backgroundColor:'#3dd68c',borderRadius:4},{label:'Refunds',data:keys.map(k=>Math.round(empData[k].refunds)),backgroundColor:'#ff6060',borderRadius:4},{label:'CBs',data:keys.map(k=>Math.round(empData[k].chargebacks)),backgroundColor:'#f5a623',borderRadius:4}]},options:{...noLeg,scales:scales(v=>'$'+(v/1000).toFixed(0)+'K')}});
+mk('ec2',{type:'bar',data:{labels:monthsEmp,datasets:[{label:'Net Profit',data:keysEmp.map(k=>Math.round(empData[k].net_profit)),backgroundColor:'#3dd68c',borderRadius:4},{label:'Refunds',data:keysEmp.map(k=>Math.round(empData[k].refunds)),backgroundColor:'#ff6060',borderRadius:4},{label:'CBs',data:keysEmp.map(k=>Math.round(empData[k].chargebacks)),backgroundColor:'#f5a623',borderRadius:4}]},options:{...noLeg,scales:scales(v=>'$'+(v/1000).toFixed(0)+'K')}});
 leg('ec2-leg',[['#3dd68c','Net Profit'],['#ff6060','Refunds'],['#f5a623','Chargebacks']]);
 
-mk('ec3',{type:'line',data:{labels:months,datasets:[{data:keys.map(k=>parseFloat(refPct(empData[k]).toFixed(2))),borderColor:'#ff6060',backgroundColor:'rgba(255,96,96,0.08)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#ff6060'},{data:keys.map(k=>parseFloat(cbPct(empData[k]).toFixed(2))),borderColor:'#f5a623',backgroundColor:'rgba(245,166,35,0.07)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#f5a623',borderDash:[5,4]}]},options:{...noLeg,scales:scales(v=>v+'%')}});
+mk('ec3',{type:'line',data:{labels:monthsEmp,datasets:[{data:keysEmp.map(k=>parseFloat(refPct(empData[k]).toFixed(2))),borderColor:'#ff6060',backgroundColor:'rgba(255,96,96,0.08)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#ff6060'},{data:keysEmp.map(k=>parseFloat(cbPct(empData[k]).toFixed(2))),borderColor:'#f5a623',backgroundColor:'rgba(245,166,35,0.07)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#f5a623',borderDash:[5,4]}]},options:{...noLeg,scales:scales(v=>v+'%')}});
 leg('ec3-leg',[['#ff6060','Refund % do faturamento'],['#f5a623','Chargeback %']]);
 
 mk('bc1',{type:'bar',data:{labels:months,datasets:[{data:keys.map(k=>bgData[k].total),backgroundColor:'rgba(90,171,255,0.22)',borderColor:'#5aabff',borderWidth:1,borderRadius:4},{data:keys.map(k=>bgData[k].upsells),backgroundColor:'#5aabff',borderRadius:4}]},options:{...noLeg,scales:scales(v=>fN(v))}});
