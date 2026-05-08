@@ -1,606 +1,255 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Análise Completa — Refund vs CB | Motivos & Afiliados</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
-
-  .header { background: linear-gradient(135deg, #1a1d2e 0%, #16213e 100%); border-bottom: 1px solid #2d3748; padding: 24px 32px; }
-  .header h1 { font-size: 21px; font-weight: 700; color: #fff; }
-  .header .sub { font-size: 13px; color: #718096; margin-top: 4px; }
-
-  .container { max-width: 1440px; margin: 0 auto; padding: 24px 32px; }
-
-  /* TABS */
-  .tabs { display: flex; gap: 4px; margin-bottom: 22px; border-bottom: 1px solid #2d3748; }
-  .tab { padding: 10px 20px; font-size: 13px; font-weight: 600; color: #718096; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; transition: all 0.2s; }
-  .tab:hover { color: #a0aec0; }
-  .tab.active { color: #fff; border-bottom-color: #4299e1; }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  /* KPI */
-  .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 22px; }
-  .kpi-card { background: #1a1d2e; border: 1px solid #2d3748; border-radius: 10px; padding: 18px; position: relative; overflow: hidden; }
-  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-  .kpi-card.red::before { background: #ff4444; }
-  .kpi-card.orange::before { background: #f6851f; }
-  .kpi-card.blue::before { background: #4299e1; }
-  .kpi-card.green::before { background: #48bb78; }
-  .kpi-card.yellow::before { background: #ecc94b; }
-  .kpi-label { font-size: 11px; color: #718096; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 8px; }
-  .kpi-value { font-size: 26px; font-weight: 700; color: #fff; }
-  .kpi-sub { font-size: 12px; color: #718096; margin-top: 4px; }
-
-  /* SECTION */
-  .section { background: #1a1d2e; border: 1px solid #2d3748; border-radius: 12px; padding: 22px; margin-bottom: 20px; }
-  .section-title { font-size: 13px; font-weight: 700; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .badge { background: #2d3748; border-radius: 6px; padding: 3px 10px; font-size: 11px; color: #718096; font-weight: 400; text-transform: none; letter-spacing: 0; }
-
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
-  .chart-wrap { position: relative; height: 220px; }
-  .chart-wrap-sm { position: relative; height: 180px; }
-
-  /* TABLE */
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; padding: 9px 12px; color: #718096; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; border-bottom: 2px solid #2d3748; white-space: nowrap; }
-  th.right, td.right { text-align: right; }
-  td { padding: 10px 12px; border-bottom: 1px solid #1e2433; color: #cbd5e0; vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(255,255,255,0.025); }
-  .prod-name { font-weight: 600; color: #fff; }
-
-  /* BARS */
-  .bar-wrap { display: flex; align-items: center; gap: 8px; }
-  .bar-bg { flex: 1; background: #2d3748; border-radius: 4px; height: 8px; overflow: hidden; min-width: 80px; }
-  .bar-fill { height: 100%; border-radius: 4px; display: flex; }
-  .bar-refund { background: #f6851f; }
-  .bar-cb { background: #ff4444; }
-  .bar-label { font-size: 12px; color: #a0aec0; white-space: nowrap; min-width: 42px; text-align: right; }
-
-  /* MOTIVO BARS */
-  .motivo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .motivo-label { font-size: 12px; color: #cbd5e0; min-width: 230px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .motivo-bar-bg { flex: 1; background: #2d3748; border-radius: 4px; height: 10px; }
-  .motivo-bar-fill { height: 100%; border-radius: 4px; }
-  .motivo-count { font-size: 12px; color: #a0aec0; min-width: 30px; text-align: right; }
-  .motivo-pct { font-size: 11px; color: #718096; min-width: 38px; text-align: right; }
-
-  /* PILLS */
-  .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
-  .pill.danger { background: rgba(255,68,68,0.15); color: #ff4444; }
-  .pill.warn { background: rgba(246,133,31,0.15); color: #f6851f; }
-  .pill.ok { background: rgba(72,187,120,0.15); color: #48bb78; }
-  .pill.muted { background: rgba(113,128,150,0.12); color: #718096; }
-  .pill.blue { background: rgba(66,153,225,0.15); color: #63b3ed; }
-
-  .net-pos { color: #48bb78; font-weight: 600; }
-  .net-neg { color: #ff4444; font-weight: 600; }
-  .taxa-high { color: #ff4444; font-weight: 700; }
-  .taxa-mid { color: #f6851f; font-weight: 600; }
-  .taxa-low { color: #48bb78; }
-
-  /* ALERTS */
-  .alert { border-radius: 10px; padding: 14px 18px; margin-bottom: 14px; border-left: 4px solid; }
-  .alert:last-child { margin-bottom: 0; }
-  .alert.critical { background: rgba(255,68,68,0.08); border-color: #ff4444; }
-  .alert.warn { background: rgba(246,133,31,0.08); border-color: #f6851f; }
-  .alert.info { background: rgba(66,153,225,0.08); border-color: #4299e1; }
-  .alert.ok { background: rgba(72,187,120,0.08); border-color: #48bb78; }
-  .alert-title { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
-  .alert.critical .alert-title { color: #ff4444; }
-  .alert.warn .alert-title { color: #f6851f; }
-  .alert.info .alert-title { color: #63b3ed; }
-  .alert.ok .alert-title { color: #48bb78; }
-  .alert p { font-size: 13px; color: #a0aec0; line-height: 1.6; }
-
-  .divider { border: none; border-top: 1px solid #2d3748; margin: 16px 0; }
-  .footnote { font-size: 11px; color: #4a5568; text-align: center; margin-top: 28px; padding-bottom: 28px; }
-
-  /* PROD TAB SELECTOR */
-  .prod-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-  .prod-tab { padding: 6px 14px; font-size: 12px; font-weight: 600; color: #718096; cursor: pointer; border: 1px solid #2d3748; border-radius: 20px; transition: all 0.2s; }
-  .prod-tab:hover { color: #a0aec0; border-color: #4a5568; }
-  .prod-tab.active { color: #fff; background: #2d3748; border-color: #4a5568; }
-  .prod-panel { display: none; }
-  .prod-panel.active { display: block; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: #000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #e0e0e0; }
+  .tab-btn { background: transparent; border: 0.5px solid #333; border-radius: 6px; padding: 6px 14px; font-size: 13px; cursor: pointer; color: #999; transition: all .2s; }
+  .tab-btn.active { background: #1a2a3a; color: #5aabff; border-color: transparent; font-weight: 500; }
+  .metric { background: #111; border: 0.5px solid #222; border-radius: 8px; padding: 12px 14px; }
+  .metric-label { font-size: 12px; color: #777; margin: 0 0 4px; }
+  .metric-val { font-size: 20px; font-weight: 500; color: #e8e8e8; margin: 0; }
+  .metric-sub { font-size: 11px; color: #555; margin: 4px 0 0; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .bar-label { font-size: 12px; color: #888; min-width: 70px; text-align: right; }
+  .bar-bg { flex: 1; background: #1a1a1a; border-radius: 3px; height: 20px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 11px; font-weight: 500; transition: width 0.4s; }
+  .bar-val { font-size: 12px; color: #666; min-width: 72px; }
+  .warn { color: #ff6b6b; }
+  .good { color: #3dd68c; }
+  .neutral { color: #999; }
+  .section-title { font-size: 13px; font-weight: 500; color: #666; margin: 1.5rem 0 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  table { background: #000; }
+  th { color: #666 !important; }
+  td { color: #ccc; border-bottom: 0.5px solid #1a1a1a; }
+  tr:hover td { background: #0d0d0d; }
 </style>
 </head>
 <body>
+<div style="padding: 0.5rem 0;">
 
-<div class="header">
-  <h1>📊 Análise Completa — Refund vs Chargeback | Motivos & Afiliados</h1>
-  <div class="sub">Dados mesclados: relatório Debertti + arquivos OrdersItems 30 dias · 3 stores · 3.632 registros · 04/05/2026</div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem;">
+  <button class="tab-btn active" onclick="show('jan')">Janeiro</button>
+  <button class="tab-btn" onclick="show('fev')">Fevereiro</button>
+  <button class="tab-btn" onclick="show('mar')">Março</button>
+  <button class="tab-btn" onclick="show('abr')">Abril</button>
+  <button class="tab-btn" onclick="show('all')">Visão geral</button>
 </div>
 
-<div class="container">
+<div id="panel-jan"></div>
+<div id="panel-fev" style="display:none"></div>
+<div id="panel-mar" style="display:none"></div>
+<div id="panel-abr" style="display:none"></div>
+<div id="panel-all" style="display:none"></div>
 
-  <!-- TABS PRINCIPAIS -->
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('visao-geral')">Visão Geral</div>
-    <div class="tab" onclick="switchTab('motivos')">Motivos de Refund</div>
-    <div class="tab" onclick="switchTab('afiliados')">Afiliados</div>
-  </div>
+<div style="margin-top: 2rem; position: relative; height: 320px;">
+  <canvas id="chart1"></canvas>
+</div>
+<div id="legend1" style="display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; font-size:12px; color:#666;"></div>
 
-  <!-- ==================== ABA 1: VISÃO GERAL ==================== -->
-  <div id="visao-geral" class="tab-content active">
-
-    <div class="kpi-grid">
-      <div class="kpi-card red">
-        <div class="kpi-label">Perda total (30 dias)</div>
-        <div class="kpi-value">$16.470</div>
-        <div class="kpi-sub">Refund + CB · todos os produtos</div>
-      </div>
-      <div class="kpi-card orange">
-        <div class="kpi-label">% que é Refund</div>
-        <div class="kpi-value">91,4%</div>
-        <div class="kpi-sub">Problema principal da carteira</div>
-      </div>
-      <div class="kpi-card red">
-        <div class="kpi-label">% que é Chargeback</div>
-        <div class="kpi-value">8,6%</div>
-        <div class="kpi-sub">CB concentrado em 3 produtos</div>
-      </div>
-      <div class="kpi-card yellow">
-        <div class="kpi-label">Produtos no negativo</div>
-        <div class="kpi-value">6 / 9</div>
-        <div class="kpi-sub">Net negativo após fees</div>
-      </div>
-      <div class="kpi-card green">
-        <div class="kpi-label">Produtos saudáveis</div>
-        <div class="kpi-value">3 / 9</div>
-        <div class="kpi-sub">Visium Pro · Gluco · Nervolyn</div>
-      </div>
-    </div>
-
-    <div class="alert warn" style="margin-bottom:20px;">
-      <div class="alert-title">🎯 Diagnóstico: o problema é Refund, não Chargeback</div>
-      <p>O CB está controlado. <strong>91,4% da perda é refund</strong>. Os dados de cancel reason revelam que os dois maiores motores de refund em todos os produtos são <strong>"Não concordou com upsell"</strong> e <strong>"Risco de chargeback/alerta"</strong> — o que significa que grande parte dos refunds não é espontânea: é reativa a uma ameaça ou confusão com o fluxo de upsell.</p>
-    </div>
-
-    <div class="section">
-      <div class="section-title">Decomposição por Produto — Refund vs Chargeback <span class="badge">Ordenado por taxa de perda</span></div>
-      <table>
-        <thead>
-          <tr>
-            <th>Produto</th>
-            <th class="right">Receita Bruta</th>
-            <th class="right">Refund $</th>
-            <th class="right">CB $</th>
-            <th style="min-width:180px;">Taxa de Perda</th>
-            <th class="right">Net</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="prod-name">Reduburn</span></td>
-            <td class="right">$1.118</td>
-            <td class="right">$1.110</td>
-            <td class="right">$0</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill"><div class="bar-refund" style="width:99%;"></div></div></div><span class="bar-label taxa-high">99,3%</span></div></td>
-            <td class="right"><span class="net-neg">-$143</span></td>
-            <td><span class="pill danger">Crítico</span></td>
-          </tr>
-          <tr>
-            <td><span class="prod-name">Prostafense</span></td>
-            <td class="right">$2.941</td>
-            <td class="right">$2.220</td>
-            <td class="right" style="color:#ff4444;">$565</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill"><div class="bar-refund" style="width:75%;"></div><div class="bar-cb" style="width:19%;"></div></div></div><span class="bar-label taxa-high">94,7%</span></div></td>
-            <td class="right"><span class="net-neg">-$1.554</span></td>
-            <td><span class="pill danger">Crítico</span></td>
-          </tr>
-          <tr>
-            <td><span class="prod-name">Lipovive</span></td>
-            <td class="right">$551</td>
-            <td class="right">$323</td>
-            <td class="right">$0</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill"><div class="bar-refund" style="width:58%;"></div></div></div><span class="bar-label taxa-high">58,5%</span></div></td>
-            <td class="right"><span class="net-neg">-$27</span></td>
-            <td><span class="pill danger">Crítico</span></td>
-          </tr>
-          <tr>
-            <td><span class="prod-name">Audileaf</span></td>
-            <td class="right">$9.981</td>
-            <td class="right">$4.865</td>
-            <td class="right" style="color:#f6851f;">$348</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill"><div class="bar-refund" style="width:49%;"></div><div class="bar-cb" style="width:3%;"></div></div></div><span class="bar-label taxa-mid">52,2%</span></div></td>
-            <td class="right"><span class="net-neg">-$710</span></td>
-            <td><span class="pill warn">Atenção</span></td>
-          </tr>
-          <tr>
-            <td><span class="prod-name">Marobrain</span></td>
-            <td class="right">$2.776</td>
-            <td class="right">$1.205</td>
-            <td class="right">$0</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill"><div class="bar-refund" style="width:43%;"></div></div></div><span class="bar-label taxa-mid">43,4%</span></div></td>
-            <td class="right"><span class="net-neg">-$90</span></td>
-            <td><span class="pill warn">Atenção</span></td>
-          </tr>
-          <tr>
-            <td><span class="prod-name">Vigorlong</span></td>
-            <td class="right">$2.767</td>
-            <td class="right">$1.177</td>
-            <td class="right" style="color:#f6851f;">$134</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill"><div class="bar-refund" style="width:42%;"></div><div class="bar-cb" style="width:5%;"></div></div></div><span class="bar-label taxa-mid">47,3%</span></div></td>
-            <td class="right"><span class="net-neg">-$448</span></td>
-            <td><span class="pill warn">Atenção</span></td>
-          </tr>
-          <tr>
-            <td><span class="prod-name">Visium Pro</span></td>
-            <td class="right">$3.927</td>
-            <td class="right">$1.249</td>
-            <td class="right">$0</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill"><div class="bar-refund" style="width:32%;"></div></div></div><span class="bar-label taxa-low">31,8%</span></div></td>
-            <td class="right"><span class="net-pos">+$652</span></td>
-            <td><span class="pill ok">Saudável</span></td>
-          </tr>
-          <tr>
-            <td><span class="prod-name">Gluco Recover</span></td>
-            <td class="right">$8.545</td>
-            <td class="right">$2.481</td>
-            <td class="right">$0</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill"><div class="bar-refund" style="width:29%;"></div></div></div><span class="bar-label taxa-low">29,0%</span></div></td>
-            <td class="right"><span class="net-pos">+$1.146</span></td>
-            <td><span class="pill ok">Saudável</span></td>
-          </tr>
-          <tr>
-            <td><span class="prod-name">Nervolyn</span></td>
-            <td class="right">$9.363</td>
-            <td class="right">$2.590</td>
-            <td class="right">$0</td>
-            <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill"><div class="bar-refund" style="width:28%;"></div></div></div><span class="bar-label taxa-low">27,7%</span></div></td>
-            <td class="right"><span class="net-pos">+$1.596</span></td>
-            <td><span class="pill ok">Saudável</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="grid-2">
-      <div class="section">
-        <div class="section-title">Composição da Perda <span class="badge">Refund vs CB</span></div>
-        <div class="chart-wrap"><canvas id="chartStack"></canvas></div>
-      </div>
-      <div class="section">
-        <div class="section-title">Net por Produto</div>
-        <div class="chart-wrap"><canvas id="chartNet"></canvas></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== ABA 2: MOTIVOS ==================== -->
-  <div id="motivos" class="tab-content">
-
-    <div class="alert info" style="margin-bottom:20px;">
-      <div class="alert-title">📌 Como ler esta aba</div>
-      <p>Motivos extraídos do campo <strong>Cancel Reason</strong> dos arquivos de 30 dias. Disponíveis para Prostafense, Reduburn e Vigorlong — os outros produtos não constam nos arquivos de orders analisados. <strong>Importante:</strong> "Risco de Chargeback/Alerta" e "Ameaça de Chargeback" são tecnicamente refunds — o sistema processou como reembolso, mas a origem é uma disputa iminente.</p>
-    </div>
-
-    <!-- Seletor de produto -->
-    <div class="prod-tabs">
-      <div class="prod-tab active" onclick="switchProd('pros')">🔴 Prostafense</div>
-      <div class="prod-tab" onclick="switchProd('red')">🟡 Reduburn</div>
-      <div class="prod-tab" onclick="switchProd('vig')">🟠 Vigorlong</div>
-    </div>
-
-    <!-- PROSTAFENSE -->
-    <div id="pros" class="prod-panel active">
-      <div class="grid-2">
-        <div class="section">
-          <div class="section-title">Prostafense — Motivos de Refund <span class="badge">152 refunds · 30 dias</span></div>
-
-          <div class="motivo-row"><span class="motivo-label">🔴 Não concordou com upsell</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:32.2%;background:#ff4444;"></div></div><span class="motivo-count">49</span><span class="motivo-pct">32,2%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🔴 Risco de CB / Alerta</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:26.3%;background:#ff4444;"></div></div><span class="motivo-count">40</span><span class="motivo-pct">26,3%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🔴 Ameaça de Chargeback</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:12.5%;background:#e53e3e;"></div></div><span class="motivo-count">19</span><span class="motivo-pct">12,5%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🟡 Partial Refund (venda salva)</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:3.9%;background:#ecc94b;"></div></div><span class="motivo-count">6</span><span class="motivo-pct">3,9%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🟠 Arrependimento</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:4.6%;background:#f6851f;"></div></div><span class="motivo-count">7</span><span class="motivo-pct">4,6%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🟠 Não lembra do pedido</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:3.9%;background:#f6851f;"></div></div><span class="motivo-count">6</span><span class="motivo-pct">3,9%</span></div>
-          <div class="motivo-row"><span class="motivo-label">⚪ Produto errado / Pedido duplicado</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:5.2%;background:#718096;"></div></div><span class="motivo-count">8</span><span class="motivo-pct">5,3%</span></div>
-          <div class="motivo-row"><span class="motivo-label">⚪ Preço alto</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:2%;background:#718096;"></div></div><span class="motivo-count">3</span><span class="motivo-pct">2,0%</span></div>
-          <div class="motivo-row"><span class="motivo-label">⚪ Outros (médico, efeitos, não funcionou...)</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:4.6%;background:#4a5568;"></div></div><span class="motivo-count">7</span><span class="motivo-pct">4,6%</span></div>
-
-          <hr class="divider">
-          <div class="chart-wrap-sm"><canvas id="chartProsMot"></canvas></div>
-        </div>
-        <div>
-          <div class="alert critical">
-            <div class="alert-title">71% dos refunds de Prostafense são ligados a CB ou upsell</div>
-            <p>Somando "Não concordou com upsell" (32%) + "Risco de CB" (26%) + "Ameaça de CB" (12,5%), chegamos a <strong>70,8% dos refunds com origem em conflito de upsell ou disputa iminente</strong>. O produto em si não é o problema — o problema é o <strong>fluxo de upsell</strong>: clientes não entendem que estão comprando itens adicionais e reagem com ameaça de disputa.</p>
-          </div>
-          <div class="alert warn" style="margin-top:14px;">
-            <div class="alert-title">6 vendas salvas (Partial Refund) — oportunidade de reter mais</div>
-            <p>Em 6 casos, o CS conseguiu oferecer reembolso parcial e manter o cliente. Com 49 cancelamentos por upsell, há espaço para aumentar essa taxa de retenção com um script de negociação mais estruturado antes de ceder o reembolso total.</p>
-          </div>
-          <div class="alert info" style="margin-top:14px;">
-            <div class="alert-title">Ação prioritária: revisar comunicação do upsell</div>
-            <p>Se quase 1 em 3 refunds é por "não concordou com upsell", o cliente está sendo surpreendido pela cobrança adicional. Revisar a copy, o checkout e o SMS de confirmação pode reduzir substancialmente esse motivo sem nenhuma ação de CS.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- REDUBURN -->
-    <div id="red" class="prod-panel">
-      <div class="grid-2">
-        <div class="section">
-          <div class="section-title">Reduburn — Motivos de Refund <span class="badge">27 refunds · 30 dias</span></div>
-
-          <div class="motivo-row"><span class="motivo-label">🔴 Risco de CB / Alerta</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:37%;background:#ff4444;"></div></div><span class="motivo-count">10</span><span class="motivo-pct">37,0%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🟠 Preço alto</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:22.2%;background:#f6851f;"></div></div><span class="motivo-count">6</span><span class="motivo-pct">22,2%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🟡 Partial Refund (venda salva)</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:11.1%;background:#ecc94b;"></div></div><span class="motivo-count">3</span><span class="motivo-pct">11,1%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🔴 Ameaça de Chargeback</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:7.4%;background:#e53e3e;"></div></div><span class="motivo-count">2</span><span class="motivo-pct">7,4%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🔴 Não concordou com upsell</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:7.4%;background:#ff4444;"></div></div><span class="motivo-count">2</span><span class="motivo-pct">7,4%</span></div>
-          <div class="motivo-row"><span class="motivo-label">⚪ Outros (efeitos, entrega, duplicado...)</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:15%;background:#4a5568;"></div></div><span class="motivo-count">4</span><span class="motivo-pct">14,8%</span></div>
-
-          <hr class="divider">
-          <div class="chart-wrap-sm"><canvas id="chartRedMot"></canvas></div>
-        </div>
-        <div>
-          <div class="alert critical">
-            <div class="alert-title">Reduburn: taxa de 99% de refund com volume pequeno — diagnóstico diferente</div>
-            <p>Apenas 27 refunds no período, mas sobre uma base pequena de vendas — daí a taxa altíssima. O motivo dominante é <strong>Risco de CB/Alerta (37%)</strong>, o que indica que o sistema está processando refunds automaticamente quando detecta um alerta de chargeback. Verifique se há configuração de "auto-refund on CB alert" ativa para esse produto.</p>
-          </div>
-          <div class="alert warn" style="margin-top:14px;">
-            <div class="alert-title">Preço alto (22%) — diferente dos outros produtos</div>
-            <p>O Reduburn é o único produto onde "preço alto" aparece como segundo maior motivo. Isso pode indicar desalinhamento entre o preço praticado e o perfil do tráfego gerado pelos afiliados. <strong>Lucas Almeida</strong> é o afiliado com mais refunds nesse produto.</p>
-          </div>
-          <div class="alert ok" style="margin-top:14px;">
-            <div class="alert-title">3 Partial Refunds — proporcionalmente alto para o volume</div>
-            <p>Com apenas 27 refunds, ter 3 Partial Refunds (11%) mostra que o CS está conseguindo reter quando tem a chance. O problema é que muitos refunds são automáticos (sistema) e nem chegam ao CS para tentativa de retenção.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- VIGORLONG -->
-    <div id="vig" class="prod-panel">
-      <div class="grid-2">
-        <div class="section">
-          <div class="section-title">Vigorlong — Motivos de Refund <span class="badge">98 refunds · 30 dias</span></div>
-
-          <div class="motivo-row"><span class="motivo-label">🔴 Risco de CB / Alerta</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:26.5%;background:#ff4444;"></div></div><span class="motivo-count">26</span><span class="motivo-pct">26,5%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🔴 Não concordou com upsell</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:23.5%;background:#ff4444;"></div></div><span class="motivo-count">23</span><span class="motivo-pct">23,5%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🔴 Ameaça de Chargeback</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:13.3%;background:#e53e3e;"></div></div><span class="motivo-count">13</span><span class="motivo-pct">13,3%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🟡 Partial Refund (venda salva)</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:11.2%;background:#ecc94b;"></div></div><span class="motivo-count">11</span><span class="motivo-pct">11,2%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🟠 Não lembra do pedido</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:4.1%;background:#f6851f;"></div></div><span class="motivo-count">4</span><span class="motivo-pct">4,1%</span></div>
-          <div class="motivo-row"><span class="motivo-label">🟠 Preço alto</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:3.1%;background:#f6851f;"></div></div><span class="motivo-count">3</span><span class="motivo-pct">3,1%</span></div>
-          <div class="motivo-row"><span class="motivo-label">⚪ Outros (efeitos, enganado, cônjuge...)</span><div class="motivo-bar-bg"><div class="motivo-bar-fill" style="width:18%;background:#4a5568;"></div></div><span class="motivo-count">18</span><span class="motivo-pct">18,4%</span></div>
-
-          <hr class="divider">
-          <div class="chart-wrap-sm"><canvas id="chartVigMot"></canvas></div>
-        </div>
-        <div>
-          <div class="alert warn">
-            <div class="alert-title">Vigorlong replica o padrão do Prostafense — mesmo problema de upsell</div>
-            <p>O Vigorlong tem exatamente o mesmo padrão de motivos: <strong>CB/alerta + upsell = 63% dos refunds</strong>. O que reforça que o problema não é do produto em si, mas do <strong>fluxo de checkout e comunicação do upsell</strong> que é compartilhado entre os produtos.</p>
-          </div>
-          <div class="alert ok" style="margin-top:14px;">
-            <div class="alert-title">11 Partial Refunds — melhor taxa de retenção da carteira</div>
-            <p>O Vigorlong tem o maior número absoluto de vendas salvas via Partial Refund. Isso mostra que o CS está conseguindo negociar bem quando o cliente chega. A oportunidade é aumentar essa proporção nos outros produtos também.</p>
-          </div>
-          <div class="alert info" style="margin-top:14px;">
-            <div class="alert-title">"Misinformed by marketing" aparece 2x — atenção aos afiliados</div>
-            <p>Dois clientes declararam explicitamente que foram enganados pelas promessas de marketing. Na aba de Afiliados, o MaxWeb Sales tem taxa de refund de 12,8% no Vigorlong — bem acima da média do produto.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== ABA 3: AFILIADOS ==================== -->
-  <div id="afiliados" class="tab-content">
-
-    <div class="alert info" style="margin-bottom:20px;">
-      <div class="alert-title">📌 Leitura da tabela</div>
-      <p>Taxa = refunds / total de vendas do afiliado naquele produto nos últimos 30 dias. Afiliados com pouquíssimas vendas (menos de 5) podem ter taxa distorcida pelo volume pequeno — veja a coluna "Vendas" antes de concluir.</p>
-    </div>
-
-    <div class="grid-3">
-      <!-- PROSTAFENSE -->
-      <div class="section">
-        <div class="section-title">Prostafense — Afiliados <span class="badge">Top 10 em refunds</span></div>
-        <table>
-          <thead><tr><th>Afiliado</th><th class="right">Vendas</th><th class="right">Refunds</th><th class="right">Taxa</th></tr></thead>
-          <tbody>
-            <tr><td>Rodrigo Passos</td><td class="right">243</td><td class="right">41</td><td class="right"><span class="taxa-mid">16,9%</span></td></tr>
-            <tr><td>Alexandre Biasoli</td><td class="right">210</td><td class="right">34</td><td class="right"><span class="taxa-mid">16,2%</span></td></tr>
-            <tr><td>Bernadete Hernandes</td><td class="right">186</td><td class="right">23</td><td class="right"><span class="taxa-low">12,4%</span></td></tr>
-            <tr><td>Karine Kuhn</td><td class="right">75</td><td class="right">13</td><td class="right"><span class="taxa-mid">17,3%</span></td></tr>
-            <tr><td>Leandro Souza</td><td class="right">39</td><td class="right">7</td><td class="right"><span class="taxa-mid">17,9%</span></td></tr>
-            <tr><td>MaxWeb Sales</td><td class="right">103</td><td class="right">7</td><td class="right"><span class="taxa-low">6,8%</span></td></tr>
-            <tr><td>HelpGrid Calls</td><td class="right">108</td><td class="right">7</td><td class="right"><span class="taxa-low">6,5%</span></td></tr>
-            <tr><td>Wladimir Penques</td><td class="right">15</td><td class="right">3</td><td class="right"><span class="taxa-mid">20,0%</span></td></tr>
-            <tr><td>Henrique Leao</td><td class="right">7</td><td class="right">3</td><td class="right"><span class="taxa-high">42,9%</span></td></tr>
-            <tr><td>HG Incredibles</td><td class="right">21</td><td class="right">3</td><td class="right"><span class="taxa-mid">14,3%</span></td></tr>
-          </tbody>
-        </table>
-        <hr class="divider">
-        <div class="alert warn" style="padding:12px 14px;">
-          <div class="alert-title">⚠ Henrique Leao — 42,9% com volume pequeno</div>
-          <p style="font-size:12px;">7 vendas, 3 refunds. Volume ainda não conclusivo, mas merece monitoramento. Se confirmar nas próximas semanas, avaliar desativação.</p>
-        </div>
-      </div>
-
-      <!-- REDUBURN -->
-      <div class="section">
-        <div class="section-title">Reduburn — Afiliados <span class="badge">Top 8</span></div>
-        <table>
-          <thead><tr><th>Afiliado</th><th class="right">Vendas</th><th class="right">Refunds</th><th class="right">Taxa</th></tr></thead>
-          <tbody>
-            <tr><td>Lucas Almeida</td><td class="right">88</td><td class="right">12</td><td class="right"><span class="taxa-mid">13,6%</span></td></tr>
-            <tr><td>Marcos Luz</td><td class="right">35</td><td class="right">7</td><td class="right"><span class="taxa-mid">20,0%</span></td></tr>
-            <tr><td>Wladimir Penques</td><td class="right">23</td><td class="right">3</td><td class="right"><span class="taxa-mid">13,0%</span></td></tr>
-            <tr><td>Helpgrid Inbound</td><td class="right">4</td><td class="right">1</td><td class="right"><span class="taxa-high">25,0%</span></td></tr>
-            <tr><td>Jean Riccardo</td><td class="right">11</td><td class="right">1</td><td class="right"><span class="taxa-low">9,1%</span></td></tr>
-            <tr><td>MaxWeb Sales</td><td class="right">13</td><td class="right">1</td><td class="right"><span class="taxa-low">7,7%</span></td></tr>
-            <tr><td>Rodrigo Almeida</td><td class="right">48</td><td class="right">1</td><td class="right"><span class="taxa-low">2,1%</span></td></tr>
-            <tr><td>Anselmo Souza</td><td class="right">2</td><td class="right">1</td><td class="right"><span class="taxa-high">50,0%</span></td></tr>
-          </tbody>
-        </table>
-        <hr class="divider">
-        <div class="alert warn" style="padding:12px 14px;">
-          <div class="alert-title">⚠ Marcos Luz — 20% com volume razoável</div>
-          <p style="font-size:12px;">35 vendas e 7 refunds é um padrão consistente o suficiente para ser preocupante. Verificar qual tipo de tráfego/copy está usando.</p>
-        </div>
-      </div>
-
-      <!-- VIGORLONG -->
-      <div class="section">
-        <div class="section-title">Vigorlong — Afiliados <span class="badge">Top 9</span></div>
-        <table>
-          <thead><tr><th>Afiliado</th><th class="right">Vendas</th><th class="right">Refunds</th><th class="right">Taxa</span></th></tr></thead>
-          <tbody>
-            <tr><td>Gestor One</td><td class="right">934</td><td class="right">63</td><td class="right"><span class="taxa-low">6,7%</span></td></tr>
-            <tr><td>Gabriel De Abreu</td><td class="right">271</td><td class="right">14</td><td class="right"><span class="taxa-low">5,2%</span></td></tr>
-            <tr><td>MaxWeb Sales</td><td class="right">39</td><td class="right">5</td><td class="right"><span class="taxa-mid">12,8%</span></td></tr>
-            <tr><td>HelpGrid Calls</td><td class="right">229</td><td class="right">5</td><td class="right"><span class="taxa-low">2,2%</span></td></tr>
-            <tr><td>Lucas Almeida</td><td class="right">62</td><td class="right">2</td><td class="right"><span class="taxa-low">3,2%</span></td></tr>
-            <tr><td>Sandra Lima</td><td class="right">3</td><td class="right">2</td><td class="right"><span class="taxa-high">66,7%</span></td></tr>
-            <tr><td>Leonardo Nascimento</td><td class="right">3</td><td class="right">1</td><td class="right"><span class="taxa-high">33,3%</span></td></tr>
-            <tr><td>LEOPOLDO FERNANDES</td><td class="right">2</td><td class="right">1</td><td class="right"><span class="taxa-high">50,0%</span></td></tr>
-            <tr><td>HG Incredibles</td><td class="right">31</td><td class="right">1</td><td class="right"><span class="taxa-low">3,2%</span></td></tr>
-          </tbody>
-        </table>
-        <hr class="divider">
-        <div class="alert ok" style="padding:12px 14px;">
-          <div class="alert-title">✅ Gestor One — maior volume, taxa controlada</div>
-          <p style="font-size:12px;">934 vendas com 6,7% de refund é o melhor benchmark de afiliado grande da carteira. Padrão de referência para os outros.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- INSIGHT CROSS AFILIADO -->
-    <div class="section" style="margin-top:4px;">
-      <div class="section-title">🔍 MaxWeb Sales — Aparece em múltiplos produtos com padrão de risco</div>
-      <div class="grid-2">
-        <div>
-          <div class="alert critical">
-            <div class="alert-title">MaxWeb Sales: 3 CBs + refunds acima da média em Vigorlong</div>
-            <p>Além dos <strong>3 chargebacks em Prostafense</strong> (incluindo 2 de clientes da Tailândia), o MaxWeb tem taxa de refund de <strong>12,8% no Vigorlong</strong> — quase o dobro da média do produto (5,4%). Em Reduburn e Prostafense as taxas são menores, mas o histórico de CB é o dado mais preocupante. É o único afiliado que aparece com risco nas três dimensões: CB, refund e tráfego internacional atípico.</p>
-          </div>
-        </div>
-        <div>
-          <div class="alert warn">
-            <div class="alert-title">Rodrigo Passos + Alexandre Biasoli — padrão sistemático em Prostafense</div>
-            <p>Os dois somam <strong>75 refunds e 7 chargebacks</strong> no Prostafense nos 30 dias. Ambos têm taxa de refund em torno de 16-17% e CBs com o padrão de pares FT+UP1 do mesmo cliente. A hipótese mais provável: o fluxo de upsell que esses dois afiliados usam não deixa claro que é uma segunda cobrança. Vale comparar as landing pages e scripts deles com os de HelpGrid Calls (6,5% de refund, mesmo produto).</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div style="margin-top: 2rem; position: relative; height: 240px;">
+  <canvas id="chart2"></canvas>
+</div>
+<div id="legend2" style="display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; font-size:12px; color:#666;"></div>
 
 </div>
 
-<div class="footnote">Dashboard v2 · Imagem Debertti + 3 arquivos OrdersItems · 3.632 registros · Cancel Reason extraído dos arquivos · 04/05/2026</div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// TAB SWITCHING
-function switchTab(id) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
+Chart.defaults.color = '#666';
+Chart.defaults.borderColor = '#222';
+
+const months = ['Jan', 'Fev', 'Mar', 'Abr'];
+const data = {
+  jan: {
+    label:'Janeiro', faturamento:683512.35,
+    front_sales:2572, front_rev:630268.73,
+    back_sales:385, back_rev:52631.98,
+    refunds:85142.68, chargebacks:4554.15, net_profit:54652.03,
+    impostos:29334.01, plataforma:50810.78,
+    comissoes:420001.48, cogs:68351.24,
+    aov_bruto:265.25, aov_liq:234.59,
+    up1:277, up1r:49000, dw1:57, dw1r:6000,
+    up2:87, up2r:11000, up3:45, up3r:5000,
+  },
+  fev: {
+    label:'Fevereiro', faturamento:2172249.79,
+    front_sales:8026, front_rev:1956587.45,
+    back_sales:1519, back_rev:214229.77,
+    refunds:230952.06, chargebacks:12995.68, net_profit:298553.53,
+    impostos:91320.64, plataforma:161592.34,
+    comissoes:1250931.2, cogs:217224.98,
+    aov_bruto:270.35, aov_liq:239.14,
+    up1:985, up1r:191000, dw1:202, dw1r:25000,
+    up2:334, up2r:46000, up3:146, up3r:20000,
+  },
+  mar: {
+    label:'Março', faturamento:2722613.7,
+    front_sales:9319, front_rev:2385943.39,
+    back_sales:2361, back_rev:335900.77,
+    refunds:344887.03, chargebacks:18737.97, net_profit:276584.19,
+    impostos:116746.76, plataforma:187888.74,
+    comissoes:1622254.4, cogs:272261.37,
+    aov_bruto:294.65, aov_liq:259.47,
+    up1:1186, up1r:271000, dw1:164, dw1r:28000,
+    up2:322, up2r:68000, up3:116, up3r:18000,
+  },
+  abr: {
+    label:'Abril', faturamento:2802332.91,
+    front_sales:7670, front_rev:2144069.73,
+    back_sales:3567, back_rev:657642.48,
+    refunds:444262.33, chargebacks:28970.67, net_profit:464126.28,
+    impostos:169205.09, plataforma:185764.76,
+    comissoes:1398975.58, cogs:280233.29,
+    aov_bruto:364.83, aov_liq:319.08,
+    up1:2292, up1r:576000, dw1:75, dw1r:21000,
+    up2:292, up2r:71000, up3:113, up3r:20000,
+  }
+};
+
+const keys = ['jan','fev','mar','abr'];
+
+function fmt(v, type) {
+  if (type === '$') return '$' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  if (type === '%') return v.toFixed(1) + '%';
+  if (type === 'n') return v.toLocaleString('pt-BR');
+  return v;
 }
 
-// PROD TAB SWITCHING
-function switchProd(id) {
-  document.querySelectorAll('.prod-panel').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.prod-tab').forEach(el => el.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
-  // Re-render charts if needed
-  renderMotivoCharts();
+function refPct(d)    { return d.refunds / d.faturamento * 100; }
+function cbPct(d)     { return d.chargebacks / d.faturamento * 100; }
+function backPct(d)   { return d.back_sales / (d.front_sales + d.back_sales) * 100; }
+function refPerBack(d){ return d.refunds / d.back_rev * 100; }
+
+function buildPanel(key) {
+  const d = data[key];
+  const rpct = refPct(d), cpct = cbPct(d), bpct = backPct(d), rbpct = refPerBack(d);
+  const rpctClass = rpct > 14 ? 'warn' : rpct > 10 ? 'neutral' : 'good';
+  const cpctClass = cpct > 0.8 ? 'warn' : 'good';
+  return `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.25rem;">
+      <div class="metric"><p class="metric-label">Faturamento total</p><p class="metric-val">${fmt(d.faturamento,'$')}</p></div>
+      <div class="metric"><p class="metric-label">Vendas front</p><p class="metric-val">${fmt(d.front_sales,'n')}</p><p class="metric-sub">${fmt(d.front_rev,'$')}</p></div>
+      <div class="metric"><p class="metric-label">Vendas back (up+dw)</p><p class="metric-val">${fmt(d.back_sales,'n')}</p><p class="metric-sub">${fmt(d.back_rev,'$')}</p></div>
+      <div class="metric"><p class="metric-label">Net Profit</p><p class="metric-val">${fmt(d.net_profit,'$')}</p></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.5rem;">
+      <div class="metric"><p class="metric-label">Reembolsos</p><p class="metric-val ${rpctClass}">${fmt(d.refunds,'$')}</p><p class="metric-sub">${fmt(rpct,'%')} do faturamento</p></div>
+      <div class="metric"><p class="metric-label">Chargebacks</p><p class="metric-val ${cpctClass}">${fmt(d.chargebacks,'$')}</p><p class="metric-sub">${fmt(cpct,'%')} do faturamento</p></div>
+      <div class="metric"><p class="metric-label">Back % do total de vendas</p><p class="metric-val">${fmt(bpct,'%')}</p></div>
+      <div class="metric"><p class="metric-label">Refund s/ receita back</p><p class="metric-val ${rbpct>40?'warn':'neutral'}">${fmt(rbpct,'%')}</p></div>
+    </div>
+    <p class="section-title">Funil de back-end</p>
+    <div>
+      ${barRow('UP1', d.up1, d.front_sales, '#378ADD')}
+      ${barRow('DW1', d.dw1, d.front_sales, '#5a5a52')}
+      ${barRow('UP2', d.up2, d.front_sales, '#1D9E75')}
+      ${barRow('UP3', d.up3, d.front_sales, '#BA7517')}
+    </div>`;
 }
 
-// CHART: Stacked refund vs CB
-const ctx1 = document.getElementById('chartStack').getContext('2d');
+function barRow(label, val, base, color) {
+  const pct = Math.min((val / base * 100), 100);
+  return `<div class="bar-row">
+    <span class="bar-label">${label}</span>
+    <div class="bar-bg"><div class="bar-fill" style="width:${pct.toFixed(1)}%;background:${color};color:#fff;">${pct.toFixed(1)}%</div></div>
+    <span class="bar-val">${val.toLocaleString('pt-BR')} vendas</span>
+  </div>`;
+}
+
+function buildAll() {
+  const rows = keys.map(k => {
+    const d = data[k];
+    const rpct = refPct(d), cpct = cbPct(d);
+    const rpctClass = rpct > 14 ? 'warn' : rpct > 10 ? 'neutral' : 'good';
+    return `<tr>
+      <td style="padding:8px 10px;font-weight:500;font-size:13px;">${d.label}</td>
+      <td style="padding:8px 10px;font-size:13px;">${fmt(d.faturamento,'$')}</td>
+      <td style="padding:8px 10px;font-size:13px;">${fmt(d.back_sales,'n')}</td>
+      <td style="padding:8px 10px;font-size:13px;">${fmt(d.back_rev,'$')}</td>
+      <td style="padding:8px 10px;font-size:13px;font-weight:500;" class="${rpctClass}">${fmt(d.refunds,'$')} <span style="font-weight:400;font-size:11px;">(${fmt(rpct,'%')})</span></td>
+      <td style="padding:8px 10px;font-size:13px;">${fmt(d.chargebacks,'$')} <span style="font-size:11px;">(${fmt(cpct,'%')})</span></td>
+      <td style="padding:8px 10px;font-size:13px;font-weight:500;">${fmt(d.net_profit,'$')}</td>
+    </tr>`;
+  }).join('');
+  return `<div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr style="border-bottom:0.5px solid #222;">
+        ${['Mês','Faturamento','Vendas back','Receita back','Refunds','Chargebacks','Net Profit']
+          .map(h=>`<th style="padding:8px 10px;text-align:left;font-weight:500;color:#555;font-size:12px;">${h}</th>`).join('')}
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+keys.forEach(k => { document.getElementById('panel-'+k).innerHTML = buildPanel(k); });
+document.getElementById('panel-all').innerHTML = buildAll();
+
+function show(k) {
+  keys.forEach(m => { document.getElementById('panel-'+m).style.display = 'none'; });
+  document.getElementById('panel-all').style.display = 'none';
+  document.getElementById('panel-'+k).style.display = 'block';
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    const match = k === 'all' ? b.textContent.toLowerCase().includes('geral') : b.textContent.toLowerCase().startsWith(data[k]?.label?.slice(0,3).toLowerCase() || k);
+    b.classList.toggle('active', match);
+  });
+}
+
+// Chart 1
+const ctx1 = document.getElementById('chart1').getContext('2d');
 new Chart(ctx1, {
   type: 'bar',
   data: {
-    labels: ['Reduburn','Prostafense','Lipovive','Audileaf','Marobrain','Vigorlong','Visium Pro','Gluco Rec.','Nervolyn'],
+    labels: months,
     datasets: [
-      { label: 'Refund', data: [1110,2220,323,4865,1205,1177,1249,2481,2590], backgroundColor: 'rgba(246,133,31,0.75)', borderRadius: 3 },
-      { label: 'Chargeback', data: [0,565,0,348,0,134,0,0,0], backgroundColor: 'rgba(255,68,68,0.75)', borderRadius: 3 }
+      { label:'Front', data: keys.map(k=>data[k].front_sales), backgroundColor:'#378ADD', borderRadius:3 },
+      { label:'Back (up+dw)', data: keys.map(k=>data[k].back_sales), backgroundColor:'#1D9E75', borderRadius:3 },
+      { label:'Refunds ($)', data: keys.map(k=>Math.round(data[k].refunds)), backgroundColor:'#E24B4A', borderRadius:3, yAxisID:'y2' },
+      { label:'Chargebacks ($)', data: keys.map(k=>Math.round(data[k].chargebacks)), backgroundColor:'#EF9F27', borderRadius:3, yAxisID:'y2' },
     ]
   },
   options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: '#a0aec0', font: { size: 11 } } } },
-    scales: {
-      x: { stacked: true, ticks: { color: '#718096', font: { size: 10 }, maxRotation: 40 }, grid: { color: '#2d3748' } },
-      y: { stacked: true, ticks: { color: '#718096', callback: v => '$'+v.toLocaleString() }, grid: { color: '#2d3748' }, beginAtZero: true }
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false } },
+    scales:{
+      y:{ title:{display:true,text:'Qtd. vendas',font:{size:11},color:'#555'}, ticks:{color:'#555',font:{size:11}}, grid:{color:'rgba(255,255,255,0.05)'} },
+      y2:{ position:'right', title:{display:true,text:'Valor ($)',font:{size:11},color:'#555'}, ticks:{color:'#555',font:{size:11},callback:v=>'$'+(v/1000).toFixed(0)+'K'}, grid:{drawOnChartArea:false} },
+      x:{ ticks:{color:'#555',font:{size:12}}, grid:{display:false} }
     }
   }
 });
 
-// CHART: Net
-const ctx2 = document.getElementById('chartNet').getContext('2d');
-const nets = [-143,-1554,-27,-710,-90,-448,652,1146,1596];
+const l1 = document.getElementById('legend1');
+[['#378ADD','Front (vendas)'],['#1D9E75','Back — up+dw (vendas)'],['#E24B4A','Refunds ($)'],['#EF9F27','Chargebacks ($)']].forEach(([c,lbl])=>{
+  l1.innerHTML += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:${c};display:inline-block;"></span>${lbl}</span>`;
+});
+
+// Chart 2
+const ctx2 = document.getElementById('chart2').getContext('2d');
 new Chart(ctx2, {
-  type: 'bar',
-  data: {
-    labels: ['Reduburn','Prostafense','Lipovive','Audileaf','Marobrain','Vigorlong','Visium Pro','Gluco Rec.','Nervolyn'],
-    datasets: [{ label: 'Net ($)', data: nets, backgroundColor: nets.map(v => v>=0 ? 'rgba(72,187,120,0.7)' : 'rgba(255,68,68,0.7)'), borderRadius: 4 }]
+  type:'line',
+  data:{
+    labels:months,
+    datasets:[
+      { label:'Refund % do fat.', data:keys.map(k=>parseFloat(refPct(data[k]).toFixed(2))), borderColor:'#E24B4A', backgroundColor:'rgba(226,75,74,0.12)', fill:true, tension:0.3, pointRadius:5 },
+      { label:'Chargeback % do fat.', data:keys.map(k=>parseFloat(cbPct(data[k]).toFixed(2))), borderColor:'#EF9F27', backgroundColor:'rgba(239,159,39,0.12)', fill:true, tension:0.3, pointRadius:5, borderDash:[5,4] },
+    ]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { ticks: { color: '#718096', font: { size: 10 }, maxRotation: 40 }, grid: { color: '#2d3748' } },
-      y: { ticks: { color: '#718096', callback: v => '$'+v.toLocaleString() }, grid: { color: '#2d3748' } }
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false } },
+    scales:{
+      y:{ ticks:{callback:v=>v+'%',color:'#555',font:{size:11}}, grid:{color:'rgba(255,255,255,0.05)'} },
+      x:{ ticks:{color:'#555',font:{size:12}}, grid:{display:false} }
     }
   }
 });
 
-// MOTIVO CHARTS
-let motivoChartsRendered = false;
-let chartProsMot, chartRedMot, chartVigMot;
-
-function renderMotivoCharts() {
-  if (motivoChartsRendered) return;
-  motivoChartsRendered = true;
-
-  const opts = (labels, data, colors) => ({
-    type: 'doughnut',
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0, hoverOffset: 4 }] },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'right', labels: { color: '#a0aec0', font: { size: 10 }, boxWidth: 12, padding: 8 } }
-      }
-    }
-  });
-
-  const prosLabels = ['Não concordou upsell','CB/Alerta','Ameaça CB','Partial Refund','Arrependimento','Não lembra','Outros'];
-  const prosData = [49, 40, 19, 6, 7, 6, 14];
-  const prosCols = ['#ff4444','#e53e3e','#c53030','#ecc94b','#f6851f','#dd6b20','#4a5568'];
-  chartProsMot = new Chart(document.getElementById('chartProsMot'), opts(prosLabels, prosData, prosCols));
-
-  const redLabels = ['CB/Alerta','Preço alto','Partial Refund','Ameaça CB','Não concordou upsell','Outros'];
-  const redData = [10, 6, 3, 2, 2, 4];
-  const redCols = ['#ff4444','#f6851f','#ecc94b','#e53e3e','#fc8181','#4a5568'];
-  chartRedMot = new Chart(document.getElementById('chartRedMot'), opts(redLabels, redData, redCols));
-
-  const vigLabels = ['CB/Alerta','Não concordou upsell','Ameaça CB','Partial Refund','Não lembra','Preço alto','Outros'];
-  const vigData = [26, 23, 13, 11, 4, 3, 18];
-  const vigCols = ['#ff4444','#e53e3e','#c53030','#ecc94b','#f6851f','#dd6b20','#4a5568'];
-  chartVigMot = new Chart(document.getElementById('chartVigMot'), opts(vigLabels, vigData, vigCols));
-}
-
-// Render motivo charts when tab is opened
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    if (document.getElementById('motivos').classList.contains('active')) {
-      setTimeout(renderMotivoCharts, 50);
-    }
-  });
+const l2 = document.getElementById('legend2');
+[['#E24B4A','Refund % do faturamento'],['#EF9F27','Chargeback % do faturamento']].forEach(([c,lbl])=>{
+  l2.innerHTML += `<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:${c};display:inline-block;"></span>${lbl}</span>`;
 });
 </script>
 </body>
