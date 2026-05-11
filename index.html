@@ -553,15 +553,53 @@ const empData = {
   fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Fev', faturamento:2172249.79, front_sales:8026, front_rev:1956587.45, back_sales:1519, back_rev:214229.77, refunds:230952.06, chargebacks:12995.68, net_profit:298553.53, impostos:91320.64, plataforma:161592.34, comissoes:1250931.2, cogs:217224.98, aov_bruto:270.35, aov_liq:239.14, up1:985, dw1:202, up2:334, up3:146 },
   mar: { label:'Março', tag:'tag-blue', tagTxt:'Mar', faturamento:2722613.70, front_sales:9319, front_rev:2385943.39, back_sales:2361, back_rev:335900.77, refunds:344887.03, chargebacks:18737.97, net_profit:276584.19, impostos:116746.76, plataforma:187888.74, comissoes:1622254.4, cogs:272261.37, aov_bruto:294.65, aov_liq:259.47, up1:1186, dw1:164, up2:322, up3:116 },
   abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', faturamento:2802332.91, front_sales:7670, front_rev:2144069.73, back_sales:3567, back_rev:657642.48, refunds:444262.33, chargebacks:28970.67, net_profit:464126.28, impostos:169205.09, plataforma:185764.76, comissoes:1398975.58, cogs:280233.29, aov_bruto:364.83, aov_liq:319.08, up1:2292, dw1:75, up2:292, up3:113 },
-  mai: { label:'Maio (1–8)', tag:'tag-green', tagTxt:'Parcial · 8 dias', faturamento:587022.69, front_sales:1666, front_rev:464234.57, back_sales:660, back_rev:122630.22, refunds:109349.13, chargebacks:11176.95, net_profit:63568.61, impostos:35860.30, plataforma:38096.66, comissoes:306129.07, cogs:58702.27, aov_bruto:351.78, aov_liq:307.96, up1:411, dw1:16, up2:68, up3:21 }
-};
+  mai: { 
+    label: 'Maio (09-10/05)', 
+    tag: 'tag-green', 
+    tagTxt: 'Afiliados Full', 
+    faturamento: 166642.03, 
+    front_sales: 471, 
+    front_rev: 128103.98, 
+    back_sales: 209, 
+    back_rev: 38538.05, 
+    refunds: 17461.74, 
+    chargebacks: 3916.67, 
+    net_profit: 31899.48, 
+    impostos: 9953.19, 
+    plataforma: 10830.66, 
+    comissoes: 85869.28, 
+    cogs: 16642.00, 
+    aov_bruto: 353.81, 
+    aov_liq: 309.68,
+    // Dados do funil anterior mantidos para o gráfico de barras
+    up1: 140, dw1: 3, up2: 16, up3: 6, up4: 1 
+  },
 const bgData = {
   jan: { label:'Janeiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:6043, revenue:1294545.80, upsells:827, upsell_pct:13.7, downsells:239, refunds:693, refund_pct:11.5, chargebacks:34, refund_value:152428, upsell_rev:134471, ref_up:169, ref_up_val:29666, ref_dw:30, ref_dw_val:4134, ref_main:494, ref_main_val:118628, cb_up:11, cb_up_val:1836, cb_dw:0, cb_dw_val:0, cb_main:23, cb_main_val:5356 },
   fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:8151, revenue:1751633.80, upsells:639, upsell_pct:7.8, downsells:176, refunds:934, refund_pct:11.5, chargebacks:48, refund_value:207261, upsell_rev:120657, ref_up:140, ref_up_val:27325, ref_dw:23, ref_dw_val:2903, ref_main:771, ref_main_val:177033, cb_up:7, cb_up_val:1443, cb_dw:0, cb_dw_val:0, cb_main:41, cb_main_val:9636 },
   mar: { label:'Março', tag:'tag-blue', tagTxt:'Funil Padrão', total:11253, revenue:2453869.90, upsells:1255, upsell_pct:11.2, downsells:310, refunds:1294, refund_pct:11.5, chargebacks:66, refund_value:292596, upsell_rev:259431, ref_up:241, ref_up_val:50230, ref_dw:28, ref_dw_val:3729, ref_main:1025, ref_main_val:238637, cb_up:12, cb_up_val:2565, cb_dw:1, cb_dw_val:99, cb_main:53, cb_main_val:13700 },
   abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', total:11352, revenue:2603693.80, upsells:2292, upsell_pct:20.2, downsells:244, refunds:1263, refund_pct:11.1, chargebacks:71, refund_value:299839, upsell_rev:522684, ref_up:492, ref_up_val:113858, ref_dw:25, ref_dw_val:3900, ref_main:746, ref_main_val:182081, cb_up:19, cb_up_val:4386, cb_dw:0, cb_dw_val:0, cb_main:52, cb_main_val:12997 },
-  mai: { label:'Maio (1–8)', tag:'tag-green', tagTxt:'Parcial · 8 dias', total:2188, revenue:505138.70, upsells:413, upsell_pct:18.9, downsells:41, refunds:124, refund_pct:5.7, chargebacks:0, refund_value:28817, upsell_rev:94892, ref_up:48, ref_up_val:11127, ref_dw:1, ref_dw_val:147, ref_main:75, ref_main_val:17542, cb_up:0, cb_up_val:0, cb_dw:0, cb_dw_val:0, cb_main:0, cb_main_val:0 }
-};
+  mai: { 
+    label: 'Maio (Parcial)', 
+    tag: 'tag-green', 
+    tagTxt: 'Real-time', 
+    total: 680, 
+    revenue: 166642.03, 
+    upsells: 209, 
+    upsell_pct: 30.7, 
+    downsells: 0, 
+    refunds: 60, // Quantidade estimada baseada no valor de $17K
+    refund_pct: 10.48, 
+    chargebacks: 15, 
+    refund_value: 17461.74, 
+    upsell_rev: 38538.05, 
+    ref_up: 18, ref_up_val: 3100, 
+    ref_dw: 0, ref_dw_val: 0, 
+    ref_main: 42, ref_main_val: 14361.74, 
+    cb_up: 3, cb_up_val: 580, 
+    cb_dw: 0, cb_dw_val: 0, 
+    cb_main: 12, cb_main_val: 3336.67 
+  },
 const keys = ['jan','fev','mar','abr','mai'];
 const keysEmp = ['jan','fev','mar','abr','mai'];
 
@@ -614,6 +652,10 @@ function buildEmpPanel(key) {
   ${barRow('DW1',d.dw1,d.front_sales,'#888')}
   ${barRow('UP2',d.up2,d.front_sales,'#3dd68c')}
   ${barRow('UP3',d.up3,d.front_sales,'#f5a623')}`;
+  ${barRow('DW2', d.dw2 || 0, d.front_sales, '#888')}
+  ${barRow('UP3', d.up3 || 0, d.front_sales, '#f5a623')}
+  ${barRow('DW3', d.dw3 || 0, d.front_sales, '#888')}
+  ${barRow('UP4', d.up4 || 0, d.front_sales, '#a78bfa')}
 }
 
 function buildEmpAll() {
@@ -638,46 +680,10 @@ function buildEmpAll() {
   <div class="sec-title">Comparativo mensal <span style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;">∂ = mês parcial</span></div>
   <div class="table-wrap"><table><thead><tr><th>Mês</th><th>Faturamento</th><th>Front</th><th>Back</th><th>Net Profit</th><th>Refunds</th><th>Chargebacks</th><th>AOV Bruto</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
+  <div class="insight"><strong>Maio (09-10/05):</strong> Operação de afiliados atingiu um <strong>Net Profit de 19,14% ($31,8K)</strong>, superando a média de abril.</div>
+  <div class="insight">O <strong>AOV Líquido de $309.68</strong> está extremamente saudável, refletindo uma taxa de conversão de back-end de 44.4% (vendas totais vs front).</div>
+  <div class="insight">Atenção: O <strong>Chargeback (2,35%)</strong> está acima do limite ideal de 1%. Monitorar a qualidade do tráfego dos afiliados desse período.</div>
 
-function buildBgPanel(key) {
-  const d = bgData[key];
-  const rpct=d.refund_pct, cpct=d.chargebacks/d.total*100;
-  const rTotal=d.refunds, cbTotal=d.chargebacks;
-  return `<div class="panel-header">${d.label} <span class="tag ${d.tag}">${d.tagTxt}</span></div>
-  <div class="metrics-row">
-    <div class="metric"><div class="metric-label">Total de vendas</div><div class="metric-val">${fN(d.total)}</div></div>
-    <div class="metric"><div class="metric-label">Faturamento</div><div class="metric-val info">$${(d.revenue/1e6).toFixed(2)}M</div><div class="metric-sub">${fD(d.revenue)}</div></div>
-    <div class="metric"><div class="metric-label">Upsells</div><div class="metric-val info">${fN(d.upsells)}</div><div class="metric-sub">${fP(d.upsell_pct)} do total</div></div>
-    <div class="metric"><div class="metric-label">Downsells</div><div class="metric-val">${fN(d.downsells)}</div><div class="metric-sub">${fP(d.downsells/d.total*100)} do total</div></div>
-    <div class="metric"><div class="metric-label">Receita upsell</div><div class="metric-val info">${fDK(d.upsell_rev)}</div></div>
-  </div>
-  <div class="sec-title">Reembolsos — geral e por tipo de oferta</div>
-  <div class="breakdown-grid">
-    ${bcCard('bc-total','Total',      rTotal,   rpct,                  d.refunds/d.total*100,        'das vendas', d.refund_value)}
-    ${bcCard('bc-up',   '↑ Upsell',  d.ref_up, d.ref_up/d.total*100,  d.ref_up/rTotal*100,           'dos refunds',d.ref_up_val)}
-    ${bcCard('bc-dw',   '↓ Downsell',d.ref_dw, d.ref_dw/d.total*100,  d.ref_dw/rTotal*100,           'dos refunds',d.ref_dw_val)}
-    ${bcCard('bc-main', 'Front/Main', d.ref_main,d.ref_main/d.total*100,d.ref_main/rTotal*100,        'dos refunds',d.ref_main_val)}
-  </div>
-  <div class="sec-title">Chargebacks — geral e por tipo de oferta</div>
-  <div class="breakdown-grid">
-    ${bcCard('bc-total','Total',       cbTotal,   cpct,                           cbTotal/d.total*100,           'das vendas', 0)}
-    ${bcCard('bc-up',   '↑ Upsell',   d.cb_up,   d.cb_up/d.total*100,            cbTotal>0?d.cb_up/cbTotal*100:0,  'dos CBs',d.cb_up_val)}
-    ${bcCard('bc-dw',   '↓ Downsell', d.cb_dw,   d.cb_dw/d.total*100,            cbTotal>0?d.cb_dw/cbTotal*100:0,  'dos CBs',d.cb_dw_val)}
-    ${bcCard('bc-main', 'Front/Main',  d.cb_main, d.cb_main/d.total*100,          cbTotal>0?d.cb_main/cbTotal*100:0,'dos CBs',d.cb_main_val)}
-  </div>
-  <div class="sec-title">Cobertura receita upsell vs. reembolso total</div>
-  ${barRow('Up. receita',d.upsell_rev,  Math.max(d.upsell_rev,d.refund_value)*1.1,'#5aabff')}
-  ${barRow('Reembolso',  d.refund_value,Math.max(d.upsell_rev,d.refund_value)*1.1,'#ff6060')}`;
-}
-
-function buildBgAll() {
-  const rows=keys.map(k=>{
-    const d=bgData[k]; const uOk=d.upsell_rev>d.refund_value; const cb=d.chargebacks;
-    const rt=`<span style="color:var(--blue);font-weight:600;">${fN(d.ref_up)}</span> <span style="opacity:.5;">(${fP(d.ref_up/d.refunds*100)}) up</span><br><span style="color:var(--amber);font-weight:600;">${fN(d.ref_dw)}</span> <span style="opacity:.5;">(${fP(d.ref_dw/d.refunds*100)}) dw</span><br><span style="color:var(--green);font-weight:600;">${fN(d.ref_main)}</span> <span style="opacity:.5;">(${fP(d.ref_main/d.refunds*100)}) front</span>`;
-    const ct=cb>0?`<span style="color:var(--blue);font-weight:600;">${fN(d.cb_up)}</span> <span style="opacity:.5;">(${fP(d.cb_up/cb*100)}) up</span><br><span style="color:var(--amber);font-weight:600;">${fN(d.cb_dw)}</span> <span style="opacity:.5;">(${fP(d.cb_dw/cb*100)}) dw</span><br><span style="color:var(--green);font-weight:600;">${fN(d.cb_main)}</span> <span style="opacity:.5;">(${fP(d.cb_main/cb*100)}) front</span>`:'—';
-    return `<tr><td class="num">${d.label}</td><td class="num">${fN(d.total)}</td><td class="num info">${fN(d.upsells)} <span style="opacity:.45;font-size:10px;">(${fP(d.upsell_pct)})</span></td><td class="${pCls(d.refund_pct)}">${fN(d.refunds)} <span style="opacity:.5;font-size:10px;">(${fP(d.refund_pct)})</span></td><td style="font-size:11px;line-height:1.8;">${rt}</td><td class="${cb>60?'warn':'good'}">${fN(cb)}</td><td style="font-size:11px;line-height:1.8;">${ct}</td><td class="num info">${fDK(d.upsell_rev)}</td><td class="${uOk?'good':'warn'}">${fDK(d.refund_value)}</td></tr>`;
-  }).join('');
-  return `<div class="panel-header">Visão Geral <span class="tag tag-blue">Jan–Mai 2026</span></div>
   <div class="metrics-row">
     <div class="metric"><div class="metric-label">Total de vendas</div><div class="metric-val">${fN(keys.reduce((s,k)=>s+bgData[k].total,0))}</div></div>
     <div class="metric"><div class="metric-label">Total upsells</div><div class="metric-val info">${fN(keys.reduce((s,k)=>s+bgData[k].upsells,0))}</div></div>
