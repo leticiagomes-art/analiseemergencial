@@ -283,6 +283,7 @@ td.info  { color: var(--blue); font-weight: 600; }
     <button class="main-tab active" onclick="switchMain(this,'empresa')">Dashboard da Empresa</button>
     <button class="main-tab" onclick="switchMain(this,'buygoods')">BuyGoods — 4 Meses</button>
     <button class="main-tab" onclick="switchMain(this,'intervalo')">Intervalo do Pedido</button>
+    <button class="main-tab" onclick="switchMain(this,'produtos')">Produtos</button>
   </div>
 </div>
 
@@ -373,6 +374,19 @@ td.info  { color: var(--blue); font-weight: 600; }
   <div id="int-all" class="sub-panel"></div>
 </div>
 
+<div id="main-produtos" class="main-panel">
+  <div class="sub-tabs">
+    <button class="sub-btn active" onclick="switchProdMonth('all')">Geral</button>
+    <button class="sub-btn" onclick="switchProdMonth('2025-12')">Dezembro</button>
+    <button class="sub-btn" onclick="switchProdMonth('2026-01')">Janeiro</button>
+    <button class="sub-btn" onclick="switchProdMonth('2026-02')">Fevereiro</button>
+    <button class="sub-btn" onclick="switchProdMonth('2026-03')">Março</button>
+    <button class="sub-btn" onclick="switchProdMonth('2026-04')">Abril</button>
+    <button class="sub-btn" onclick="switchProdMonth('2026-05')">Maio</button>
+  </div>
+  <div id="prod-content"></div>
+</div>
+
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
@@ -427,16 +441,18 @@ const intData = {
       main:     {'0-3d':1, '4-7d':5, '8-15d':22,'16-30d':22,'45d+':2}
     }
   },
-  mai: { label:'Maio (1–8)', tag:'tag-green', tagTxt:'Parcial · 8 dias',
+  mai: { label:'Maio (1–11)', tag:'tag-green', tagTxt:'Parcial',
+    refundReasons: ['Chargeback alert (múltiplos produtos)', 'Threatened with a chargeback', 'Did not agree to the upsells', 'No longer interested in the product', 'Doctor advised against using it'],
+    cbReasons: ['Fraudulent Transaction (múltiplas variantes)', 'Consumer Disputes', 'Unauthorized Transaction', 'credit_not_processed', 'Merchandise Not Received'],
     refund: {
-      upsell:   {'0-3d':46,'4-7d':2,'8-15d':0,'16-30d':0,'45d+':0},
-      downsell: {'0-3d':1, '4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},
-      main:     {'0-3d':70,'4-7d':5,'8-15d':0,'16-30d':0,'45d+':0}
+      upsell:   {'0-3d':121,'4-7d':22,'8-15d':29,'16-30d':27,'45d+':28},
+      downsell: {'0-3d':3,  '4-7d':1, '8-15d':1, '16-30d':1, '45d+':6},
+      main:     {'0-3d':172,'4-7d':44,'8-15d':71,'16-30d':89,'45d+':126}
     },
     chargeback: {
-      upsell:   {'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},
-      downsell: {'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},
-      main:     {'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0}
+      upsell:   {'0-3d':1,'4-7d':0,'8-15d':2,'16-30d':7,'45d+':5},
+      downsell: {'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':2},
+      main:     {'0-3d':0,'4-7d':1,'8-15d':6,'16-30d':19,'45d+':11}
     }
   }
 };
@@ -499,7 +515,19 @@ function buildIntPanel(key) {
       ${BUCKETS.map(b=>`<span style="display:flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);"><span style="width:8px;height:8px;background:${BKT_COLOR[b]};border-radius:2px;display:inline-block;"></span>${BKT_LABEL[b]}</span>`).join('')}
     </div>
     ${['upsell','downsell','main'].map(ot=>stackedBarHTML(ot, d.chargeback[ot], cTotal)).join('')}
-  </div>`;
+  </div>
+  ${d.refundReasons ? `
+  <div class="sec-title" style="margin-top:28px;">Motivações identificadas nos arquivos de base</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:10px;padding:14px 16px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Razões de reembolso</div>
+      ${d.refundReasons.map(r=>`<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);line-height:1.9;">· ${r}</div>`).join('')}
+    </div>
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:10px;padding:14px 16px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Razões de chargeback</div>
+      ${d.cbReasons.map(r=>`<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);line-height:1.9;">· ${r}</div>`).join('')}
+    </div>
+  </div>` : ''}`;
 }
 
 function buildIntAll() {
@@ -529,9 +557,12 @@ function buildIntAll() {
   // Insight: in April most upsell refunds are 0-3d (early regret signal)
   const abrUp0_3 = intData.abr.refund.upsell['0-3d'];
   const abrUpTot = sumBuckets(intData.abr.refund.upsell);
+  const maiUpTot = sumBuckets(intData.mai.refund.upsell);
+  const maiUp0_3 = intData.mai.refund.upsell['0-3d'];
 
   return `<div class="panel-header">Visão Geral — Intervalos <span class="tag tag-blue">Jan–Mai 2026</span></div>
   <div class="insight">Em <strong>abril</strong>, ${abrUp0_3} de ${abrUpTot} reembolsos de upsell (${(abrUp0_3/abrUpTot*100).toFixed(0)}%) aconteceram em 0–3 dias — reflexo do funil mais agressivo gerando arrependimento imediato.</div>
+  <div class="insight">Em <strong>maio</strong>, ${maiUp0_3} de ${maiUpTot} reembolsos de upsell (${(maiUp0_3/maiUpTot*100).toFixed(0)}%) ocorreram em 0–3 dias — padrão similar a abril, confirmando a tendência de arrependimento rápido com funil agressivo.</div>
   <div class="insight">Os reembolsos de <strong>front/main</strong> são mais distribuídos ao longo do tempo — indicam insatisfação com o produto em si, não com a oferta do funil.</div>
   <div class="insight"><strong>Chargebacks</strong> tendem a aparecer nos intervalos 8–15d e 16–30d, consistente com o tempo de processamento de disputa no cartão.</div>
 
@@ -553,14 +584,14 @@ const empData = {
   fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Fev', faturamento:2172249.79, front_sales:8026, front_rev:1956587.45, back_sales:1519, back_rev:214229.77, refunds:230952.06, chargebacks:12995.68, net_profit:298553.53, impostos:91320.64, plataforma:161592.34, comissoes:1250931.2, cogs:217224.98, aov_bruto:270.35, aov_liq:239.14, up1:985, dw1:202, up2:334, up3:146 },
   mar: { label:'Março', tag:'tag-blue', tagTxt:'Mar', faturamento:2722613.70, front_sales:9319, front_rev:2385943.39, back_sales:2361, back_rev:335900.77, refunds:344887.03, chargebacks:18737.97, net_profit:276584.19, impostos:116746.76, plataforma:187888.74, comissoes:1622254.4, cogs:272261.37, aov_bruto:294.65, aov_liq:259.47, up1:1186, dw1:164, up2:322, up3:116 },
   abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', faturamento:2802332.91, front_sales:7670, front_rev:2144069.73, back_sales:3567, back_rev:657642.48, refunds:444262.33, chargebacks:28970.67, net_profit:464126.28, impostos:169205.09, plataforma:185764.76, comissoes:1398975.58, cogs:280233.29, aov_bruto:364.83, aov_liq:319.08, up1:2292, dw1:75, up2:292, up3:113 },
-  mai: { label:'Maio (1–8)', tag:'tag-green', tagTxt:'Parcial · 8 dias', faturamento:587022.69, front_sales:1666, front_rev:464234.57, back_sales:660, back_rev:122630.22, refunds:109349.13, chargebacks:11176.95, net_profit:63568.61, impostos:35860.30, plataforma:38096.66, comissoes:306129.07, cogs:58702.27, aov_bruto:351.78, aov_liq:307.96, up1:411, dw1:16, up2:68, up3:21 }
+  mai: { label:'Maio (1–10)', tag:'tag-green', tagTxt:'Parcial · 10 dias', faturamento:770380.07, front_sales:2178, front_rev:604113.75, back_sales:892, back_rev:166108.42, refunds:127607.71, chargebacks:15093.62, net_profit:101330.51, impostos:46921.78, plataforma:50005.28, comissoes:399304.94, cogs:77038.01, aov_bruto:353.49, aov_liq:309.21, up1:570, dw1:20, up2:84, up3:28 }
 };
 const bgData = {
-  jan: { label:'Janeiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:6043, revenue:1294545.80, upsells:827, upsell_pct:13.7, downsells:239, refunds:693, refund_pct:11.5, chargebacks:34, refund_value:152428, upsell_rev:134471, ref_up:169, ref_up_val:29666, ref_dw:30, ref_dw_val:4134, ref_main:494, ref_main_val:118628, cb_up:11, cb_up_val:1836, cb_dw:0, cb_dw_val:0, cb_main:23, cb_main_val:5356 },
-  fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:8151, revenue:1751633.80, upsells:639, upsell_pct:7.8, downsells:176, refunds:934, refund_pct:11.5, chargebacks:48, refund_value:207261, upsell_rev:120657, ref_up:140, ref_up_val:27325, ref_dw:23, ref_dw_val:2903, ref_main:771, ref_main_val:177033, cb_up:7, cb_up_val:1443, cb_dw:0, cb_dw_val:0, cb_main:41, cb_main_val:9636 },
-  mar: { label:'Março', tag:'tag-blue', tagTxt:'Funil Padrão', total:11253, revenue:2453869.90, upsells:1255, upsell_pct:11.2, downsells:310, refunds:1294, refund_pct:11.5, chargebacks:66, refund_value:292596, upsell_rev:259431, ref_up:241, ref_up_val:50230, ref_dw:28, ref_dw_val:3729, ref_main:1025, ref_main_val:238637, cb_up:12, cb_up_val:2565, cb_dw:1, cb_dw_val:99, cb_main:53, cb_main_val:13700 },
-  abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', total:11352, revenue:2603693.80, upsells:2292, upsell_pct:20.2, downsells:244, refunds:1263, refund_pct:11.1, chargebacks:71, refund_value:299839, upsell_rev:522684, ref_up:492, ref_up_val:113858, ref_dw:25, ref_dw_val:3900, ref_main:746, ref_main_val:182081, cb_up:19, cb_up_val:4386, cb_dw:0, cb_dw_val:0, cb_main:52, cb_main_val:12997 },
-  mai: { label:'Maio (1–8)', tag:'tag-green', tagTxt:'Parcial · 8 dias', total:2188, revenue:505138.70, upsells:413, upsell_pct:18.9, downsells:41, refunds:124, refund_pct:5.7, chargebacks:0, refund_value:28817, upsell_rev:94892, ref_up:48, ref_up_val:11127, ref_dw:1, ref_dw_val:147, ref_main:75, ref_main_val:17542, cb_up:0, cb_up_val:0, cb_dw:0, cb_dw_val:0, cb_main:0, cb_main_val:0 }
+  jan: { label:'Janeiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:6043, revenue:1294545.80, upsells:827, upsell_pct:13.7, downsells:239, sales_up:827, sales_dw:239, sales_main:4977, refunds:693, refund_pct:11.5, chargebacks:34, refund_value:152428, upsell_rev:134471, ref_up:169, ref_up_val:29666, ref_dw:30, ref_dw_val:4134, ref_main:494, ref_main_val:118628, cb_up:11, cb_up_val:1836, cb_dw:0, cb_dw_val:0, cb_main:23, cb_main_val:5356 },
+  fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:8151, revenue:1751633.80, upsells:639, upsell_pct:7.8, downsells:176, sales_up:639, sales_dw:176, sales_main:7336, refunds:934, refund_pct:11.5, chargebacks:48, refund_value:207261, upsell_rev:120657, ref_up:140, ref_up_val:27325, ref_dw:23, ref_dw_val:2903, ref_main:771, ref_main_val:177033, cb_up:7, cb_up_val:1443, cb_dw:0, cb_dw_val:0, cb_main:41, cb_main_val:9636 },
+  mar: { label:'Março', tag:'tag-blue', tagTxt:'Funil Padrão', total:11253, revenue:2453869.90, upsells:1255, upsell_pct:11.2, downsells:310, sales_up:1255, sales_dw:310, sales_main:9688, refunds:1294, refund_pct:11.5, chargebacks:66, refund_value:292596, upsell_rev:259431, ref_up:241, ref_up_val:50230, ref_dw:28, ref_dw_val:3729, ref_main:1025, ref_main_val:238637, cb_up:12, cb_up_val:2565, cb_dw:1, cb_dw_val:99, cb_main:53, cb_main_val:13700 },
+  abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', total:11352, revenue:2603693.80, upsells:2292, upsell_pct:20.2, downsells:244, sales_up:2292, sales_dw:244, sales_main:8816, refunds:1263, refund_pct:11.1, chargebacks:71, refund_value:299839, upsell_rev:522684, ref_up:492, ref_up_val:113858, ref_dw:25, ref_dw_val:3900, ref_main:746, ref_main_val:182081, cb_up:19, cb_up_val:4386, cb_dw:0, cb_dw_val:0, cb_main:52, cb_main_val:12997 },
+  mai: { label:'Maio (1–10)', tag:'tag-green', tagTxt:'Parcial · Empresa', total:3072, revenue:770380.07, upsells:684, upsell_pct:22.3, downsells:35, sales_up:684, sales_dw:35, sales_main:2353, refunds:3, refund_pct:16.56, chargebacks:6, refund_value:127607.71, upsell_rev:166108.42, ref_up:2, ref_up_val:84939, ref_dw:0, ref_dw_val:0, ref_main:1, ref_main_val:42669, cb_up:1, cb_up_val:279.16, cb_dw:0, cb_dw_val:0, cb_main:5, cb_main_val:14814 }
 };
 const keys = ['jan','fev','mar','abr','mai'];
 const keysEmp = ['jan','fev','mar','abr','mai'];
@@ -581,13 +612,20 @@ function barRow(label, val, base, color) {
   return `<div class="bar-row"><span class="bar-label">${label}</span><div class="bar-bg"><div class="bar-fill" style="width:${pct.toFixed(1)}%;background:${color};">${pct.toFixed(1)}%</div></div><span class="bar-val">${fN(val)} vendas</span></div>`;
 }
 
-function bcCard(cls, head, val, pctOfSales, pctOfGroup, groupLabel, money) {
+function bcCard(cls, head, val, pctOfSales, pctOfGroup, groupLabel, money, salesForType, isMai) {
+  const typeRate = salesForType > 0 ? (val/salesForType*100).toFixed(1) : null;
+  const rateColor = typeRate !== null
+    ? (parseFloat(typeRate) > 20 ? 'var(--red)' : parseFloat(typeRate) > 12 ? 'var(--amber)' : 'var(--green)')
+    : 'var(--text3)';
+  const maiNote = isMai && cls !== 'bc-total' ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px;">∂ dados parciais</div>` : '';
   return `<div class="breakdown-card ${cls}">
     <div class="bc-head">${head}</div>
     <div class="bc-val">${fN(val)}</div>
     <div class="bc-pct-main">${fP(pctOfSales)} das vendas</div>
     <div class="bc-pct-sub">${fP(pctOfGroup)} ${groupLabel}</div>
+    ${typeRate !== null ? `<div style="font-family:'Epilogue',sans-serif;font-size:13px;font-weight:800;color:${rateColor};margin:4px 0 2px;letter-spacing:-.01em;">${typeRate}% <span style="font-size:10px;font-weight:400;font-family:'IBM Plex Mono',monospace;color:var(--text3);">taxa do segmento</span></div>` : ''}
     <div class="bc-money">${money > 0 ? fDK(money) : '—'}</div>
+    ${maiNote}
   </div>`;
 }
 
@@ -613,7 +651,28 @@ function buildEmpPanel(key) {
   ${barRow('UP1',d.up1,d.front_sales,'#5aabff')}
   ${barRow('DW1',d.dw1,d.front_sales,'#888')}
   ${barRow('UP2',d.up2,d.front_sales,'#3dd68c')}
-  ${barRow('UP3',d.up3,d.front_sales,'#f5a623')}`;
+  ${barRow('UP3',d.up3,d.front_sales,'#f5a623')}
+  ${key==='mai' ? `
+  <div class="sec-title">Motivações de reembolso e chargeback (Mai 1–10)</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:10px;padding:14px 16px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Reembolsos — razões (3 registros)</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.9;">
+        <div><span style="color:var(--red);font-weight:700;">2</span> <span style="color:var(--text2);">Did not agree to the upsells</span></div>
+        <div><span style="color:var(--red);font-weight:700;">1</span> <span style="color:var(--text2);">Did not work</span></div>
+      </div>
+    </div>
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:10px;padding:14px 16px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Chargebacks — razões (6 registros)</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.9;">
+        <div><span style="color:var(--amber);font-weight:700;">2</span> <span style="color:var(--text2);">Fraudulent Transaction</span></div>
+        <div><span style="color:var(--amber);font-weight:700;">1</span> <span style="color:var(--text2);">Consumer Disputes (13.1)</span></div>
+        <div><span style="color:var(--amber);font-weight:700;">1</span> <span style="color:var(--text2);">Not As Described / Defective</span></div>
+        <div><span style="color:var(--amber);font-weight:700;">1</span> <span style="color:var(--text2);">Unauthorized Transaction (4868)</span></div>
+        <div><span style="color:var(--amber);font-weight:700;">1</span> <span style="color:var(--text2);">Unauthorized Transaction (UA01)</span></div>
+      </div>
+    </div>
+  </div>` : ''}`;
 }
 
 function buildEmpAll() {
@@ -633,8 +692,8 @@ function buildEmpAll() {
     <div class="metric"><div class="metric-label">Total chargebacks</div><div class="metric-val amber">${fDK(tC)}</div><div class="metric-sub">${fP(tC/tF*100)} do faturamento</div></div>
   </div>
   <div class="insight"><strong>Abril</strong> fechou com o maior net profit ($464K, 16,6%) mesmo com refunds em alta absoluta. O crescimento do back-end (3.567 vendas, 32% do total) foi o principal driver.</div>
-  <div class="insight"><strong>Maio (1–8)</strong>: refund de 18,6% do faturamento já nos primeiros 8 dias — acima da média histórica — e chargeback de 1,9%. Requer atenção no fechamento do mês.</div>
-  <div class="insight">Taxa de refund cresceu de <strong>12,5% (jan)</strong> até <strong>15,9% (abr)</strong>. Maio parcial já mostra <strong>18,6%</strong> — tendência preocupante.</div>
+  <div class="insight"><strong>Maio (1–10)</strong>: refund de 16,6% e chargeback de 1,96% já nos primeiros 10 dias — acima da média histórica de jan–mar. Motivações identificadas: <strong>"Did not agree to the upsells"</strong> lidera os reembolsos; chargebacks dominados por disputas de fraude e transações não autorizadas.</div>
+  <div class="insight">Taxa de refund: <strong>12,5% (jan) → 13,8% (fev) → 12,7% (mar) → 15,9% (abr) → 16,6% (mai ∂)</strong>. Tendência de alta consistente com funil mais agressivo.</div>
   <div class="sec-title">Comparativo mensal <span style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;">∂ = mês parcial</span></div>
   <div class="table-wrap"><table><thead><tr><th>Mês</th><th>Faturamento</th><th>Front</th><th>Back</th><th>Net Profit</th><th>Refunds</th><th>Chargebacks</th><th>AOV Bruto</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
@@ -643,31 +702,39 @@ function buildBgPanel(key) {
   const d = bgData[key];
   const rpct=d.refund_pct, cpct=d.chargebacks/d.total*100;
   const rTotal=d.refunds, cbTotal=d.chargebacks;
+  const isMai = key === 'mai';
+  const su=d.sales_up, sd=d.sales_dw, sm=d.sales_main;
+  const maiWarning = isMai ? `<div class="insight" style="border-left-color:var(--amber);margin-bottom:16px;"><strong>Dados de maio (1–10)</strong>: totais financeiros e vendas alinhados com o Dashboard da Empresa. Contagem de refunds/chargebacks por tipo baseada nos arquivos de base (parcial). Taxas do segmento calculadas sobre os valores disponíveis.</div>` : '';
   return `<div class="panel-header">${d.label} <span class="tag ${d.tag}">${d.tagTxt}</span></div>
+  ${maiWarning}
   <div class="metrics-row">
     <div class="metric"><div class="metric-label">Total de vendas</div><div class="metric-val">${fN(d.total)}</div></div>
     <div class="metric"><div class="metric-label">Faturamento</div><div class="metric-val info">$${(d.revenue/1e6).toFixed(2)}M</div><div class="metric-sub">${fD(d.revenue)}</div></div>
+    <div class="metric"><div class="metric-label">Vendas Front</div><div class="metric-val">${fN(d.total-d.upsells-d.downsells)}</div><div class="metric-sub">${fP((d.total-d.upsells-d.downsells)/d.total*100)} do total</div></div>
     <div class="metric"><div class="metric-label">Upsells</div><div class="metric-val info">${fN(d.upsells)}</div><div class="metric-sub">${fP(d.upsell_pct)} do total</div></div>
     <div class="metric"><div class="metric-label">Downsells</div><div class="metric-val">${fN(d.downsells)}</div><div class="metric-sub">${fP(d.downsells/d.total*100)} do total</div></div>
-    <div class="metric"><div class="metric-label">Receita upsell</div><div class="metric-val info">${fDK(d.upsell_rev)}</div></div>
+    <div class="metric"><div class="metric-label">Receita back</div><div class="metric-val info">${fDK(d.upsell_rev)}</div></div>
   </div>
-  <div class="sec-title">Reembolsos — geral e por tipo de oferta</div>
+
+  <div class="sec-title">Reembolsos — geral e por tipo · <span style="color:var(--text3);font-size:9px;font-weight:400;">taxa do segmento = refunds ÷ vendas daquele tipo</span></div>
   <div class="breakdown-grid">
-    ${bcCard('bc-total','Total',      rTotal,   rpct,                  d.refunds/d.total*100,        'das vendas', d.refund_value)}
-    ${bcCard('bc-up',   '↑ Upsell',  d.ref_up, d.ref_up/d.total*100,  d.ref_up/rTotal*100,           'dos refunds',d.ref_up_val)}
-    ${bcCard('bc-dw',   '↓ Downsell',d.ref_dw, d.ref_dw/d.total*100,  d.ref_dw/rTotal*100,           'dos refunds',d.ref_dw_val)}
-    ${bcCard('bc-main', 'Front/Main', d.ref_main,d.ref_main/d.total*100,d.ref_main/rTotal*100,        'dos refunds',d.ref_main_val)}
+    ${bcCard('bc-total','Total',      rTotal,   rpct,                  d.refunds/d.total*100,        'das vendas', d.refund_value, 0,    isMai)}
+    ${bcCard('bc-up',   '↑ Upsell',  d.ref_up, d.ref_up/d.total*100,  d.ref_up/Math.max(rTotal,1)*100, 'dos refunds',d.ref_up_val,  su,   isMai)}
+    ${bcCard('bc-dw',   '↓ Downsell',d.ref_dw, d.ref_dw/d.total*100,  d.ref_dw/Math.max(rTotal,1)*100, 'dos refunds',d.ref_dw_val,  sd,   isMai)}
+    ${bcCard('bc-main', 'Front/Main', d.ref_main,d.ref_main/d.total*100,d.ref_main/Math.max(rTotal,1)*100,'dos refunds',d.ref_main_val,sm,  isMai)}
   </div>
-  <div class="sec-title">Chargebacks — geral e por tipo de oferta</div>
+
+  <div class="sec-title" style="margin-top:24px;">Chargebacks — geral e por tipo · <span style="color:var(--text3);font-size:9px;font-weight:400;">taxa do segmento = CBs ÷ vendas daquele tipo</span></div>
   <div class="breakdown-grid">
-    ${bcCard('bc-total','Total',       cbTotal,   cpct,                           cbTotal/d.total*100,           'das vendas', 0)}
-    ${bcCard('bc-up',   '↑ Upsell',   d.cb_up,   d.cb_up/d.total*100,            cbTotal>0?d.cb_up/cbTotal*100:0,  'dos CBs',d.cb_up_val)}
-    ${bcCard('bc-dw',   '↓ Downsell', d.cb_dw,   d.cb_dw/d.total*100,            cbTotal>0?d.cb_dw/cbTotal*100:0,  'dos CBs',d.cb_dw_val)}
-    ${bcCard('bc-main', 'Front/Main',  d.cb_main, d.cb_main/d.total*100,          cbTotal>0?d.cb_main/cbTotal*100:0,'dos CBs',d.cb_main_val)}
+    ${bcCard('bc-total','Total',       cbTotal,   cpct,                           cbTotal/d.total*100,           'das vendas', 0,            0,  isMai)}
+    ${bcCard('bc-up',   '↑ Upsell',   d.cb_up,   d.cb_up/d.total*100,            cbTotal>0?d.cb_up/cbTotal*100:0,  'dos CBs',d.cb_up_val,   su,  isMai)}
+    ${bcCard('bc-dw',   '↓ Downsell', d.cb_dw,   d.cb_dw/d.total*100,            cbTotal>0?d.cb_dw/cbTotal*100:0,  'dos CBs',d.cb_dw_val,   sd,  isMai)}
+    ${bcCard('bc-main', 'Front/Main',  d.cb_main, d.cb_main/d.total*100,          cbTotal>0?d.cb_main/cbTotal*100:0,'dos CBs',d.cb_main_val,  sm,  isMai)}
   </div>
-  <div class="sec-title">Cobertura receita upsell vs. reembolso total</div>
-  ${barRow('Up. receita',d.upsell_rev,  Math.max(d.upsell_rev,d.refund_value)*1.1,'#5aabff')}
-  ${barRow('Reembolso',  d.refund_value,Math.max(d.upsell_rev,d.refund_value)*1.1,'#ff6060')}`;
+
+  <div class="sec-title" style="margin-top:24px;">Cobertura receita back vs. reembolso total</div>
+  ${barRow('Back receita',d.upsell_rev,  Math.max(d.upsell_rev,d.refund_value)*1.1,'#5aabff')}
+  ${barRow('Reembolso',   d.refund_value,Math.max(d.upsell_rev,d.refund_value)*1.1,'#ff6060')}`;
 }
 
 function buildBgAll() {
@@ -684,9 +751,9 @@ function buildBgAll() {
     <div class="metric"><div class="metric-label">Total reembolsos</div><div class="metric-val amber">${fN(keys.reduce((s,k)=>s+bgData[k].refunds,0))}</div></div>
     <div class="metric"><div class="metric-label">Total chargebacks</div><div class="metric-val">${fN(keys.reduce((s,k)=>s+bgData[k].chargebacks,0))}</div></div>
   </div>
-  <div class="insight">Taxa de reembolso ficou <strong>estável em ~11,5%</strong> de jan a abr. Maio (parcial, 8 dias) mostra 5,7% — esperado, pois a maioria dos reembolsos ainda não foi solicitada.</div>
-  <div class="insight">Em <strong>jan e fev</strong> a receita de upsell era menor que o valor reembolsado. Inverteu em março e abril, com margem crescente.</div>
-  <div class="insight"><strong>Abril</strong>: upsells dobraram (7,8% → 20,2%), receita upsell saltou de $259K para $522K, enquanto valor reembolsado cresceu apenas $7K.</div>
+  <div class="insight">Taxa de reembolso ficou <strong>estável em ~11,5%</strong> de jan a abr. Maio (empresa, 1–10) registra <strong>16,6%</strong> — refund liderado por "Did not agree to the upsells"; chargebacks dominados por disputa/fraude.</div>
+  <div class="insight">Taxa de refund por tipo de upsell: <strong>Jan 20,4% → Fev 21,9% → Mar 19,2% → Abr 21,5%</strong>. Upsells consistentemente com refund ~2× maior que front/main.</div>
+  <div class="insight"><strong>Abril</strong>: receita back ($522K) superou os reembolsos ($300K) com boa margem. Em maio, receita back ($166K) vs. reembolso total ($127K) — margem apertada.</div>
   <div class="sec-title">Comparativo mensal</div>
   <div class="table-wrap"><table><thead><tr><th>Mês</th><th>Vendas</th><th>Upsells</th><th>Reembolsos</th><th>Refund por tipo</th><th>Chargebacks</th><th>CB por tipo</th><th>Receita Up.</th><th>Reemb. ($)</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
@@ -696,20 +763,6 @@ keys.forEach(k => { $('bg-'+k).innerHTML=buildBgPanel(k); $('int-'+k).innerHTML=
 $('emp-all').innerHTML=buildEmpAll();
 $('bg-all').innerHTML=buildBgAll();
 $('int-all').innerHTML=buildIntAll();
-
-function switchMain(btn,tab) {
-  document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.main-tab').forEach(b=>b.classList.remove('active'));
-  $('main-'+tab).classList.add('active'); btn.classList.add('active');
-}
-function switchSub(btn,prefix,key) {
-  const panel=$('main-'+prefix);
-  panel.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
-  panel.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active'));
-  const idMap = {empresa:'emp-', buygoods:'bg-', intervalo:'int-'};
-  $((idMap[prefix]||prefix+'-')+key).classList.add('active');
-  btn.classList.add('active');
-}
 
 function toggleTheme() {
   const html=document.documentElement;
@@ -749,7 +802,7 @@ mk('bc1',{type:'bar',data:{labels:months,datasets:[{data:keys.map(k=>bgData[k].t
 leg('bc1-leg',[['rgba(90,171,255,0.5)','Total vendas',,'#5aabff'],['#5aabff','Upsells']]);
 
 mk('bc2',{type:'bar',data:{labels:months,datasets:[{data:keys.map(k=>bgData[k].upsell_rev),backgroundColor:'#5aabff',borderRadius:4},{data:keys.map(k=>bgData[k].refund_value),backgroundColor:'rgba(255,96,96,0.28)',borderColor:'#ff6060',borderWidth:1,borderRadius:4}]},options:{...noLeg,scales:scales(v=>'$'+(v/1000).toFixed(0)+'K')}});
-leg('bc2-leg',[['#5aabff','Receita upsell'],['rgba(255,96,96,0.5)','Valor reembolsado','#ff6060']]);
+leg('bc2-leg',[['#5aabff','Receita back (up+dw)'],['rgba(255,96,96,0.5)','Valor reembolsado','#ff6060']]);
 
 mk('bc3',{type:'line',data:{labels:months,datasets:[{data:keys.map(k=>bgData[k].upsell_pct),borderColor:'#5aabff',backgroundColor:'rgba(90,171,255,0.09)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#5aabff'},{data:keys.map(k=>bgData[k].refund_pct),borderColor:'#ff6060',backgroundColor:'rgba(255,96,96,0.06)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#ff6060',borderDash:[5,4]},{data:keys.map(k=>parseFloat((bgData[k].chargebacks/bgData[k].total*100).toFixed(2))),borderColor:'#f5a623',tension:0.35,pointRadius:4,pointBackgroundColor:'#f5a623',borderDash:[2,4]}]},options:{...noLeg,scales:scales(v=>v.toFixed(1)+'%')}});
 leg('bc3-leg',[['#5aabff','% upsell'],['#ff6060','% reembolso'],['#f5a623','% chargeback']]);
@@ -762,6 +815,499 @@ function updateChartColors() {
     c.options.scales.y.grid.color=grid;
     c.update();
   });
+}
+
+/* ── PRODUCT CSS ── */
+const prodCSS = `
+.prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-top: 4px; }
+.prod-card { background: var(--bg1); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.prod-header { padding: 16px 18px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.prod-name { font-family: 'Epilogue', sans-serif; font-size: 17px; font-weight: 900; letter-spacing: -.03em; color: var(--text); }
+.prod-range { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); margin-top: 3px; }
+.prod-body { padding: 14px 18px 16px; }
+.prod-section { margin-bottom: 14px; }
+.prod-section:last-child { margin-bottom: 0; }
+.prod-sec-title { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.prod-stat-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.prod-stat { background: var(--bg3); border-radius: 6px; padding: 7px 12px; }
+.prod-stat-v { font-family: 'Epilogue', sans-serif; font-size: 18px; font-weight: 900; letter-spacing: -.03em; }
+.prod-stat-l { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); margin-top: 1px; }
+.prod-reasons { display: flex; flex-direction: column; gap: 4px; }
+.prod-reason { display: flex; align-items: flex-start; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text2); line-height: 1.4; }
+.prod-reason-n { font-weight: 700; min-width: 20px; text-align: right; flex-shrink: 0; }
+.prod-type-pills { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+.prod-type-pill { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px; }
+.pill-up   { background: var(--blue-d);  color: var(--blue); }
+.pill-dw   { background: var(--amber-d); color: var(--amber); }
+.pill-main { background: var(--green-d); color: var(--green); }
+.prod-no-data { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); font-style: italic; }
+.prod-filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.prod-filter-btn { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; padding: 5px 14px; border: 1px solid var(--border2); border-radius: 4px; background: transparent; color: var(--text3); cursor: pointer; transition: all .18s; }
+.prod-filter-btn.active { background: var(--blue-d); border-color: var(--blue); color: var(--blue); }
+`;
+document.head.insertAdjacentHTML('beforeend', `<style>${prodCSS}</style>`);
+
+/* ── PRODUCT DATA ── */
+const PBKTS = ['0-3d','4-7d','8-15d','16-30d','45d+'];
+const PBKT_COLOR = {'0-3d':'#3dd68c','4-7d':'#5aabff','8-15d':'#a78bfa','16-30d':'#f5a623','45d+':'#ff6060'};
+const PBKT_LABEL = {'0-3d':'0–3 dias','4-7d':'4–7 dias','8-15d':'8–15 dias','16-30d':'16–30 dias','45d+':'45+ dias'};
+const PROD_COLORS = ['#5aabff','#3dd68c','#f5a623','#a78bfa','#ff6060','#f472b6','#34d399','#fb923c','#60a5fa','#c084fc','#4ade80','#facc15'];
+
+const prodData = [
+  {
+    id:'lipovive', name:'LipoVive', color:'#5aabff',
+    refRange:'Dez 1, 2025 → Mai 11, 2026', cbRange:'Dez 1, 2025 → Mai 3, 2026',
+    refunds:{ total:3655, value:534734.65, byType:{upsell:825,downsell:152,main:2678},
+      buckets:{'0-3d':349,'4-7d':88,'8-15d':182,'16-30d':392,'45d+':2644},
+      reasons:[{n:902,r:'Did not work'},{n:391,r:'Chargeback alert'},{n:331,r:'No longer interested in the product'},
+               {n:262,r:'Did not agree to the upsells'},{n:262,r:'Doctor advised against using it'},
+               {n:168,r:'Threatened with a chargeback'},{n:137,r:'Experienced side effects after taking it'},
+               {n:98,r:'Partial Refund – Saved Sale'},{n:97,r:'Chargeback Alert-RDR'},{n:84,r:'Did not receive product'}]},
+    chargebacks:{ total:107, value:26838.11, byType:{upsell:26,downsell:2,main:79},
+      buckets:{'0-3d':0,'4-7d':0,'8-15d':9,'16-30d':9,'45d+':89},
+      reasons:[{n:14,r:'Fraudulent Transaction (7030)'},{n:8,r:'Cardholder Dispute – Not As Described/Defective'},
+               {n:5,r:'Refund Not Processed (RN2)'},{n:5,r:'Refund Not Processed (8002)'},
+               {n:5,r:'Fraudulent Transaction (UA01)'},{n:5,r:'Fraudulent Transaction (F29)'},
+               {n:4,r:'Fraudulent Transaction (NA)'},{n:4,r:'Unauthorized Transaction (4837)'}]}
+  },
+  {
+    id:'prostafense', name:'Prostafense', color:'#3dd68c',
+    refRange:'Dez 1, 2025 → Mai 10, 2026', cbRange:'Dez 1, 2025 → Mai 8, 2026',
+    refunds:{ total:1432, value:226319.64, byType:{upsell:423,downsell:34,main:975},
+      buckets:{'0-3d':433,'4-7d':103,'8-15d':149,'16-30d':281,'45d+':466},
+      reasons:[{n:220,r:'Did not agree to the upsells'},{n:212,r:'Chargeback alert'},
+               {n:172,r:'Did not work'},{n:146,r:'Doctor advised against using it'},
+               {n:99,r:'No longer interested in the product'},{n:74,r:'Threatened with a chargeback'},
+               {n:59,r:'Chargeback Alert-RDR'},{n:54,r:'Partial Refund – Saved Sale'},
+               {n:42,r:'Experienced side effects after taking it'},{n:39,r:'Did not receive product'}]},
+    chargebacks:{ total:43, value:11642.14, byType:{upsell:15,downsell:0,main:28},
+      buckets:{'0-3d':2,'4-7d':1,'8-15d':11,'16-30d':14,'45d+':15},
+      reasons:[{n:5,r:'Fraudulent Transaction (NA)'},{n:4,r:'Fraudulent Transaction (6005)'},
+               {n:3,r:'Fraudulent Transaction (F29)'},{n:3,r:'fraudulent'},
+               {n:3,r:'Unauthorized Transaction (4837)'},{n:2,r:'Fraudulent Transaction (UA01)'},
+               {n:2,r:'Consumer Disputes (13.1)'},{n:2,r:'Unauthorized Transaction (4868)'}]}
+  },
+  {
+    id:'marobrain', name:'Marobrain', color:'#f5a623',
+    refRange:'Dez 1, 2025 → Mai 11, 2026', cbRange:'Dez 3, 2025 → Mai 11, 2026',
+    refunds:{ total:1115, value:175829.60, byType:{upsell:249,downsell:31,main:835},
+      buckets:{'0-3d':334,'4-7d':88,'8-15d':171,'16-30d':221,'45d+':301},
+      reasons:[{n:244,r:'Chargeback alert'},{n:123,r:'Doctor advised against using it'},
+               {n:105,r:'Did not agree to the upsells'},{n:92,r:'No longer interested in the product'},
+               {n:66,r:'Threatened with a chargeback'},{n:55,r:'Did not work'},
+               {n:48,r:'Chargeback Alert-RDR'},{n:42,r:'Partial Refund – Saved Sale'},
+               {n:38,r:'Experienced side effects after taking it'},{n:37,r:'Did not receive product'}]},
+    chargebacks:{ total:60, value:15405.82, byType:{upsell:16,downsell:1,main:43},
+      buckets:{'0-3d':0,'4-7d':3,'8-15d':18,'16-30d':17,'45d+':22},
+      reasons:[{n:7,r:'Fraudulent Transaction (F29)'},{n:6,r:'Fraudulent Transaction (NA)'},
+               {n:4,r:'Cancelled Recurring (C04)'},{n:3,r:'Fraudulent Transaction (UA01)'},
+               {n:3,r:'Fraudulent Transaction (7030)'},{n:3,r:'fraudulent'},
+               {n:2,r:'Unauthorized Transaction (4837)'},{n:2,r:'credit_not_processed'}]}
+  },
+  {
+    id:'vigorlong', name:'Vigorlong', color:'#a78bfa',
+    refRange:'Dez 1, 2025 → Mai 11, 2026', cbRange:'Dez 1, 2025 → Mai 9, 2026',
+    refunds:{ total:1351, value:207734.33, byType:{upsell:299,downsell:4,main:1048},
+      buckets:{'0-3d':250,'4-7d':78,'8-15d':124,'16-30d':246,'45d+':653},
+      reasons:[{n:253,r:'Chargeback alert'},{n:252,r:'Did not work'},
+               {n:99,r:'Did not agree to the upsells'},{n:98,r:'Partial Refund – Saved Sale'},
+               {n:85,r:'Threatened with a chargeback'},{n:73,r:'No longer interested in the product'},
+               {n:72,r:'Doctor advised against using it'},{n:65,r:'Chargeback Alert-RDR'},
+               {n:54,r:'Did not receive product'},{n:52,r:'Experienced side effects after taking it'}]},
+    chargebacks:{ total:62, value:15390.76, byType:{upsell:12,downsell:0,main:50},
+      buckets:{'0-3d':0,'4-7d':2,'8-15d':7,'16-30d':19,'45d+':34},
+      reasons:[{n:9,r:'Fraudulent Transaction (7030)'},{n:8,r:'Fraudulent Transaction (UA01)'},
+               {n:6,r:'Fraudulent Transaction (F29)'},{n:6,r:'fraudulent'},
+               {n:3,r:'Refund Not Processed (C01)'},{n:3,r:'Unauthorized Transaction (4837)'},
+               {n:2,r:'Merchandise Not Received'},{n:2,r:'Consumer Disputes (13.1)'}]}
+  },
+  {
+    id:'visiumPro', name:'Visium Pro', color:'#ff6060',
+    refRange:'Dez 2, 2025 → Mai 11, 2026', cbRange:'Dez 7, 2025 → Mai 11, 2026',
+    refunds:{ total:985, value:140742.73, byType:{upsell:175,downsell:13,main:797},
+      buckets:{'0-3d':357,'4-7d':47,'8-15d':117,'16-30d':181,'45d+':283},
+      reasons:[{n:171,r:'Did not agree to the upsells'},{n:145,r:'Chargeback alert'},
+               {n:86,r:'No longer interested in the product'},{n:78,r:'Doctor advised against using it'},
+               {n:72,r:'Did not work'},{n:64,r:'Threatened with a chargeback'},
+               {n:52,r:'Chargeback Alert-RDR'},{n:40,r:'Experienced side effects after taking it'},
+               {n:39,r:'Partial Refund – Saved Sale'},{n:35,r:'Did not receive product'}]},
+    chargebacks:{ total:21, value:5455.19, byType:{upsell:3,downsell:0,main:18},
+      buckets:{'0-3d':0,'4-7d':1,'8-15d':8,'16-30d':7,'45d+':5},
+      reasons:[{n:3,r:'Fraudulent Transaction (F29)'},{n:3,r:'fraudulent'},
+               {n:3,r:'Fraudulent Transaction (UA01)'},{n:2,r:'Fraudulent Transaction (UA02)'},
+               {n:2,r:'credit_not_processed'},{n:1,r:'Merchandise Not Received'},
+               {n:1,r:'Consumer Disputes'},{n:1,r:'Unauthorized Transaction (4868)'}]}
+  },
+  {
+    id:'nervolyn', name:'Nervolyn', color:'#f472b6',
+    refRange:'Dez 1, 2025 → Mai 11, 2026', cbRange:'Dez 9, 2025 → Mai 11, 2026',
+    refunds:{ total:846, value:119364.17, byType:{upsell:294,downsell:34,main:518},
+      buckets:{'0-3d':336,'4-7d':57,'8-15d':144,'16-30d':164,'45d+':145},
+      reasons:[{n:136,r:'Did not agree to the upsells'},{n:128,r:'Chargeback alert'},
+               {n:92,r:'Doctor advised against using it'},{n:68,r:'No longer interested in the product'},
+               {n:61,r:'Threatened with a chargeback'},{n:56,r:'Did not work'},
+               {n:43,r:'Chargeback Alert-RDR'},{n:38,r:'Experienced side effects after taking it'},
+               {n:30,r:'Partial Refund – Saved Sale'},{n:27,r:'Did not receive product'}]},
+    chargebacks:{ total:49, value:12114.66, byType:{upsell:11,downsell:1,main:37},
+      buckets:{'0-3d':1,'4-7d':5,'8-15d':21,'16-30d':15,'45d+':7},
+      reasons:[{n:6,r:'Fraudulent Transaction (UA01)'},{n:5,r:'fraudulent'},
+               {n:4,r:'Fraudulent Transaction (7030)'},{n:4,r:'Fraudulent Transaction (F29)'},
+               {n:4,r:'Merchandise Not Received (4755)'},{n:3,r:'Consumer Disputes (13.1)'},
+               {n:3,r:'Unauthorized Transaction (4837)'},{n:2,r:'credit_not_processed'}]}
+  },
+  {
+    id:'reduburn', name:'Reduburn', color:'#34d399',
+    refRange:'Dez 1, 2025 → Mai 11, 2026', cbRange:'Dez 1, 2025 → Mai 10, 2026',
+    refunds:{ total:886, value:143226.94, byType:{upsell:52,downsell:103,main:731},
+      buckets:{'0-3d':181,'4-7d':58,'8-15d':100,'16-30d':215,'45d+':332},
+      reasons:[{n:143,r:'Chargeback alert'},{n:107,r:'Did not work'},
+               {n:81,r:'Doctor advised against using it'},{n:80,r:'No longer interested in the product'},
+               {n:63,r:'Experienced side effects after taking it'},{n:57,r:'Threatened with a chargeback'},
+               {n:55,r:'Chargeback Alert-RDR'},{n:52,r:'Partial Refund – Saved Sale'},
+               {n:47,r:'Did not agree to the upsells'},{n:44,r:'Did not receive product'}]},
+    chargebacks:{ total:26, value:7460.68, byType:{upsell:0,downsell:3,main:23},
+      buckets:{'0-3d':0,'4-7d':1,'8-15d':4,'16-30d':10,'45d+':11},
+      reasons:[{n:3,r:'Fraudulent Transaction (UA01)'},{n:3,r:'fraudulent'},
+               {n:3,r:'Fraudulent Transaction (F29)'},{n:3,r:'Unauthorized Transaction (4837)'},
+               {n:2,r:'Merchandise Not Received (C08)'},{n:2,r:'Consumer Disputes'},
+               {n:2,r:'credit_not_processed'},{n:1,r:'Cancelled Recurring (C04)'}]}
+  },
+  {
+    id:'glucorecover', name:'Gluco Recover', color:'#fb923c',
+    refRange:'Dez 3, 2025 → Mai 11, 2026', cbRange:'Jan 27 → Mai 8, 2026',
+    refunds:{ total:905, value:144456.27, byType:{upsell:308,downsell:22,main:575},
+      buckets:{'0-3d':347,'4-7d':98,'8-15d':163,'16-30d':175,'45d+':122},
+      reasons:[{n:170,r:'Chargeback alert'},{n:138,r:'Did not agree to the upsells'},
+               {n:86,r:'No longer interested in the product'},{n:86,r:'Threatened with a chargeback'},
+               {n:81,r:'Doctor advised against using it'},{n:38,r:'Chargeback Alert-RDR'},
+               {n:38,r:'Partial Refund – Saved Sale'},{n:30,r:'Misinformed by marketing or influencer claims'},
+               {n:29,r:'Did not work'},{n:27,r:'Did not receive product'}]},
+    chargebacks:{ total:26, value:7307.58, byType:{upsell:5,downsell:0,main:21},
+      buckets:{'0-3d':2,'4-7d':3,'8-15d':5,'16-30d':12,'45d+':4},
+      reasons:[{n:5,r:'fraudulent'},{n:3,r:'Fraudulent Transaction (UA01)'},
+               {n:2,r:'product_not_received'},{n:2,r:'Fraudulent Transaction (NA)'},
+               {n:2,r:'Consumer Disputes (13.1)'},{n:2,r:'Unauthorized Transaction (4868)'},
+               {n:1,r:'Refund Not Processed (RN2)'},{n:1,r:'CREDIT_NOT_PROCESSED'}]}
+  },
+  {
+    id:'audileaf', name:'AudiLeaf', color:'#60a5fa',
+    refRange:'Mar 5 → Mai 10, 2026', cbRange:'Mar 31 → Mai 10, 2026',
+    refunds:{ total:536, value:83358.36, byType:{upsell:252,downsell:14,main:270},
+      buckets:{'0-3d':353,'4-7d':47,'8-15d':68,'16-30d':42,'45d+':26},
+      reasons:[{n:127,r:'Did not agree to the upsells'},{n:111,r:'Chargeback alert'},
+               {n:69,r:'Threatened with a chargeback'},{n:43,r:'No longer interested in the product'},
+               {n:27,r:'Doctor advised against using it'},{n:25,r:'Too expensive'},
+               {n:22,r:'Partial Refund – Saved Sale'},{n:20,r:'Duplicate order placed by mistake'},
+               {n:18,r:'Did not work'},{n:15,r:'Experienced side effects after taking it'}]},
+    chargebacks:{ total:8, value:2170.75, byType:{upsell:2,downsell:0,main:6},
+      buckets:{'0-3d':0,'4-7d':0,'8-15d':4,'16-30d':4,'45d+':0},
+      reasons:[{n:3,r:'credit_not_processed'},{n:1,r:'Cancelled Recurring (C04)'},
+               {n:1,r:'Fraudulent Transaction (F29)'},{n:1,r:'Other (12.6.2)'},
+               {n:1,r:'Unauthorized Transaction (4868)'},{n:1,r:'fraudulent'}]}
+  },
+  {
+    id:'boosterxt', name:'Booster XT', color:'#c084fc',
+    refRange:'Mar 1 → Mai 9, 2026', cbRange:'Mar 16, 2026',
+    refunds:{ total:48, value:7049.32, byType:{upsell:13,downsell:0,main:35},
+      buckets:{'0-3d':19,'4-7d':2,'8-15d':5,'16-30d':8,'45d+':14},
+      reasons:[{n:15,r:'Chargeback alert'},{n:4,r:'Did not work'},
+               {n:4,r:'Worried about interactions with medications'},{n:4,r:'Did not receive product'},
+               {n:4,r:'Threatened with a chargeback'},{n:4,r:'Regret over spending (buyer\'s remorse)'},
+               {n:3,r:'Did not agree to the upsells'},{n:3,r:'Doctor advised against using it'},
+               {n:2,r:'Chargeback Alert-RDR'},{n:1,r:'Too expensive'}]},
+    chargebacks:{ total:2, value:285.55, byType:{upsell:1,downsell:0,main:1},
+      buckets:{'0-3d':0,'4-7d':2,'8-15d':0,'16-30d':0,'45d+':0},
+      reasons:[{n:2,r:'Fraudulent Transaction (UA01)'}]}
+  },
+  {
+    id:'lipobliss', name:'LipoBliss', color:'#4ade80',
+    refRange:'Mar 23 → Mai 7, 2026', cbRange:'—',
+    refunds:{ total:40, value:6149.37, byType:{upsell:19,downsell:0,main:21},
+      buckets:{'0-3d':23,'4-7d':8,'8-15d':5,'16-30d':0,'45d+':4},
+      reasons:[{n:10,r:'Threatened with a chargeback'},{n:4,r:"Realized they don't need it"},
+               {n:4,r:'Did not agree to the upsells'},{n:4,r:'No longer interested in the product'},
+               {n:4,r:'Experienced side effects after taking it'},{n:3,r:'Chargeback'},
+               {n:3,r:'Chargeback Alert-RDR'},{n:2,r:'Test order'},
+               {n:2,r:'Doctor advised against using it'},{n:1,r:'Did not work'}]},
+    chargebacks:{ total:0, value:0, byType:{upsell:0,downsell:0,main:0}, buckets:{}, reasons:[] }
+  },
+  {
+    id:'lipotrine', name:'LipoTrine', color:'#facc15',
+    refRange:'Abr 22 → Mai 7, 2026', cbRange:'—',
+    refunds:{ total:3, value:790.95, byType:{upsell:1,downsell:0,main:2},
+      buckets:{'0-3d':3,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},
+      reasons:[{n:1,r:'Too expensive'},{n:1,r:'Chargeback'},{n:1,r:'Chargeback alert'}]},
+    chargebacks:{ total:0, value:0, byType:{upsell:0,downsell:0,main:0}, buckets:{}, reasons:[] }
+  }
+];
+
+/* ── PRODUCT RENDER ── */
+function typeTag(byType) {
+  const tags = [];
+  if ((byType.upsell   || 0) > 0) tags.push(`<span class="prod-type-pill pill-up">↑ up: ${byType.upsell}</span>`);
+  if ((byType.downsell || 0) > 0) tags.push(`<span class="prod-type-pill pill-dw">↓ dw: ${byType.downsell}</span>`);
+  if ((byType.main     || 0) > 0) tags.push(`<span class="prod-type-pill pill-main">front: ${byType.main}</span>`);
+  return tags.length ? `<div class="prod-type-pills">${tags.join('')}</div>` : '';
+}
+
+function bucketBar(buckets, total, color) {
+  if (!buckets || total === 0) return '';
+  const bars = PBKTS.map(b => {
+    const v = buckets[b] || 0; if (!v) return '';
+    const w = (v/total*100).toFixed(1);
+    return `<div title="${PBKT_LABEL[b]}: ${v} (${(v/total*100).toFixed(0)}%)" style="width:${w}%;background:${PBKT_COLOR[b]};height:100%;min-width:2px;"></div>`;
+  }).join('');
+  const legend = PBKTS.filter(b => (buckets[b]||0) > 0).map(b =>
+    `<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);white-space:nowrap;">
+      <span style="display:inline-block;width:6px;height:6px;background:${PBKT_COLOR[b]};border-radius:1px;margin-right:2px;vertical-align:middle;"></span>${PBKT_LABEL[b]}: <strong style="color:var(--text2);">${buckets[b]}</strong> (${(buckets[b]/total*100).toFixed(0)}%)
+    </span>`).join('');
+  return `<div style="margin-top:8px;">
+    <div style="display:flex;height:12px;border-radius:3px;overflow:hidden;background:var(--bg3);">${bars}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">${legend}</div>
+  </div>`;
+}
+
+function prodSectionHTML(title, data, color) {
+  const hasData = data.total > 0;
+  if (!hasData) return `<div class="prod-section">
+    <div class="prod-sec-title"><span style="width:6px;height:6px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0;"></span>${title}</div>
+    <div class="prod-no-data">Sem registros no período</div>
+  </div>`;
+  const reasons = (data.reasons||[]).slice(0,8);
+  return `<div class="prod-section">
+    <div class="prod-sec-title"><span style="width:6px;height:6px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0;"></span>${title}</div>
+    <div class="prod-stat-row">
+      <div class="prod-stat"><div class="prod-stat-v" style="color:${color};">${data.total}</div><div class="prod-stat-l">ocorrências</div></div>
+      <div class="prod-stat"><div class="prod-stat-v" style="color:${color};">$${data.value.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="prod-stat-l">valor total</div></div>
+    </div>
+    ${typeTag(data.byType)}
+    ${bucketBar(data.buckets, data.total, color)}
+    <div class="prod-reasons" style="margin-top:8px;">
+      ${reasons.map(({n,r})=>`<div class="prod-reason"><span class="prod-reason-n" style="color:${color};">${n}×</span><span>${r}</span></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function buildProdCard(p, filter) {
+  const hasRef = p.refunds.total > 0;
+  const hasCB  = p.chargebacks.total > 0;
+  if (filter === 'refund'     && !hasRef) return '';
+  if (filter === 'chargeback' && !hasCB)  return '';
+  return `<div class="prod-card">
+    <div class="prod-header">
+      <div>
+        <div class="prod-name" style="border-left:3px solid ${p.color};padding-left:10px;">${p.name}</div>
+        <div class="prod-range">📅 Ref: ${p.refRange}</div>
+        ${p.cbRange && p.cbRange!=='—' ? `<div class="prod-range">📅 CB: ${p.cbRange}</div>` : ''}
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        ${hasRef ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">${p.refunds.total} refunds</div>` : ''}
+        ${hasCB  ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--amber);font-weight:700;">${p.chargebacks.total} CBs</div>` : ''}
+      </div>
+    </div>
+    <div class="prod-body">
+      ${prodSectionHTML('Reembolsos',  p.refunds,     'var(--red)')}
+      <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+      ${prodSectionHTML('Chargebacks', p.chargebacks, 'var(--amber)')}
+    </div>
+  </div>`;
+}
+
+function buildProdContent(filter, month) {
+  currentProdFilter = filter || 'all';
+  const totalRef    = prodData.reduce((s,p)=>s+p.refunds.total,0);
+  const totalCB     = prodData.reduce((s,p)=>s+p.chargebacks.total,0);
+  const totalRefVal = prodData.reduce((s,p)=>s+p.refunds.value,0);
+  const totalCBVal  = prodData.reduce((s,p)=>s+p.chargebacks.value,0);
+  const cards = prodData.map(p=>buildProdCard(p,filter)).filter(Boolean).join('');
+
+  const refReasons = {}, cbReasons = {};
+  prodData.forEach(p => {
+    (p.refunds.reasons||[]).forEach(({n,r})=>{ refReasons[r]=(refReasons[r]||0)+n; });
+    (p.chargebacks.reasons||[]).forEach(({n,r})=>{ cbReasons[r]=(cbReasons[r]||0)+n; });
+  });
+  const topRef = Object.entries(refReasons).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const topCB  = Object.entries(cbReasons).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+  // Aggregate buckets across all products
+  const allRefBkts={}, allCBBkts={};
+  PBKTS.forEach(b=>{ allRefBkts[b]=prodData.reduce((s,p)=>s+(p.refunds.buckets && p.refunds.buckets[b]||0),0); });
+  PBKTS.forEach(b=>{ allCBBkts[b]=prodData.reduce((s,p)=>s+(p.chargebacks.buckets && p.chargebacks.buckets[b]||0),0); });
+
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+    <div class="panel-header" style="margin-bottom:0;">Análise por Produto <span class="tag tag-blue">Últimos 6 Meses</span></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:20px;">
+    <div class="metric"><div class="metric-label">Total refunds</div><div class="metric-val warn">${totalRef.toLocaleString('pt-BR')}</div><div class="metric-sub">$${(totalRefVal/1000).toFixed(1)}K</div></div>
+    <div class="metric"><div class="metric-label">Total chargebacks</div><div class="metric-val amber">${totalCB.toLocaleString('pt-BR')}</div><div class="metric-sub">$${(totalCBVal/1000).toFixed(1)}K</div></div>
+    <div class="metric"><div class="metric-label">Produto + refunds</div><div class="metric-val info">${prodData.reduce((a,b)=>b.refunds.total>a.refunds.total?b:a).name}</div><div class="metric-sub">${prodData.reduce((a,b)=>b.refunds.total>a.refunds.total?b:a).refunds.total} registros</div></div>
+    <div class="metric"><div class="metric-label">Produto + CBs</div><div class="metric-val amber">${prodData.reduce((a,b)=>b.chargebacks.total>a.chargebacks.total?b:a).name}</div><div class="metric-sub">${prodData.reduce((a,b)=>b.chargebacks.total>a.chargebacks.total?b:a).chargebacks.total} registros</div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:10px;padding:14px 18px;">
+      <div class="sec-title" style="margin-top:0;border-left-color:var(--red);">Top motivações de reembolso (todos os produtos)</div>
+      <div class="prod-reasons">${topRef.map(([r,n])=>`<div class="prod-reason"><span class="prod-reason-n" style="color:var(--red);">${n}×</span><span>${r}</span></div>`).join('')}</div>
+      <div style="margin-top:12px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Intervalo de reembolso (todos)</div>${bucketBar(allRefBkts,totalRef,'var(--red)')}</div>
+    </div>
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:10px;padding:14px 18px;">
+      <div class="sec-title" style="margin-top:0;border-left-color:var(--amber);">Top motivações de chargeback (todos os produtos)</div>
+      <div class="prod-reasons">${topCB.map(([r,n])=>`<div class="prod-reason"><span class="prod-reason-n" style="color:var(--amber);">${n}×</span><span>${r}</span></div>`).join('')}</div>
+      <div style="margin-top:12px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Intervalo de chargeback (todos)</div>${bucketBar(allCBBkts,totalCB,'var(--amber)')}</div>
+    </div>
+  </div>
+
+  <div class="prod-filter-bar">
+    <button class="prod-filter-btn ${filter==='all'?'active':''}" onclick="rebuildProd('all')">Todos (${prodData.length})</button>
+    <button class="prod-filter-btn ${filter==='refund'?'active':''}" onclick="rebuildProd('refund')">Com reembolsos (${prodData.filter(p=>p.refunds.total>0).length})</button>
+    <button class="prod-filter-btn ${filter==='chargeback'?'active':''}" onclick="rebuildProd('chargeback')">Com chargebacks (${prodData.filter(p=>p.chargebacks.total>0).length})</button>
+  </div>
+  <div class="prod-grid">${cards}</div>`;
+}
+
+function rebuildProd(filter) {
+  $('prod-content').innerHTML = buildProdContent(filter, currentProdMonth || 'all');
+}
+
+/* ── PRODUCT MONTHLY DATA ── */
+const prodMonthly = {
+  'LipoVive': {
+    ref:{'2025-12':{total:1691,value:252614.89,up:406,dw:75,main:1210,buckets:{'0-3d':121,'4-7d':16,'8-15d':37,'16-30d':73,'45d+':1444},reasons:[[520,'Did not work'],[149,'Chargeback alert'],[140,'No longer interested in the product'],[120,'Experienced side effects after taking it'],[115,'Did not see expected results / Did not work as advertised']]},'2026-01':{total:836,value:123083.23,up:216,dw:33,main:587,buckets:{'0-3d':115,'4-7d':40,'8-15d':77,'16-30d':109,'45d+':495},reasons:[[192,'Did not work'],[112,'Chargeback alert'],[78,'Did not agree to the upsells'],[67,'No longer interested in the product'],[54,'Doctor advised against using it']]},'2026-02':{total:464,value:66797.64,up:95,dw:23,main:346,buckets:{'0-3d':63,'4-7d':15,'8-15d':22,'16-30d':85,'45d+':279},reasons:[[92,'Did not work'],[63,'Chargeback alert'],[49,'No longer interested in the product'],[35,'Did not agree to the upsells'],[29,'Doctor advised against using it']]},'2026-03':{total:472,value:66197.93,up:80,dw:17,main:375,buckets:{'0-3d':47,'4-7d':12,'8-15d':43,'16-30d':106,'45d+':264},reasons:[[72,'Did not work'],[58,'No longer interested in the product'],[47,'Chargeback alert'],[38,'Doctor advised against using it'],[36,'Experienced side effects after taking it']]},'2026-04':{total:170,value:23010.75,up:26,dw:4,main:140,buckets:{'0-3d':2,'4-7d':5,'8-15d':2,'16-30d':19,'45d+':142},reasons:[[35,'Doctor advised against using it'],[24,'Did not work'],[17,'No longer interested in the product'],[17,'Experienced side effects after taking it'],[15,'Did not see expected results / Did not work as advertised']]},'2026-05':{total:22,value:3030.21,up:2,dw:0,main:20,buckets:{'0-3d':1,'4-7d':0,'8-15d':1,'16-30d':0,'45d+':20},reasons:[[7,'Chargeback alert'],[2,'Did not work'],[1,'Doctor advised against using it']]}},
+    cb:{'2025-12':{total:53,value:13698.03,up:14,dw:1,main:38,buckets:{'0-3d':0,'4-7d':0,'8-15d':3,'16-30d':1,'45d+':49},reasons:[[5,'Fraudulent Transaction (7030)'],[5,'Refund Not Processed (8002)'],[4,'Cardholder Dispute'],[4,'Refund Not Processed (RN2)'],[3,'Cancelled Recurring (C04)']]},'2026-01':{total:23,value:6004.66,up:5,dw:1,main:17,buckets:{'0-3d':0,'4-7d':0,'8-15d':4,'16-30d':2,'45d+':17},reasons:[[5,'Fraudulent Transaction (7030)'],[3,'Cardholder Dispute'],[3,'Fraudulent Transaction (UA01)'],[2,'CREDIT_NOT_PROCESSED'],[1,'Unauthorized Transaction (A02)']]},'2026-02':{total:17,value:4147.55,up:6,dw:0,main:11,buckets:{'0-3d':0,'4-7d':0,'8-15d':2,'16-30d':5,'45d+':10},reasons:[[2,'Fraudulent Transaction (NA)'],[2,'Fraudulent Transaction (7030)'],[1,'credit_not_processed'],[1,'Fraudulent Transaction (10.4)']]},'2026-03':{total:8,value:1901.12,up:1,dw:0,main:7,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':1,'45d+':7},reasons:[[2,'Fraudulent Transaction (7030)'],[1,'Consumer Disputes (13.6)'],[1,'Cancelled Recurring (C05)']]},'2026-04':{total:4,value:550.60,up:0,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':4},reasons:[[3,'credit_not_processed'],[1,'Consumer Disputes (13.7)']]},'2026-05':{total:2,value:536.15,up:0,dw:0,main:2,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':2},reasons:[[1,'Cardholder Dispute'],[1,'fraudulent']]}}
+  },
+  'Prostafense': {
+    ref:{'2025-12':{total:216,value:34435.83,up:75,dw:2,main:139,buckets:{'0-3d':74,'4-7d':13,'8-15d':19,'16-30d':38,'45d+':72},reasons:[[41,'Did not agree to the upsells'],[35,'Chargeback alert'],[25,'Did not work'],[21,'No longer interested in the product'],[16,'Doctor advised against using it']]},'2026-01':{total:218,value:34913.33,up:72,dw:5,main:141,buckets:{'0-3d':58,'4-7d':21,'8-15d':12,'16-30d':51,'45d+':76},reasons:[[38,'Did not agree to the upsells'],[28,'Chargeback alert'],[27,'No longer interested in the product'],[25,'Did not work'],[21,'Doctor advised against using it']]},'2026-02':{total:241,value:39665.04,up:51,dw:8,main:182,buckets:{'0-3d':58,'4-7d':17,'8-15d':24,'16-30d':54,'45d+':88},reasons:[[45,'Chargeback alert'],[41,'Did not work'],[28,'Doctor advised against using it'],[20,'Partial Refund – Saved Sale'],[19,'Did not agree to the upsells']]},'2026-03':{total:251,value:40286.10,up:36,dw:9,main:206,buckets:{'0-3d':58,'4-7d':14,'8-15d':40,'16-30d':49,'45d+':90},reasons:[[46,'Did not work'],[45,'Doctor advised against using it'],[29,'Chargeback alert'],[17,'Partial Refund – Saved Sale'],[16,'Did not agree to the upsells']]},'2026-04':{total:455,value:67629.93,up:170,dw:10,main:275,buckets:{'0-3d':172,'4-7d':27,'8-15d':53,'16-30d':77,'45d+':126},reasons:[[105,'Did not agree to the upsells'],[55,'Chargeback alert'],[40,'Threatened with a chargeback'],[36,'Doctor advised against using it'],[34,'Did not work']]},'2026-05':{total:51,value:9389.41,up:19,dw:0,main:32,buckets:{'0-3d':13,'4-7d':11,'8-15d':1,'16-30d':12,'45d+':14},reasons:[[20,'Chargeback alert'],[12,'Threatened with a chargeback'],[4,'Regret over spending'],[4,'Experienced side effects']]}},
+    cb:{'2025-12':{total:14,value:3827.39,up:5,dw:0,main:9,buckets:{'0-3d':0,'4-7d':0,'8-15d':4,'16-30d':3,'45d+':7},reasons:[[4,'Fraudulent Transaction (NA)'],[4,'Fraudulent Transaction (6005)'],[2,'Fraudulent Transaction (193)']]},'2026-01':{total:3,value:889.83,up:0,dw:0,main:3,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':0,'45d+':2},reasons:[[1,'fraudulent'],[1,'Fraudulent Transaction (NA)']]},'2026-02':{total:3,value:778.22,up:1,dw:0,main:2,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':1},reasons:[[1,'Consumer Disputes (13.3)'],[1,'Fraudulent Transaction (4)']]},'2026-03':{total:8,value:2134.32,up:1,dw:0,main:7,buckets:{'0-3d':1,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':5},reasons:[[2,'Refund Not Processed (8002)'],[1,'fraudulent'],[1,'Duplicate Processing (P08)']]},'2026-04':{total:9,value:2435.53,up:4,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':5,'16-30d':4,'45d+':0},reasons:[[2,'Fraudulent Transaction (7030)'],[2,'Unauthorized Transaction (4837)'],[2,'Fraudulent Transaction (F29)']]},'2026-05':{total:6,value:1576.85,up:4,dw:0,main:2,buckets:{'0-3d':1,'4-7d':0,'8-15d':1,'16-30d':4,'45d+':0},reasons:[[2,'Consumer Disputes (13.1)'],[2,'Cancelled Recurring (C05)'],[1,'Unauthorized Transaction (4837)']]}}
+  },
+  'Marobrain': {
+    ref:{'2025-12':{total:121,value:18135.13,up:25,dw:5,main:91,buckets:{'0-3d':45,'4-7d':7,'8-15d':24,'16-30d':22,'45d+':23},reasons:[[24,'Chargeback alert'],[15,'Did not agree to the upsells'],[14,'No longer interested in the product'],[10,'Did not receive product'],[8,'Misinformed by marketing']]},'2026-01':{total:141,value:23611.63,up:40,dw:2,main:99,buckets:{'0-3d':30,'4-7d':13,'8-15d':23,'16-30d':31,'45d+':44},reasons:[[42,'Chargeback alert'],[13,'No longer interested in the product'],[12,'Doctor advised against using it'],[10,'Threatened with a chargeback'],[9,'Partial Refund – Saved Sale']]},'2026-02':{total:184,value:28709.69,up:43,dw:8,main:133,buckets:{'0-3d':50,'4-7d':12,'8-15d':17,'16-30d':21,'45d+':84},reasons:[[31,'Chargeback alert'],[29,'Doctor advised against using it'],[24,'Did not agree to the upsells'],[15,'No longer interested in the product'],[11,'Did not work']]},'2026-03':{total:336,value:50809.16,up:79,dw:10,main:247,buckets:{'0-3d':106,'4-7d':31,'8-15d':51,'16-30d':73,'45d+':75},reasons:[[76,'Chargeback alert'],[44,'Doctor advised against using it'],[38,'Did not agree to the upsells'],[24,'No longer interested in the product'],[21,'Did not work']]},'2026-04':{total:266,value:40945.37,up:45,dw:6,main:215,buckets:{'0-3d':81,'4-7d':20,'8-15d':44,'16-30d':69,'45d+':52},reasons:[[46,'Chargeback alert'],[32,'Doctor advised against using it'],[27,'Threatened with a chargeback'],[24,'No longer interested in the product'],[16,'Concerned about potential side effects']]},'2026-05':{total:67,value:13618.62,up:17,dw:0,main:50,buckets:{'0-3d':22,'4-7d':5,'8-15d':12,'16-30d':5,'45d+':23},reasons:[[25,'Chargeback alert'],[13,'Threatened with a chargeback'],[6,'Chargeback Alert-RDR'],[4,'Did not agree to the upsells']]}},
+    cb:{'2025-12':{total:7,value:1298.61,up:1,dw:0,main:6,buckets:{'0-3d':0,'4-7d':1,'8-15d':5,'16-30d':1,'45d+':0},reasons:[[2,'Fraudulent Transaction (7030)'],[1,'Fraudulent Transaction (NA)'],[1,'Refund Not Processed (C01)']]},'2026-01':{total:6,value:1887.11,up:1,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':2,'16-30d':1,'45d+':3},reasons:[[2,'credit_not_processed'],[1,'Merchandise Not Received (4755)'],[1,'Unauthorized Transaction (4837)']]},'2026-02':{total:7,value:1340.47,up:2,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':5},reasons:[[2,'Fraudulent Transaction (NA)'],[2,'Other Fraud'],[1,'Cancelled Recurring (C04)']]},'2026-03':{total:9,value:2291.02,up:4,dw:0,main:5,buckets:{'0-3d':0,'4-7d':1,'8-15d':3,'16-30d':5,'45d+':0},reasons:[[3,'Fraudulent Transaction (NA)'],[2,'Fraudulent Transaction (6005)'],[2,'Fraudulent Transaction (F29)']]},'2026-04':{total:17,value:4962.46,up:4,dw:0,main:13,buckets:{'0-3d':0,'4-7d':1,'8-15d':7,'16-30d':2,'45d+':7},reasons:[[2,'Fraudulent Transaction (F29)'],[2,'Cancelled Recurring (C04)'],[2,'fraudulent']]},'2026-05':{total:14,value:3626.15,up:4,dw:1,main:9,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':7,'45d+':7},reasons:[[3,'Fraudulent Transaction (10.4)'],[2,'product_unacceptable'],[2,'Fraudulent Transaction (F29)'],[2,'Refund Not Processed (4560)']]}}
+  },
+  'Vigorlong': {
+    ref:{'2025-12':{total:269,value:37946.82,up:78,dw:0,main:191,buckets:{'0-3d':60,'4-7d':16,'8-15d':11,'16-30d':61,'45d+':121},reasons:[[48,'Did not work'],[35,'Chargeback alert'],[31,'Did not agree to the upsells'],[27,'No longer interested in the product'],[22,'Partial Refund – Saved Sale']]},'2026-01':{total:203,value:31716.05,up:41,dw:0,main:162,buckets:{'0-3d':15,'4-7d':10,'8-15d':20,'16-30d':35,'45d+':123},reasons:[[60,'Chargeback alert'],[34,'Did not work'],[18,'Did not see expected results'],[10,'Doctor advised against using it'],[10,'Chargeback Alert-RDR']]},'2026-02':{total:227,value:37094.27,up:39,dw:0,main:188,buckets:{'0-3d':26,'4-7d':17,'8-15d':44,'16-30d':48,'45d+':92},reasons:[[60,'Chargeback alert'],[43,'Did not work'],[22,'Threatened with a chargeback'],[17,'Partial Refund – Saved Sale'],[13,'Doctor advised against using it']]},'2026-03':{total:281,value:42820.87,up:32,dw:0,main:249,buckets:{'0-3d':28,'4-7d':6,'8-15d':15,'16-30d':53,'45d+':179},reasons:[[77,'Did not work'],[47,'Chargeback alert'],[26,'No longer interested in the product'],[22,'Did not see expected results'],[17,'Experienced side effects']]},'2026-04':{total:317,value:48521.56,up:98,dw:4,main:215,buckets:{'0-3d':114,'4-7d':27,'8-15d':29,'16-30d':29,'45d+':118},reasons:[[44,'Did not work'],[44,'Did not agree to the upsells'],[38,'Chargeback alert'],[38,'Threatened with a chargeback'],[34,'Partial Refund – Saved Sale']]},'2026-05':{total:54,value:9634.76,up:11,dw:0,main:43,buckets:{'0-3d':7,'4-7d':2,'8-15d':5,'16-30d':20,'45d+':20},reasons:[[13,'Chargeback alert'],[7,'Did not agree to the upsells'],[6,'Did not work'],[6,'Doctor advised against using it']]}},
+    cb:{'2025-12':{total:5,value:1612.43,up:0,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':3},reasons:[[3,'Fraudulent Transaction (7030)'],[1,'Fraudulent Transaction (UA02)'],[1,'Refund Not Processed (C01)']]},'2026-01':{total:7,value:1408.69,up:3,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':3,'45d+':3},reasons:[[2,'Fraudulent Transaction (UA01)'],[1,'Unauthorized Transaction (A02)'],[1,'Refund Not Processed (8002)']]},'2026-02':{total:13,value:3236.41,up:5,dw:0,main:8,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':3,'45d+':9},reasons:[[2,'Fraudulent Transaction (UA01)'],[2,'product_not_received'],[2,'Cancelled Recurring'],[2,'Unauthorized Transaction (A02)']]},'2026-03':{total:15,value:3640.60,up:1,dw:0,main:14,buckets:{'0-3d':0,'4-7d':1,'8-15d':2,'16-30d':6,'45d+':6},reasons:[[4,'Fraudulent Transaction (7030)'],[3,'fraudulent'],[2,'Fraudulent Transaction (F29)']]},'2026-04':{total:16,value:3979.31,up:2,dw:0,main:14,buckets:{'0-3d':0,'4-7d':0,'8-15d':4,'16-30d':3,'45d+':9},reasons:[[3,'fraudulent'],[2,'Other Unspecified'],[2,'Fraudulent Transaction (UA01)'],[2,'Refund Not Processed (C01)']]},'2026-05':{total:6,value:1513.32,up:1,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':4},reasons:[[2,'Consumer Disputes (13.1)'],[1,'Fraudulent Transaction (F29)'],[1,'Fraudulent Transaction (UA01)']]}}
+  },
+  'Gluco Recover': {
+    ref:{'2025-12':{total:4,value:450.18,up:0,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':2},reasons:[[3,'No longer interested in the product'],[1,'Chargeback alert']]},'2026-01':{total:20,value:3419.51,up:9,dw:0,main:11,buckets:{'0-3d':14,'4-7d':2,'8-15d':3,'16-30d':1,'45d+':0},reasons:[[3,'Chargeback alert'],[2,'Regret over spending'],[2,'Duplicate charge'],[2,'Doctor advised against using it'],[2,'Test order']]},'2026-02':{total:88,value:13614.39,up:27,dw:2,main:59,buckets:{'0-3d':38,'4-7d':11,'8-15d':18,'16-30d':15,'45d+':6},reasons:[[21,'Chargeback alert'],[13,'Misinformed by marketing'],[12,'Did not agree to the upsells'],[10,'No longer interested in the product'],[6,'Partial Refund – Saved Sale']]},'2026-03':{total:272,value:39640.79,up:69,dw:11,main:192,buckets:{'0-3d':95,'4-7d':22,'8-15d':47,'16-30d':63,'45d+':45},reasons:[[43,'Chargeback alert'],[42,'Doctor advised against using it'],[40,'Did not agree to the upsells'],[21,'No longer interested in the product'],[19,'Did not work']]},'2026-04':{total:421,value:68697.51,up:166,dw:8,main:247,buckets:{'0-3d':161,'4-7d':54,'8-15d':75,'16-30d':76,'45d+':55},reasons:[[80,'Did not agree to the upsells'],[64,'Chargeback alert'],[48,'No longer interested in the product'],[48,'Threatened with a chargeback'],[29,'Doctor advised against using it']]},'2026-05':{total:100,value:18633.89,up:37,dw:1,main:62,buckets:{'0-3d':39,'4-7d':9,'8-15d':20,'16-30d':18,'45d+':14},reasons:[[38,'Chargeback alert'],[16,'Threatened with a chargeback'],[8,'Chargeback'],[8,'Experienced side effects'],[5,'Did not agree to the upsells']]}},
+    cb:{'2026-01':{total:1,value:307.42,up:0,dw:0,main:1,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[1,'product_not_received']]},'2026-02':{total:2,value:439.26,up:0,dw:0,main:2,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':1,'45d+':0},reasons:[[1,'Fraudulent Transaction (UA01)'],[1,'Fraudulent Transaction (NA)']]},'2026-03':{total:8,value:2035.75,up:2,dw:0,main:6,buckets:{'0-3d':2,'4-7d':1,'8-15d':1,'16-30d':2,'45d+':2},reasons:[[3,'fraudulent'],[1,'Fraudulent Transaction (6005)'],[1,'Refund Not Processed (RN2)']]},'2026-04':{total:9,value:2774.60,up:2,dw:0,main:7,buckets:{'0-3d':0,'4-7d':0,'8-15d':3,'16-30d':5,'45d+':1},reasons:[[1,'Other Unspecified'],[1,'Consumer Disputes (13.1)'],[1,'Fraudulent Transaction (UA01)'],[1,'duplicate'],[1,'fraudulent']]},'2026-05':{total:6,value:1750.55,up:1,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':4,'45d+':1},reasons:[[1,'Consumer Disputes (13.1)'],[1,'Cardholder Dispute'],[1,'fraudulent'],[1,'Fraudulent Transaction (F29)'],[1,'Fraudulent Transaction (UA01)']]}}
+  },
+  'Nervolyn': {
+    ref:{'2025-12':{total:50,value:6957.80,up:20,dw:1,main:29,buckets:{'0-3d':12,'4-7d':2,'8-15d':10,'16-30d':9,'45d+':17},reasons:[[11,'Did not agree to the upsells'],[10,'Doctor advised against using it'],[6,'Chargeback alert'],[4,'Refused Delivery'],[4,'Did not work']]},'2026-01':{total:16,value:1917.55,up:2,dw:0,main:14,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':1,'45d+':15},reasons:[[9,'Did not work'],[3,'Chargeback alert'],[2,'Partial Refund – Saved Sale'],[1,'Experienced side effects'],[1,'Chargeback Alert-RDR']]},'2026-02':{total:42,value:5534.66,up:13,dw:3,main:26,buckets:{'0-3d':18,'4-7d':0,'8-15d':5,'16-30d':3,'45d+':16},reasons:[[10,'Did not agree to the upsells'],[9,'Did not work'],[7,'Doctor advised against using it'],[5,'Did not receive product'],[2,'Chargeback alert']]},'2026-03':{total:161,value:23855.89,up:48,dw:7,main:106,buckets:{'0-3d':66,'4-7d':13,'8-15d':34,'16-30d':38,'45d+':10},reasons:[[32,'Chargeback alert'],[27,'Doctor advised against using it'],[17,'Did not agree to the upsells'],[12,'Partial Refund – Saved Sale'],[8,'Experienced side effects']]},'2026-04':{total:459,value:61334.31,up:170,dw:19,main:270,buckets:{'0-3d':196,'4-7d':32,'8-15d':81,'16-30d':86,'45d+':64},reasons:[[95,'Did not agree to the upsells'],[54,'Chargeback alert'],[53,'No longer interested in the product'],[40,'Doctor advised against using it'],[36,'Threatened with a chargeback']]},'2026-05':{total:118,value:19763.96,up:41,dw:4,main:73,buckets:{'0-3d':44,'4-7d':10,'8-15d':14,'16-30d':27,'45d+':23},reasons:[[31,'Chargeback alert'],[17,'Threatened with a chargeback'],[10,'Chargeback'],[8,'Doctor advised against using it'],[6,'No longer interested in the product']]}},
+    cb:{'2025-12':{total:4,value:823.96,up:0,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':2},reasons:[[2,'Fraudulent Transaction (7030)'],[1,'Fraudulent Transaction (6005)'],[1,'Fraudulent Transaction (UA01)']]},'2026-01':{total:1,value:116.68,up:0,dw:0,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':1},reasons:[[1,'Fraudulent Transaction (6005)']]},'2026-02':{total:2,value:561.27,up:0,dw:0,main:2,buckets:{'0-3d':0,'4-7d':0,'8-15d':2,'16-30d':0,'45d+':0},reasons:[[1,'fraudulent'],[1,'Unauthorized Transaction (6342)']]},'2026-03':{total:4,value:950.11,up:0,dw:0,main:4,buckets:{'0-3d':0,'4-7d':1,'8-15d':1,'16-30d':2,'45d+':0},reasons:[[1,'fraudulent'],[1,'Fraudulent Transaction (NA)'],[1,'Fraudulent Transaction (F29)'],[1,'Merchandise Not Received (4755)']]},'2026-04':{total:29,value:7339.81,up:7,dw:1,main:21,buckets:{'0-3d':1,'4-7d':3,'8-15d':15,'16-30d':7,'45d+':3},reasons:[[3,'fraudulent'],[3,'Fraudulent Transaction (UA01)'],[3,'Merchandise Not Received (4755)'],[3,'Unauthorized Transaction (4868)'],[2,'Fraudulent Transaction (F29)']]},'2026-05':{total:9,value:2322.83,up:4,dw:0,main:5,buckets:{'0-3d':0,'4-7d':1,'8-15d':2,'16-30d':5,'45d+':1},reasons:[[3,'Fraudulent Transaction (10.4)'],[2,'Fraudulent Transaction (UA01)'],[1,'Consumer Disputes (13.7)']]}}
+  },
+  'VisiumPro': {
+    ref:{'2025-12':{total:126,value:16321.01,up:58,dw:3,main:65,buckets:{'0-3d':49,'4-7d':0,'8-15d':7,'16-30d':18,'45d+':52},reasons:[[32,'Did not agree to the upsells'],[20,'Chargeback alert'],[12,'No longer interested in the product'],[10,'Did not work'],[8,'Ordered by mistake']]},'2026-01':{total:134,value:16617.88,up:56,dw:6,main:72,buckets:{'0-3d':44,'4-7d':5,'8-15d':6,'16-30d':27,'45d+':52},reasons:[[28,'Chargeback alert'],[19,'Did not agree to the upsells'],[15,'Did not work'],[11,'Experienced side effects'],[10,'Concerned about potential side effects']]},'2026-02':{total:115,value:14014.96,up:31,dw:2,main:82,buckets:{'0-3d':17,'4-7d':2,'8-15d':16,'16-30d':34,'45d+':46},reasons:[[21,'Doctor advised against using it'],[17,'Chargeback alert'],[16,'Experienced side effects'],[14,'Did not agree to the upsells'],[9,'Partial Refund – Saved Sale']]},'2026-03':{total:211,value:29984.03,up:20,dw:2,main:189,buckets:{'0-3d':81,'4-7d':13,'8-15d':41,'16-30d':27,'45d+':49},reasons:[[30,'No longer interested in the product'],[26,'Chargeback alert'],[23,'Did not work'],[21,'Did not agree to the upsells'],[19,'Doctor advised against using it']]},'2026-04':{total:321,value:49843.33,up:8,dw:0,main:313,buckets:{'0-3d':138,'4-7d':19,'8-15d':36,'16-30d':59,'45d+':69},reasons:[[77,'Did not agree to the upsells'],[35,'Chargeback alert'],[27,'No longer interested in the product'],[21,'Experienced side effects'],[21,'Doctor advised against using it']]},'2026-05':{total:78,value:13961.52,up:2,dw:0,main:76,buckets:{'0-3d':28,'4-7d':8,'8-15d':11,'16-30d':16,'45d+':15},reasons:[[19,'Chargeback alert'],[10,'Threatened with a chargeback'],[8,'Did not agree to the upsells'],[7,'Did not receive product'],[6,'No longer interested in the product']]}},
+    cb:{}
+  },
+  'Reduburn': {
+    ref:{'2025-12':{total:123,value:19376.78,up:20,dw:37,main:66,buckets:{'0-3d':27,'4-7d':13,'8-15d':15,'16-30d':26,'45d+':42},reasons:[[23,'Did not agree to the upsells'],[18,'Chargeback alert'],[18,'Did not work'],[13,'No longer interested in the product'],[9,'Doctor advised against using it']]},'2026-01':{total:120,value:19548.17,up:12,dw:28,main:80,buckets:{'0-3d':22,'4-7d':4,'8-15d':2,'16-30d':21,'45d+':71},reasons:[[34,'Did not work'],[19,'Chargeback alert'],[13,'Experienced side effects'],[9,'Doctor advised against using it'],[7,'Does not remember placing order']]},'2026-02':{total:147,value:24634.50,up:10,dw:13,main:124,buckets:{'0-3d':54,'4-7d':15,'8-15d':17,'16-30d':26,'45d+':35},reasons:[[24,'Chargeback alert'],[18,'Partial Refund – Saved Sale'],[14,'Did not work'],[13,'No longer interested in the product'],[12,'Doctor advised against using it']]},'2026-03':{total:265,value:41279.26,up:6,dw:16,main:243,buckets:{'0-3d':46,'4-7d':20,'8-15d':43,'16-30d':75,'45d+':81},reasons:[[37,'Chargeback alert'],[32,'No longer interested in the product'],[28,'Doctor advised against using it'],[23,'Did not work'],[17,'Partial Refund – Saved Sale']]},'2026-04':{total:201,value:31684.86,up:4,dw:7,main:190,buckets:{'0-3d':28,'4-7d':6,'8-15d':21,'16-30d':56,'45d+':90},reasons:[[30,'Chargeback alert'],[24,'Experienced side effects'],[19,'Doctor advised against using it'],[16,'No longer interested in the product'],[14,'Did not work']]},'2026-05':{total:30,value:6703.37,up:0,dw:2,main:28,buckets:{'0-3d':4,'4-7d':0,'8-15d':2,'16-30d':11,'45d+':13},reasons:[[15,'Chargeback alert'],[4,'Doctor advised against using it'],[4,'Chargeback'],[4,'Did not work'],[2,'Third party refund request']]}},
+    cb:{'2025-12':{total:2,value:654.15,up:0,dw:1,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':0,'45d+':1},reasons:[[1,'Fraudulent Transaction (193)'],[1,'Merchandise Not Received (C08)']]},'2026-01':{total:1,value:212.76,up:0,dw:1,main:0,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':1},reasons:[[1,'Fraudulent Transaction (UA01)']]},'2026-02':{total:3,value:741.61,up:0,dw:0,main:3,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':1},reasons:[[1,'Fraudulent Transaction (7030)'],[1,'fraudulent'],[1,'Fraudulent Transaction (F29)']]},'2026-03':{total:10,value:2920.66,up:0,dw:0,main:10,buckets:{'0-3d':0,'4-7d':1,'8-15d':2,'16-30d':5,'45d+':2},reasons:[[2,'fraudulent'],[2,'Fraudulent Transaction (UA01)'],[1,'Fraudulent Transaction (F29)']]},'2026-04':{total:6,value:1507.15,up:0,dw:0,main:6,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':3,'45d+':3},reasons:[[3,'Unauthorized Transaction (4837)'],[1,'Merchandise Not Received (C08)'],[1,'product_unacceptable']]},'2026-05':{total:4,value:1424.35,up:0,dw:1,main:3,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':1,'45d+':3},reasons:[[1,'Unauthorized Transaction (4868)'],[1,'Fraudulent Transaction (F29)'],[1,'Consumer Disputes (13.7)']]}}
+  },
+  'AudiLeaf': {
+    ref:{'2026-03':{total:37,value:6110.35,up:14,dw:3,main:20,buckets:{'0-3d':25,'4-7d':3,'8-15d':7,'16-30d':2,'45d+':0},reasons:[[14,'Chargeback alert'],[11,'Did not agree to the upsells'],[4,'Threatened with a chargeback'],[3,'Partial Refund – Saved Sale'],[2,'No longer interested in the product']]},'2026-04':{total:297,value:43947.54,up:151,dw:6,main:140,buckets:{'0-3d':199,'4-7d':23,'8-15d':30,'16-30d':32,'45d+':13},reasons:[[85,'Did not agree to the upsells'],[43,'Chargeback alert'],[27,'Threatened with a chargeback'],[23,'No longer interested in the product'],[20,'Doctor advised against using it']]},'2026-05':{total:202,value:33300.47,up:87,dw:5,main:110,buckets:{'0-3d':129,'4-7d':21,'8-15d':31,'16-30d':8,'45d+':13},reasons:[[54,'Chargeback alert'],[38,'Threatened with a chargeback'],[31,'Did not agree to the upsells'],[18,'No longer interested in the product'],[12,'Duplicate order placed by mistake']]}},
+    cb:{'2026-03':{total:2,value:431.36,up:1,dw:0,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':0},reasons:[[2,'credit_not_processed']]},'2026-04':{total:1,value:249.22,up:0,dw:0,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':1,'45d+':0},reasons:[[1,'Cancelled Recurring (C04)']]},'2026-05':{total:5,value:1490.17,up:1,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':4,'16-30d':1,'45d+':0},reasons:[[1,'Fraudulent Transaction (F29)'],[1,'Other (12.6.2)'],[1,'Unauthorized Transaction (4868)'],[1,'credit_not_processed'],[1,'fraudulent']]}}
+  },
+  'Booster XT': {
+    ref:{'2026-03':{total:18,value:2702.58,up:5,dw:0,main:13,buckets:{'0-3d':10,'4-7d':2,'8-15d':4,'16-30d':2,'45d+':0},reasons:[[10,'Chargeback alert'],[2,'Duplicate charge'],[1,'Too expensive'],[1,'Refused Delivery – No Prior CS Contact']]},'2026-04':{total:27,value:3896.15,up:6,dw:0,main:21,buckets:{'0-3d':7,'4-7d':0,'8-15d':1,'16-30d':6,'45d+':13},reasons:[[5,'Chargeback alert'],[4,'Worried about interactions with medications'],[4,'Did not receive product'],[4,'Threatened with a chargeback'],[4,'Regret over spending']]},'2026-05':{total:3,value:450.59,up:2,dw:0,main:1,buckets:{'0-3d':2,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':1},reasons:[[2,'Did not agree to the upsells'],[1,'Did not work']]}},
+    cb:{'2026-03':{total:2,value:285.55,up:1,dw:0,main:1,buckets:{'0-3d':0,'4-7d':2,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[2,'Fraudulent Transaction (UA01)']]}}
+  },
+  'LipoBliss': {
+    ref:{'2026-03':{total:4,value:605.50,up:2,dw:0,main:2,buckets:{'0-3d':4,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[4,"Realized they don't need it"]]},'2026-04':{total:21,value:3931.58,up:9,dw:0,main:12,buckets:{'0-3d':13,'4-7d':7,'8-15d':1,'16-30d':0,'45d+':0},reasons:[[4,'Threatened with a chargeback'],[4,'Did not agree to the upsells'],[3,'Chargeback'],[3,'Chargeback Alert-RDR'],[2,'Test order']]},'2026-05':{total:15,value:1612.29,up:8,dw:0,main:7,buckets:{'0-3d':6,'4-7d':1,'8-15d':4,'16-30d':0,'45d+':4},reasons:[[6,'Threatened with a chargeback'],[4,'No longer interested in the product'],[4,'Experienced side effects'],[1,'Chargeback alert']]}},
+    cb:{}
+  },
+  'LipoTrine': {
+    ref:{'2026-04':{total:2,value:538.44,up:0,dw:0,main:2,buckets:{'0-3d':2,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[1,'Too expensive'],[1,'Chargeback']]},'2026-05':{total:1,value:252.51,up:1,dw:0,main:0,buckets:{'0-3d':1,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[1,'Chargeback alert']]}},
+    cb:{}
+  },
+  'Visium Pro': {
+    ref:{},
+    cb:{'2025-12':{total:1,value:111.39,up:0,dw:0,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':1,'45d+':0},reasons:[[1,'Fraudulent Transaction (UA02)']]},'2026-01':{total:2,value:241.66,up:1,dw:0,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':0,'45d+':1},reasons:[[1,'Fraudulent Transaction (F29)'],[1,'fraudulent']]},'2026-02':{total:4,value:915.14,up:2,dw:0,main:2,buckets:{'0-3d':0,'4-7d':0,'8-15d':3,'16-30d':0,'45d+':1},reasons:[[3,'Fraudulent Transaction (UA01)'],[1,'Fraudulent Transaction (UA02)']]},'2026-03':{total:3,value:947.89,up:0,dw:0,main:3,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':2,'45d+':0},reasons:[[1,'Other Fraud'],[1,'Cancelled Recurring (C05)'],[1,'credit_not_processed']]},'2026-04':{total:9,value:2599.04,up:0,dw:0,main:9,buckets:{'0-3d':0,'4-7d':1,'8-15d':3,'16-30d':2,'45d+':3},reasons:[[2,'Cancelled Recurring (C04)'],[2,'fraudulent'],[2,'Fraudulent Transaction (F29)']]},'2026-05':{total:2,value:640.07,up:0,dw:0,main:2,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':0},reasons:[[1,'credit_not_processed'],[1,'Merchandise Not Received (4555)']]}}
+  }
+};
+
+const MONTH_KEYS  = ['2025-12','2026-01','2026-02','2026-03','2026-04','2026-05'];
+const MONTH_NAMES = {'2025-12':'Dezembro','2026-01':'Janeiro','2026-02':'Fevereiro','2026-03':'Março','2026-04':'Abril','2026-05':'Maio'};
+let currentProdMonth = 'all';
+
+function buildMonthMiniCard(prodName, month, type) {
+  const data = prodMonthly[prodName];
+  if (!data) return '';
+  const m = (type==='ref' ? data.ref : data.cb)[month];
+  if (!m || m.total === 0) return '';
+  const color = type==='ref' ? 'var(--red)' : 'var(--amber)';
+  const label = type==='ref' ? 'refs' : 'CBs';
+  return `<div style="background:var(--bg3);border-radius:5px;padding:7px 10px;margin-bottom:6px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:${color};">${m.total} ${label}</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);">$${(m.value/1000).toFixed(1)}K</span>
+    </div>
+    ${typeTag({upsell:m.up||0,downsell:m.dw||0,main:m.main||0})}
+    ${bucketBar(m.buckets, m.total, color)}
+    <div class="prod-reasons" style="margin-top:6px;">
+      ${(m.reasons||[]).slice(0,4).map(([n,r])=>`<div class="prod-reason"><span class="prod-reason-n" style="color:${color};">${n}×</span><span>${r}</span></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function buildMonthCard(month) {
+  const cards = prodData.map(p => {
+    const pName = p.name === 'Visium Pro' ? 'VisiumPro' : p.name;
+    const refCard = buildMonthMiniCard(pName, month, 'ref');
+    const cbCard  = buildMonthMiniCard(pName, month, 'cb');
+    if (!refCard && !cbCard) return '';
+    return `<div class="prod-card">
+      <div class="prod-header">
+        <div><div class="prod-name" style="border-left:3px solid ${p.color};padding-left:10px;">${p.name}</div></div>
+        <div style="text-align:right;">
+          ${prodMonthly[pName] && prodMonthly[pName].ref[month] ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--red);font-weight:700;">${(prodMonthly[pName].ref[month]||{total:0}).total} refs</div>` : ''}
+          ${prodMonthly[pName] && prodMonthly[pName].cb[month]  ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);font-weight:700;">${(prodMonthly[pName].cb[month]||{total:0}).total} CBs</div>` : ''}
+        </div>
+      </div>
+      <div class="prod-body">
+        ${refCard ? `<div class="prod-sec-title"><span style="width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block;flex-shrink:0;"></span>Reembolsos</div>${refCard}` : '<div class="prod-no-data">Sem reembolsos neste mês</div>'}
+        <div style="height:1px;background:var(--border);margin:10px 0;"></div>
+        ${cbCard  ? `<div class="prod-sec-title"><span style="width:6px;height:6px;border-radius:50%;background:var(--amber);display:inline-block;flex-shrink:0;"></span>Chargebacks</div>${cbCard}` : '<div class="prod-no-data">Sem chargebacks neste mês</div>'}
+      </div>
+    </div>`;
+  }).filter(Boolean).join('');
+  const totRef = prodData.reduce((s,p)=>{ const pn=p.name==='Visium Pro'?'VisiumPro':p.name; return s+((prodMonthly[pn]&&prodMonthly[pn].ref[month])?prodMonthly[pn].ref[month].total:0); },0);
+  const totCB  = prodData.reduce((s,p)=>{ const pn=p.name==='Visium Pro'?'VisiumPro':p.name; return s+((prodMonthly[pn]&&prodMonthly[pn].cb[month])?prodMonthly[pn].cb[month].total:0); },0);
+  return `<div style="margin-bottom:16px;"><div class="metrics-row">
+    <div class="metric"><div class="metric-label">Refunds ${MONTH_NAMES[month]}</div><div class="metric-val warn">${totRef}</div></div>
+    <div class="metric"><div class="metric-label">Chargebacks ${MONTH_NAMES[month]}</div><div class="metric-val amber">${totCB}</div></div>
+  </div></div>
+  <div class="prod-grid">${cards || '<div style="color:var(--text3);font-family:\'IBM Plex Mono\',monospace;font-size:12px;">Sem dados para este mês.</div>'}</div>`;
+}
+
+function buildProdFull() { return buildProdContent(currentProdFilter||'all', 'all'); }
+
+function switchProdMonth(month) {
+  currentProdMonth = month;
+  document.querySelectorAll('#main-produtos .sub-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  $('prod-content').innerHTML = month === 'all'
+    ? buildProdContent(currentProdFilter||'all', 'all')
+    : `<div class="panel-header">${MONTH_NAMES[month]} <span class="tag tag-blue">${month}</span></div>${buildMonthCard(month)}`;
+}
+
+/* ── FIXED SWITCH FUNCTIONS ── */
+function switchMain(btn, tab) {
+  document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.main-tab').forEach(b=>b.classList.remove('active'));
+  $('main-'+tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'produtos' && !$('prod-content').innerHTML) {
+    $('prod-content').innerHTML = buildProdContent('all', 'all');
+  }
+}
+function switchSub(btn, prefix, key) {
+  const panel = $('main-'+prefix);
+  panel.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
+  panel.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active'));
+  const idMap = {empresa:'emp-', buygoods:'bg-', intervalo:'int-'};
+  $((idMap[prefix]||prefix+'-')+key).classList.add('active');
+  btn.classList.add('active');
 }
 </script>
 </body>
