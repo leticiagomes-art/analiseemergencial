@@ -5,225 +5,148 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Consolidado</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Epilogue:wght@400;600;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── TOKENS ── */
 [data-theme="dark"] {
-  --bg:      #06060a;
-  --bg1:     #0d0d14;
-  --bg2:     #12121c;
-  --bg3:     #1a1a28;
-  --border:  rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.13);
-  --text:    #eeeef8;
-  --text2:   #8080a8;
-  --text3:   #48486a;
-  --blue:    #5aabff;
-  --blue-d:  rgba(90,171,255,0.13);
-  --green:   #3dd68c;
-  --green-d: rgba(61,214,140,0.11);
-  --red:     #ff6060;
-  --red-d:   rgba(255,96,96,0.11);
-  --amber:   #f5a623;
-  --amber-d: rgba(245,166,35,0.11);
-  --shadow:  0 2px 20px rgba(0,0,0,0.55);
-  --grid:    rgba(255,255,255,0.04);
-  --tick:    #48486a;
+  --bg:      #07070f;  --bg1: #0d0d1a;  --bg2: #111120;  --bg3: #181828;
+  --border:  rgba(255,255,255,0.055);  --border2: rgba(255,255,255,0.11);
+  --text:    #e6e6f2;  --text2: #72729a;  --text3: #3e3e5a;
+  --blue:    #4f8cff;  --blue-d:  rgba(79,140,255,0.12);
+  --green:   #34c97c;  --green-d: rgba(52,201,124,0.10);
+  --red:     #f05252;  --red-d:   rgba(240,82,82,0.10);
+  --amber:   #f0a020;  --amber-d: rgba(240,160,32,0.10);
+  --shadow:  0 1px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  --grid: rgba(255,255,255,0.035);  --tick: #3e3e5a;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+  --display: 'Syne', sans-serif;
 }
 [data-theme="light"] {
-  --bg:      #f2f2f8;
-  --bg1:     #ffffff;
-  --bg2:     #f8f8fc;
-  --bg3:     #ebebf4;
-  --border:  rgba(0,0,0,0.08);
-  --border2: rgba(0,0,0,0.15);
-  --text:    #111122;
-  --text2:   #4a4a70;
-  --text3:   #9090b8;
-  --blue:    #1a7aef;
-  --blue-d:  rgba(26,122,239,0.10);
-  --green:   #179057;
-  --green-d: rgba(23,144,87,0.10);
-  --red:     #d43030;
-  --red-d:   rgba(212,48,48,0.10);
-  --amber:   #bf7600;
-  --amber-d: rgba(191,118,0,0.10);
-  --shadow:  0 2px 14px rgba(0,0,0,0.08);
-  --grid:    rgba(0,0,0,0.06);
-  --tick:    #9090b8;
+  --bg:      #f1f1f7;  --bg1: #ffffff;  --bg2: #f8f8fc;  --bg3: #ebebf3;
+  --border:  rgba(0,0,0,0.07);  --border2: rgba(0,0,0,0.13);
+  --text:    #0c0c1e;  --text2: #44446a;  --text3: #8888b0;
+  --blue:    #1a6ef5;  --blue-d:  rgba(26,110,245,0.09);
+  --green:   #13885a;  --green-d: rgba(19,136,90,0.09);
+  --red:     #cc2e2e;  --red-d:   rgba(204,46,46,0.09);
+  --amber:   #b86800;  --amber-d: rgba(184,104,0,0.09);
+  --shadow:  0 1px 8px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
+  --grid: rgba(0,0,0,0.05);  --tick: #8888b0;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+  --display: 'Syne', sans-serif;
 }
 
 body {
-  background: var(--bg); font-family: 'Epilogue', sans-serif;
-  color: var(--text); min-height: 100vh;
+  background: var(--bg); font-family: var(--sans); color: var(--text);
+  min-height: 100vh; font-size: 14px; -webkit-font-smoothing: antialiased;
   transition: background .3s, color .3s;
 }
 
-/* HEADER */
 .header {
-  border-bottom: 1px solid var(--border2); padding: 18px 28px 0;
+  border-bottom: 1px solid var(--border); padding: 16px 28px 0;
   background: var(--bg1); position: sticky; top: 0; z-index: 100;
-  box-shadow: var(--shadow); transition: background .3s, box-shadow .3s;
+  box-shadow: var(--shadow); transition: background .3s;
 }
 .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.logo {
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600;
-  letter-spacing: .18em; text-transform: uppercase; color: var(--text3);
-}
-.header-right { display: flex; align-items: center; gap: 10px; }
-.date-badge {
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3);
-  background: var(--bg3); border: 1px solid var(--border2); border-radius: 5px; padding: 3px 10px;
-}
-.theme-btn {
-  background: var(--bg3); border: 1px solid var(--border2); border-radius: 6px;
-  padding: 5px 10px; cursor: pointer; font-size: 15px; line-height: 1;
-  color: var(--text2); transition: border-color .18s, color .18s;
-}
+.logo { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--text3); }
+.header-right { display: flex; align-items: center; gap: 8px; }
+.date-badge { font-family: var(--mono); font-size: 10px; color: var(--text3); background: var(--bg3); border: 1px solid var(--border2); border-radius: 3px; padding: 3px 9px; letter-spacing: .04em; }
+.theme-btn { background: var(--bg3); border: 1px solid var(--border2); border-radius: 4px; padding: 4px 9px; cursor: pointer; font-size: 14px; line-height: 1; color: var(--text3); transition: all .15s; }
 .theme-btn:hover { border-color: var(--blue); color: var(--blue); }
 
-/* MAIN TABS */
-.main-tabs { display: flex; }
+.main-tabs { display: flex; gap: 2px; }
 .main-tab {
-  font-family: 'Epilogue', sans-serif; font-size: 13px; font-weight: 700;
-  letter-spacing: .01em; padding: 10px 24px 12px; cursor: pointer;
-  border: none; background: transparent; color: var(--text3);
-  position: relative; transition: color .2s;
+  font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: .01em;
+  padding: 10px 20px 12px; cursor: pointer; border: none; background: transparent;
+  color: var(--text3); position: relative; transition: color .15s;
 }
 .main-tab::after {
-  content: ''; position: absolute; bottom: 0; left: 8px; right: 8px; height: 2px;
-  background: transparent; transition: background .2s; border-radius: 2px;
+  content: ''; position: absolute; bottom: 0; left: 10px; right: 10px; height: 1.5px;
+  background: transparent; transition: background .15s;
 }
 .main-tab.active { color: var(--text); }
 .main-tab.active::after { background: var(--blue); }
 .main-tab:hover:not(.active) { color: var(--text2); }
 
-/* CONTENT */
-.content { padding: 26px 28px 48px; }
+.content { padding: 24px 28px 48px; }
 .main-panel { display: none; }
 .main-panel.active { display: block; }
 
-/* SUB TABS */
-.sub-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 26px; }
+.sub-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 24px; }
 .sub-btn {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-  letter-spacing: .09em; text-transform: uppercase;
-  padding: 6px 16px; border: 1px solid var(--border2); border-radius: 5px;
-  background: transparent; color: var(--text3); cursor: pointer; transition: all .18s;
+  font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: .07em;
+  text-transform: uppercase; padding: 5px 14px; border: 1px solid var(--border);
+  border-radius: 3px; background: transparent; color: var(--text3); cursor: pointer; transition: all .15s;
 }
 .sub-btn.active { background: var(--blue-d); border-color: var(--blue); color: var(--blue); }
-.sub-btn:hover:not(.active) { color: var(--text2); }
+.sub-btn:hover:not(.active) { border-color: var(--border2); color: var(--text2); }
 
-/* PANELS */
 .sub-panel { display: none; }
-.sub-panel.active { display: block; animation: fadeUp .22s ease; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+.sub-panel.active { display: block; animation: fadeUp .2s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 
-/* PANEL HEADER */
 .panel-header {
-  font-size: 24px; font-weight: 900; letter-spacing: -.03em; line-height: 1.1;
-  color: var(--text); margin-bottom: 22px; display: flex; align-items: center; gap: 10px;
+  font-family: var(--display); font-size: 22px; font-weight: 700; letter-spacing: -.02em;
+  line-height: 1.15; color: var(--text); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
 }
 
-/* METRIC CARDS */
-.metrics-row {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 10px;
-  margin-bottom: 12px;
-}
+.metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 8px; margin-bottom: 10px; }
 .metric {
-  background: var(--bg1); border: 1px solid var(--border); border-radius: 10px;
-  padding: 14px 16px; transition: border-color .18s, background .3s;
+  background: var(--bg1); border: 1px solid var(--border); border-radius: 6px;
+  padding: 13px 15px; transition: border-color .15s, background .3s; position: relative; overflow: hidden;
 }
+.metric::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--border2), transparent); }
 .metric:hover { border-color: var(--border2); }
-.metric-label {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-  letter-spacing: .08em; text-transform: uppercase; color: var(--text3); margin-bottom: 7px;
-}
-.metric-val {
-  font-family: 'Epilogue', sans-serif; font-size: 22px; font-weight: 900;
-  letter-spacing: -.04em; color: var(--text); line-height: 1;
-}
-.metric-sub {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); margin-top: 5px;
-}
+.metric-label { font-family: var(--mono); font-size: 9.5px; font-weight: 500; letter-spacing: .09em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+.metric-val { font-family: var(--display); font-size: 21px; font-weight: 700; letter-spacing: -.03em; color: var(--text); line-height: 1; }
+.metric-sub { font-family: var(--mono); font-size: 9.5px; color: var(--text3); margin-top: 5px; letter-spacing: .02em; }
 .metric-val.good  { color: var(--green); }
 .metric-val.warn  { color: var(--red); }
 .metric-val.info  { color: var(--blue); }
 .metric-val.amber { color: var(--amber); }
 
-/* SECTION TITLE */
 .sec-title {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-  letter-spacing: .13em; text-transform: uppercase; color: var(--text3);
-  margin: 26px 0 13px; padding-left: 10px; border-left: 3px solid var(--blue);
+  font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--text3); margin: 24px 0 12px;
+  display: flex; align-items: center; gap: 8px;
 }
+.sec-title::before { content: ''; display: block; width: 2px; height: 10px; background: var(--blue); border-radius: 1px; flex-shrink: 0; }
 
-/* BREAKDOWN CARDS */
-.breakdown-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 8px;
-  margin-bottom: 4px;
-}
+.breakdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 7px; margin-bottom: 4px; }
 .breakdown-card {
-  background: var(--bg1); border: 1px solid var(--border);
-  border-top: 3px solid var(--border2); border-radius: 10px;
-  padding: 14px 16px; transition: background .3s, border-color .18s;
+  background: var(--bg1); border: 1px solid var(--border); border-radius: 6px;
+  padding: 12px 14px; border-left: 2px solid var(--border2); transition: background .3s, border-color .15s;
 }
 .breakdown-card:hover { border-color: var(--border2); }
-.bc-total { border-top-color: var(--text3); }
-.bc-up    { border-top-color: var(--blue); }
-.bc-dw    { border-top-color: var(--amber); }
-.bc-main  { border-top-color: var(--green); }
-.bc-head {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-  letter-spacing: .09em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px;
-}
-.bc-val {
-  font-family: 'Epilogue', sans-serif; font-size: 30px; font-weight: 900;
-  letter-spacing: -.05em; color: var(--text); line-height: 1; margin-bottom: 6px;
-}
-.bc-pct-main {
-  font-family: 'Epilogue', sans-serif; font-size: 14px; font-weight: 800;
-  letter-spacing: -.01em; margin-bottom: 2px;
-}
-.bc-pct-sub {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); margin-bottom: 5px;
-}
-.bc-money { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; color: var(--text2); }
+.bc-total { border-left-color: var(--text3); }
+.bc-up    { border-left-color: var(--blue); }
+.bc-dw    { border-left-color: var(--amber); }
+.bc-main  { border-left-color: var(--green); }
+.bc-head { font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+.bc-val { font-family: var(--display); font-size: 26px; font-weight: 700; letter-spacing: -.04em; color: var(--text); line-height: 1; margin-bottom: 5px; }
+.bc-pct-main { font-family: var(--display); font-size: 12px; font-weight: 600; letter-spacing: -.01em; margin-bottom: 1px; }
+.bc-pct-sub { font-family: var(--mono); font-size: 9px; color: var(--text3); margin-bottom: 4px; letter-spacing: .02em; }
+.bc-money { font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--text2); }
 .bc-total .bc-pct-main { color: var(--text2); }
 .bc-up    .bc-pct-main { color: var(--blue); }
 .bc-dw    .bc-pct-main { color: var(--amber); }
 .bc-main  .bc-pct-main { color: var(--green); }
 
-/* BAR ROWS */
-.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
-.bar-label {
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600;
-  color: var(--text2); min-width: 44px; text-align: right;
-}
-.bar-bg { flex: 1; background: var(--bg3); border-radius: 4px; height: 22px; overflow: hidden; }
-.bar-fill {
-  height: 100%; border-radius: 4px; display: flex; align-items: center;
-  justify-content: flex-end; padding-right: 8px;
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; color: #fff;
-  transition: width .55s cubic-bezier(.25,.46,.45,.94);
-}
-.bar-val { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); min-width: 80px; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bar-label { font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--text2); min-width: 44px; text-align: right; letter-spacing: .02em; }
+.bar-bg { flex: 1; background: var(--bg3); border-radius: 2px; height: 20px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 2px; display: flex; align-items: center; justify-content: flex-end; padding-right: 7px; font-family: var(--mono); font-size: 10px; font-weight: 600; color: #fff; transition: width .5s cubic-bezier(.25,.46,.45,.94); letter-spacing: .02em; }
+.bar-val { font-family: var(--mono); font-size: 10px; color: var(--text3); min-width: 80px; }
 
-/* TABLE */
-.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; margin-top: 6px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; margin-top: 6px; }
 table { width: 100%; border-collapse: collapse; }
 thead tr { border-bottom: 1px solid var(--border2); }
-th {
-  padding: 10px 14px; text-align: left; white-space: nowrap;
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-  letter-spacing: .09em; text-transform: uppercase; color: var(--text3);
-}
-td {
-  padding: 10px 14px; border-bottom: 1px solid var(--border);
-  font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text2);
-  transition: background .15s;
-}
+th { padding: 9px 13px; text-align: left; white-space: nowrap; font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--text3); }
+td { padding: 9px 13px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 11.5px; color: var(--text2); transition: background .12s; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--bg3); }
 td.num   { color: var(--text); font-weight: 600; }
@@ -232,41 +155,27 @@ td.warn  { color: var(--red); font-weight: 600; }
 td.amber { color: var(--amber); font-weight: 600; }
 td.info  { color: var(--blue); font-weight: 600; }
 
-/* CHARTS */
-.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; }
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
 @media (max-width: 680px) { .charts-grid { grid-template-columns: 1fr; } }
-.chart-card, .chart-full {
-  background: var(--bg1); border: 1px solid var(--border); border-radius: 10px;
-  padding: 16px 18px; transition: background .3s;
-}
-.chart-full { margin-top: 14px; }
-.chart-title {
-  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 14px;
-}
-.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; }
-.legend-item { display: flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); }
-.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.chart-card, .chart-full { background: var(--bg1); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; transition: background .3s; }
+.chart-full { margin-top: 12px; }
+.chart-title { font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 14px; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 10px; color: var(--text3); }
+.legend-dot { width: 7px; height: 7px; border-radius: 1px; flex-shrink: 0; }
 
-/* TAGS */
-.tag {
-  display: inline-block; font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
-  padding: 3px 9px; border-radius: 4px;
-}
+.tag { display: inline-block; font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; }
 .tag-blue  { background: var(--blue-d);  color: var(--blue); }
 .tag-amber { background: var(--amber-d); color: var(--amber); }
 .tag-green { background: var(--green-d); color: var(--green); }
 
-/* INSIGHTS */
 .insight {
   background: var(--bg2); border: 1px solid var(--border);
-  border-left: 3px solid var(--blue); border-radius: 0 10px 10px 0;
-  padding: 12px 16px; margin-bottom: 10px;
-  font-size: 13px; line-height: 1.65; color: var(--text2);
-  transition: background .3s;
+  border-left: 2px solid var(--blue); border-radius: 0 6px 6px 0;
+  padding: 11px 14px; margin-bottom: 8px;
+  font-family: var(--sans); font-size: 12.5px; color: var(--text2); line-height: 1.65; transition: background .3s;
 }
-.insight strong { color: var(--text); font-weight: 700; }
+.insight strong { color: var(--text); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -284,6 +193,7 @@ td.info  { color: var(--blue); font-weight: 600; }
     <button class="main-tab" onclick="switchMain(this,'buygoods')">BuyGoods — 4 Meses</button>
     <button class="main-tab" onclick="switchMain(this,'intervalo')">Intervalo do Pedido</button>
     <button class="main-tab" onclick="switchMain(this,'produtos')">Produtos</button>
+    <button class="main-tab" onclick="switchMain(this,'upsell')">Análise de Upsell</button>
   </div>
 </div>
 
@@ -374,6 +284,10 @@ td.info  { color: var(--blue); font-weight: 600; }
   <div id="int-all" class="sub-panel"></div>
 </div>
 
+<div id="main-upsell" class="main-panel">
+  <div id="upsell-content"></div>
+</div>
+
 <div id="main-produtos" class="main-panel">
   <div class="sub-tabs">
     <button class="sub-btn active" onclick="switchProdMonth('all')">Geral</button>
@@ -441,18 +355,18 @@ const intData = {
       main:     {'0-3d':1, '4-7d':5, '8-15d':22,'16-30d':22,'45d+':2}
     }
   },
-  mai: { label:'Maio (1–11)', tag:'tag-green', tagTxt:'Parcial',
+  mai: { label:'Maio (1–17)', tag:'tag-green', tagTxt:'Parcial',
     refundReasons: ['Chargeback alert (múltiplos produtos)', 'Threatened with a chargeback', 'Did not agree to the upsells', 'No longer interested in the product', 'Doctor advised against using it'],
-    cbReasons: ['Fraudulent Transaction (múltiplas variantes)', 'Consumer Disputes', 'Unauthorized Transaction', 'credit_not_processed', 'Merchandise Not Received'],
+    cbReasons: ['Fraudulent Transaction (F29/UA01/10.4)', 'Consumer Disputes', 'Cancelled Recurring', 'Merchandise Not Received', 'fraudulent'],
     refund: {
-      upsell:   {'0-3d':121,'4-7d':22,'8-15d':29,'16-30d':27,'45d+':28},
-      downsell: {'0-3d':3,  '4-7d':1, '8-15d':1, '16-30d':1, '45d+':6},
-      main:     {'0-3d':172,'4-7d':44,'8-15d':71,'16-30d':89,'45d+':126}
+      upsell:   {'0-3d':192,'4-7d':38,'8-15d':39,'16-30d':46,'45d+':42},
+      downsell: {'0-3d':4,  '4-7d':1, '8-15d':1, '16-30d':1, '45d+':8},
+      main:     {'0-3d':258,'4-7d':69,'8-15d':114,'16-30d':143,'45d+':210}
     },
     chargeback: {
-      upsell:   {'0-3d':1,'4-7d':0,'8-15d':2,'16-30d':7,'45d+':5},
+      upsell:   {'0-3d':1,'4-7d':0,'8-15d':8,'16-30d':9,'45d+':7},
       downsell: {'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':2},
-      main:     {'0-3d':0,'4-7d':1,'8-15d':6,'16-30d':19,'45d+':11}
+      main:     {'0-3d':0,'4-7d':1,'8-15d':12,'16-30d':24,'45d+':14}
     }
   }
 };
@@ -472,16 +386,16 @@ function stackedBarHTML(offerType, data, total) {
     const v = data[b]||0; if (!v) return '';
     const w = (v/Math.max(total,1)*100).toFixed(1);
     const pct = (v/rowTotal*100).toFixed(0);
-    return `<div title="${BKT_LABEL[b]}: ${v} (${pct}% deste tipo)" style="width:${w}%;background:${BKT_COLOR[b]};height:100%;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;min-width:${w>4?'0':'0'}px;">${w>5?v:''}</div>`;
+    return `<div title="${BKT_LABEL[b]}: ${v} (${pct}% deste tipo)" style="width:${w}%;background:${BKT_COLOR[b]};height:100%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;min-width:${w>4?'0':'0'}px;">${w>5?v:''}</div>`;
   }).join('');
   return `<div style="margin-bottom:10px;">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-      <span style="min-width:90px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:${OT_COLOR[offerType]};">${OT_LABEL[offerType]}</span>
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);">${rowTotal} ocorrências</span>
+      <span style="min-width:90px;font-family:var(--mono);font-size:11px;font-weight:600;color:${OT_COLOR[offerType]};">${OT_LABEL[offerType]}</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">${rowTotal} ocorrências</span>
     </div>
     <div style="display:flex;height:26px;border-radius:5px;overflow:hidden;background:var(--bg3);">${bars}</div>
     <div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;">
-      ${BUCKETS.map(b=>{const v=data[b]||0; const p=(v/rowTotal*100).toFixed(0); return v>0?`<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);"><span style="display:inline-block;width:7px;height:7px;background:${BKT_COLOR[b]};border-radius:1px;margin-right:3px;vertical-align:middle;"></span>${BKT_LABEL[b]}: <strong style="color:var(--text2);">${v}</strong> <span style="opacity:.6;">(${p}%)</span></span>`:''}).join('')}
+      ${BUCKETS.map(b=>{const v=data[b]||0; const p=(v/rowTotal*100).toFixed(0); return v>0?`<span style="font-family:var(--mono);font-size:10px;color:var(--text3);"><span style="display:inline-block;width:7px;height:7px;background:${BKT_COLOR[b]};border-radius:1px;margin-right:3px;vertical-align:middle;"></span>${BKT_LABEL[b]}: <strong style="color:var(--text2);">${v}</strong> <span style="opacity:.6;">(${p}%)</span></span>`:''}).join('')}
     </div>
   </div>`;
 }
@@ -501,31 +415,31 @@ function buildIntPanel(key) {
 
   <div class="sec-title">Reembolsos por intervalo (total: ${rTotal})</div>
   <div class="metrics-row" style="margin-bottom:18px;">${bucketSummary('refund')}</div>
-  <div style="background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:6px;">
+  <div style="background:var(--bg1);border:1px solid var(--border);border-radius:5px;padding:16px 18px;margin-bottom:6px;">
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
-      ${BUCKETS.map(b=>`<span style="display:flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);"><span style="width:8px;height:8px;background:${BKT_COLOR[b]};border-radius:2px;display:inline-block;"></span>${BKT_LABEL[b]}</span>`).join('')}
+      ${BUCKETS.map(b=>`<span style="display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:10px;color:var(--text3);"><span style="width:8px;height:8px;background:${BKT_COLOR[b]};border-radius:2px;display:inline-block;"></span>${BKT_LABEL[b]}</span>`).join('')}
     </div>
     ${['upsell','downsell','main'].map(ot=>stackedBarHTML(ot, d.refund[ot], rTotal)).join('')}
   </div>
 
   <div class="sec-title" style="margin-top:28px;">Chargebacks por intervalo (total: ${cTotal})</div>
   <div class="metrics-row" style="margin-bottom:18px;">${bucketSummary('chargeback')}</div>
-  <div style="background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:16px 18px;">
+  <div style="background:var(--bg1);border:1px solid var(--border);border-radius:5px;padding:16px 18px;">
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
-      ${BUCKETS.map(b=>`<span style="display:flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);"><span style="width:8px;height:8px;background:${BKT_COLOR[b]};border-radius:2px;display:inline-block;"></span>${BKT_LABEL[b]}</span>`).join('')}
+      ${BUCKETS.map(b=>`<span style="display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:10px;color:var(--text3);"><span style="width:8px;height:8px;background:${BKT_COLOR[b]};border-radius:2px;display:inline-block;"></span>${BKT_LABEL[b]}</span>`).join('')}
     </div>
     ${['upsell','downsell','main'].map(ot=>stackedBarHTML(ot, d.chargeback[ot], cTotal)).join('')}
   </div>
   ${d.refundReasons ? `
   <div class="sec-title" style="margin-top:28px;">Motivações identificadas nos arquivos de base</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:10px;padding:14px 16px;">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Razões de reembolso</div>
-      ${d.refundReasons.map(r=>`<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);line-height:1.9;">· ${r}</div>`).join('')}
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:5px;padding:14px 16px;">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Razões de reembolso</div>
+      ${d.refundReasons.map(r=>`<div style="font-family:var(--mono);font-size:12px;color:var(--text2);line-height:1.9;">· ${r}</div>`).join('')}
     </div>
-    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:10px;padding:14px 16px;">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Razões de chargeback</div>
-      ${d.cbReasons.map(r=>`<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);line-height:1.9;">· ${r}</div>`).join('')}
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:5px;padding:14px 16px;">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Razões de chargeback</div>
+      ${d.cbReasons.map(r=>`<div style="font-family:var(--mono);font-size:12px;color:var(--text2);line-height:1.9;">· ${r}</div>`).join('')}
     </div>
   </div>` : ''}`;
 }
@@ -562,7 +476,7 @@ function buildIntAll() {
 
   return `<div class="panel-header">Visão Geral — Intervalos <span class="tag tag-blue">Jan–Mai 2026</span></div>
   <div class="insight">Em <strong>abril</strong>, ${abrUp0_3} de ${abrUpTot} reembolsos de upsell (${(abrUp0_3/abrUpTot*100).toFixed(0)}%) aconteceram em 0–3 dias — reflexo do funil mais agressivo gerando arrependimento imediato.</div>
-  <div class="insight">Em <strong>maio</strong>, ${maiUp0_3} de ${maiUpTot} reembolsos de upsell (${(maiUp0_3/maiUpTot*100).toFixed(0)}%) ocorreram em 0–3 dias — padrão similar a abril, confirmando a tendência de arrependimento rápido com funil agressivo.</div>
+  <div class="insight">Em <strong>maio (1–17)</strong>, ${maiUp0_3} de ${maiUpTot} reembolsos de upsell (${(maiUp0_3/maiUpTot*100).toFixed(0)}%) ocorreram em 0–3 dias — padrão consistente com abril; novo produto BreathEaseX aparece com 20 refunds concentrados em 0–7 dias.</div>
   <div class="insight">Os reembolsos de <strong>front/main</strong> são mais distribuídos ao longo do tempo — indicam insatisfação com o produto em si, não com a oferta do funil.</div>
   <div class="insight"><strong>Chargebacks</strong> tendem a aparecer nos intervalos 8–15d e 16–30d, consistente com o tempo de processamento de disputa no cartão.</div>
 
@@ -584,14 +498,14 @@ const empData = {
   fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Fev', faturamento:2172249.79, front_sales:8026, front_rev:1956587.45, back_sales:1519, back_rev:214229.77, refunds:230952.06, chargebacks:12995.68, net_profit:298553.53, impostos:91320.64, plataforma:161592.34, comissoes:1250931.2, cogs:217224.98, aov_bruto:270.35, aov_liq:239.14, up1:985, dw1:202, up2:334, up3:146 },
   mar: { label:'Março', tag:'tag-blue', tagTxt:'Mar', faturamento:2722613.70, front_sales:9319, front_rev:2385943.39, back_sales:2361, back_rev:335900.77, refunds:344887.03, chargebacks:18737.97, net_profit:276584.19, impostos:116746.76, plataforma:187888.74, comissoes:1622254.4, cogs:272261.37, aov_bruto:294.65, aov_liq:259.47, up1:1186, dw1:164, up2:322, up3:116 },
   abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', faturamento:2802332.91, front_sales:7670, front_rev:2144069.73, back_sales:3567, back_rev:657642.48, refunds:444262.33, chargebacks:28970.67, net_profit:464126.28, impostos:169205.09, plataforma:185764.76, comissoes:1398975.58, cogs:280233.29, aov_bruto:364.83, aov_liq:319.08, up1:2292, dw1:75, up2:292, up3:113 },
-  mai: { label:'Maio (1–10)', tag:'tag-green', tagTxt:'Parcial · 10 dias', faturamento:770380.07, front_sales:2178, front_rev:604113.75, back_sales:892, back_rev:166108.42, refunds:127607.71, chargebacks:15093.62, net_profit:101330.51, impostos:46921.78, plataforma:50005.28, comissoes:399304.94, cogs:77038.01, aov_bruto:353.49, aov_liq:309.21, up1:570, dw1:20, up2:84, up3:28 }
+  mai: { label:'Maio (1–17)', tag:'tag-green', tagTxt:'Parcial · 17 dias', faturamento:1374147.43, front_sales:3830, front_rev:1068394.91, back_sales:1610, back_rev:305594.62, refunds:214059.93, chargebacks:24210.69, net_profit:203336.23, impostos:84056.62, plataforma:89023.78, comissoes:706102.05, cogs:137414.75, aov_bruto:358.79, aov_liq:313.60, up1:1140, dw1:40, up2:168, up3:56 }
 };
 const bgData = {
   jan: { label:'Janeiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:6043, revenue:1294545.80, upsells:827, upsell_pct:13.7, downsells:239, sales_up:827, sales_dw:239, sales_main:4977, refunds:693, refund_pct:11.5, chargebacks:34, refund_value:152428, upsell_rev:134471, ref_up:169, ref_up_val:29666, ref_dw:30, ref_dw_val:4134, ref_main:494, ref_main_val:118628, cb_up:11, cb_up_val:1836, cb_dw:0, cb_dw_val:0, cb_main:23, cb_main_val:5356 },
   fev: { label:'Fevereiro', tag:'tag-blue', tagTxt:'Funil Padrão', total:8151, revenue:1751633.80, upsells:639, upsell_pct:7.8, downsells:176, sales_up:639, sales_dw:176, sales_main:7336, refunds:934, refund_pct:11.5, chargebacks:48, refund_value:207261, upsell_rev:120657, ref_up:140, ref_up_val:27325, ref_dw:23, ref_dw_val:2903, ref_main:771, ref_main_val:177033, cb_up:7, cb_up_val:1443, cb_dw:0, cb_dw_val:0, cb_main:41, cb_main_val:9636 },
   mar: { label:'Março', tag:'tag-blue', tagTxt:'Funil Padrão', total:11253, revenue:2453869.90, upsells:1255, upsell_pct:11.2, downsells:310, sales_up:1255, sales_dw:310, sales_main:9688, refunds:1294, refund_pct:11.5, chargebacks:66, refund_value:292596, upsell_rev:259431, ref_up:241, ref_up_val:50230, ref_dw:28, ref_dw_val:3729, ref_main:1025, ref_main_val:238637, cb_up:12, cb_up_val:2565, cb_dw:1, cb_dw_val:99, cb_main:53, cb_main_val:13700 },
   abr: { label:'Abril', tag:'tag-amber', tagTxt:'Funil Agressivo', total:11352, revenue:2603693.80, upsells:2292, upsell_pct:20.2, downsells:244, sales_up:2292, sales_dw:244, sales_main:8816, refunds:1263, refund_pct:11.1, chargebacks:71, refund_value:299839, upsell_rev:522684, ref_up:492, ref_up_val:113858, ref_dw:25, ref_dw_val:3900, ref_main:746, ref_main_val:182081, cb_up:19, cb_up_val:4386, cb_dw:0, cb_dw_val:0, cb_main:52, cb_main_val:12997 },
-  mai: { label:'Maio (1–10)', tag:'tag-green', tagTxt:'Parcial · Empresa', total:3072, revenue:770380.07, upsells:684, upsell_pct:22.3, downsells:35, sales_up:684, sales_dw:35, sales_main:2353, refunds:3, refund_pct:16.56, chargebacks:6, refund_value:127607.71, upsell_rev:166108.42, ref_up:2, ref_up_val:84939, ref_dw:0, ref_dw_val:0, ref_main:1, ref_main_val:42669, cb_up:1, cb_up_val:279.16, cb_dw:0, cb_dw_val:0, cb_main:5, cb_main_val:14814 }
+  mai: { label:'Maio (1–17)', tag:'tag-green', tagTxt:'Parcial · Empresa', total:5442, revenue:1374147.43, upsells:1304, upsell_pct:24.0, downsells:70, sales_up:1304, sales_dw:70, sales_main:4068, refunds:1166, refund_pct:15.58, chargebacks:78, refund_value:214059.93, upsell_rev:305594.62, ref_up:357, ref_up_val:107022, ref_dw:15, ref_dw_val:2457, ref_main:794, ref_main_val:104581, cb_up:25, cb_up_val:0, cb_dw:2, cb_dw_val:0, cb_main:51, cb_main_val:0 }
 };
 const keys = ['jan','fev','mar','abr','mai'];
 const keysEmp = ['jan','fev','mar','abr','mai'];
@@ -617,13 +531,13 @@ function bcCard(cls, head, val, pctOfSales, pctOfGroup, groupLabel, money, sales
   const rateColor = typeRate !== null
     ? (parseFloat(typeRate) > 20 ? 'var(--red)' : parseFloat(typeRate) > 12 ? 'var(--amber)' : 'var(--green)')
     : 'var(--text3)';
-  const maiNote = isMai && cls !== 'bc-total' ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px;">∂ dados parciais</div>` : '';
+  const maiNote = isMai && cls !== 'bc-total' ? `<div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;">∂ dados parciais</div>` : '';
   return `<div class="breakdown-card ${cls}">
     <div class="bc-head">${head}</div>
     <div class="bc-val">${fN(val)}</div>
     <div class="bc-pct-main">${fP(pctOfSales)} das vendas</div>
     <div class="bc-pct-sub">${fP(pctOfGroup)} ${groupLabel}</div>
-    ${typeRate !== null ? `<div style="font-family:'Epilogue',sans-serif;font-size:13px;font-weight:800;color:${rateColor};margin:4px 0 2px;letter-spacing:-.01em;">${typeRate}% <span style="font-size:10px;font-weight:400;font-family:'IBM Plex Mono',monospace;color:var(--text3);">taxa do segmento</span></div>` : ''}
+    ${typeRate !== null ? `<div style="font-family:var(--display);font-size:13px;font-weight:800;color:${rateColor};margin:4px 0 2px;letter-spacing:-.01em;">${typeRate}% <span style="font-size:10px;font-weight:400;font-family:var(--mono);color:var(--text3);">taxa do segmento</span></div>` : ''}
     <div class="bc-money">${money > 0 ? fDK(money) : '—'}</div>
     ${maiNote}
   </div>`;
@@ -655,16 +569,16 @@ function buildEmpPanel(key) {
   ${key==='mai' ? `
   <div class="sec-title">Motivações de reembolso e chargeback (Mai 1–10)</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:10px;padding:14px 16px;">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Reembolsos — razões (3 registros)</div>
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.9;">
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:5px;padding:14px 16px;">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Reembolsos — razões (3 registros)</div>
+      <div style="font-family:var(--mono);font-size:12px;line-height:1.9;">
         <div><span style="color:var(--red);font-weight:700;">2</span> <span style="color:var(--text2);">Did not agree to the upsells</span></div>
         <div><span style="color:var(--red);font-weight:700;">1</span> <span style="color:var(--text2);">Did not work</span></div>
       </div>
     </div>
-    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:10px;padding:14px 16px;">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Chargebacks — razões (6 registros)</div>
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.9;">
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:5px;padding:14px 16px;">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">Chargebacks — razões (6 registros)</div>
+      <div style="font-family:var(--mono);font-size:12px;line-height:1.9;">
         <div><span style="color:var(--amber);font-weight:700;">2</span> <span style="color:var(--text2);">Fraudulent Transaction</span></div>
         <div><span style="color:var(--amber);font-weight:700;">1</span> <span style="color:var(--text2);">Consumer Disputes (13.1)</span></div>
         <div><span style="color:var(--amber);font-weight:700;">1</span> <span style="color:var(--text2);">Not As Described / Defective</span></div>
@@ -692,9 +606,9 @@ function buildEmpAll() {
     <div class="metric"><div class="metric-label">Total chargebacks</div><div class="metric-val amber">${fDK(tC)}</div><div class="metric-sub">${fP(tC/tF*100)} do faturamento</div></div>
   </div>
   <div class="insight"><strong>Abril</strong> fechou com o maior net profit ($464K, 16,6%) mesmo com refunds em alta absoluta. O crescimento do back-end (3.567 vendas, 32% do total) foi o principal driver.</div>
-  <div class="insight"><strong>Maio (1–10)</strong>: refund de 16,6% e chargeback de 1,96% já nos primeiros 10 dias — acima da média histórica de jan–mar. Motivações identificadas: <strong>"Did not agree to the upsells"</strong> lidera os reembolsos; chargebacks dominados por disputas de fraude e transações não autorizadas.</div>
+  <div class="insight"><strong>Maio (1–17)</strong>: refund de 15,6% e chargeback de 1,76% acumulados — acima da média histórica jan–mar. Principais motivações: <strong>"Chargeback alert"</strong> e <strong>"Did not agree to the upsells"</strong> lideram; chargebacks dominados por Fraudulent Transaction (F29/UA01) e Cancelled Recurring.</div>
   <div class="insight">Taxa de refund: <strong>12,5% (jan) → 13,8% (fev) → 12,7% (mar) → 15,9% (abr) → 16,6% (mai ∂)</strong>. Tendência de alta consistente com funil mais agressivo.</div>
-  <div class="sec-title">Comparativo mensal <span style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;">∂ = mês parcial</span></div>
+  <div class="sec-title">Comparativo mensal <span style="font-size:10px;color:var(--text3);font-family:var(--mono);">∂ = mês parcial</span></div>
   <div class="table-wrap"><table><thead><tr><th>Mês</th><th>Faturamento</th><th>Front</th><th>Back</th><th>Net Profit</th><th>Refunds</th><th>Chargebacks</th><th>AOV Bruto</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
@@ -782,8 +696,8 @@ const noLeg={plugins:{legend:{display:false}},responsive:true,maintainAspectRati
 
 function scales(yfmt) {
   return {
-    x:{grid:{display:false},ticks:{color:getTick(),font:{family:"'IBM Plex Mono'",size:11}}},
-    y:{grid:{color:getGrid()},ticks:{color:getTick(),font:{family:"'IBM Plex Mono'",size:11},callback:yfmt}}
+    x:{grid:{display:false},ticks:{color:getTick(),font:{family:'JetBrains Mono',size:10}}},
+    y:{grid:{color:getGrid()},ticks:{color:getTick(),font:{family:'JetBrains Mono',size:10},callback:yfmt}}
   };
 }
 function mk(id,cfg) { charts[id]=new Chart($(id),cfg); }
@@ -822,27 +736,27 @@ const prodCSS = `
 .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-top: 4px; }
 .prod-card { background: var(--bg1); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
 .prod-header { padding: 16px 18px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-.prod-name { font-family: 'Epilogue', sans-serif; font-size: 17px; font-weight: 900; letter-spacing: -.03em; color: var(--text); }
-.prod-range { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); margin-top: 3px; }
+.prod-name { font-family:var(--display); font-size: 17px; font-weight: 900; letter-spacing: -.03em; color: var(--text); }
+.prod-range { font-family:var(--mono); font-size: 10px; color: var(--text3); margin-top: 3px; }
 .prod-body { padding: 14px 18px 16px; }
 .prod-section { margin-bottom: 14px; }
 .prod-section:last-child { margin-bottom: 0; }
-.prod-sec-title { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.prod-sec-title { font-family:var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
 .prod-stat-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
 .prod-stat { background: var(--bg3); border-radius: 6px; padding: 7px 12px; }
-.prod-stat-v { font-family: 'Epilogue', sans-serif; font-size: 18px; font-weight: 900; letter-spacing: -.03em; }
-.prod-stat-l { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); margin-top: 1px; }
+.prod-stat-v { font-family:var(--display); font-size: 18px; font-weight: 900; letter-spacing: -.03em; }
+.prod-stat-l { font-family:var(--mono); font-size: 10px; color: var(--text3); margin-top: 1px; }
 .prod-reasons { display: flex; flex-direction: column; gap: 4px; }
-.prod-reason { display: flex; align-items: flex-start; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text2); line-height: 1.4; }
+.prod-reason { display: flex; align-items: flex-start; gap: 8px; font-family:var(--mono); font-size: 11px; color: var(--text2); line-height: 1.4; }
 .prod-reason-n { font-weight: 700; min-width: 20px; text-align: right; flex-shrink: 0; }
 .prod-type-pills { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
-.prod-type-pill { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px; }
+.prod-type-pill { font-family:var(--mono); font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 3px; }
 .pill-up   { background: var(--blue-d);  color: var(--blue); }
 .pill-dw   { background: var(--amber-d); color: var(--amber); }
 .pill-main { background: var(--green-d); color: var(--green); }
-.prod-no-data { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); font-style: italic; }
+.prod-no-data { font-family:var(--mono); font-size: 11px; color: var(--text3); font-style: italic; }
 .prod-filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
-.prod-filter-btn { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; padding: 5px 14px; border: 1px solid var(--border2); border-radius: 4px; background: transparent; color: var(--text3); cursor: pointer; transition: all .18s; }
+.prod-filter-btn { font-family:var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; padding: 5px 14px; border: 1px solid var(--border2); border-radius: 4px; background: transparent; color: var(--text3); cursor: pointer; transition: all .18s; }
 .prod-filter-btn.active { background: var(--blue-d); border-color: var(--blue); color: var(--blue); }
 `;
 document.head.insertAdjacentHTML('beforeend', `<style>${prodCSS}</style>`);
@@ -1032,6 +946,16 @@ const prodData = [
     chargebacks:{ total:0, value:0, byType:{upsell:0,downsell:0,main:0}, buckets:{}, reasons:[] }
   },
   {
+    id:'breatheasex', name:'BreathEaseX', color:'#38bdf8',
+    refRange:'Mai 11 → Mai 17, 2026', cbRange:'—',
+    refunds:{ total:20, value:3822.43, byType:{upsell:12,downsell:0,main:8},
+      buckets:{'0-3d':14,'4-7d':6,'8-15d':0,'16-30d':0,'45d+':0},
+      reasons:[{n:6,r:'Threatened with a chargeback'},{n:5,r:'Chargeback alert'},
+               {n:4,r:'Did not agree to the upsells'},{n:3,r:'Doctor advised against using it'},
+               {n:1,r:'No longer interested in the product'},{n:1,r:'Experienced side effects'}]},
+    chargebacks:{ total:0, value:0, byType:{upsell:0,downsell:0,main:0}, buckets:{}, reasons:[] }
+  },
+  {
     id:'lipotrine', name:'LipoTrine', color:'#facc15',
     refRange:'Abr 22 → Mai 7, 2026', cbRange:'—',
     refunds:{ total:3, value:790.95, byType:{upsell:1,downsell:0,main:2},
@@ -1058,7 +982,7 @@ function bucketBar(buckets, total, color) {
     return `<div title="${PBKT_LABEL[b]}: ${v} (${(v/total*100).toFixed(0)}%)" style="width:${w}%;background:${PBKT_COLOR[b]};height:100%;min-width:2px;"></div>`;
   }).join('');
   const legend = PBKTS.filter(b => (buckets[b]||0) > 0).map(b =>
-    `<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);white-space:nowrap;">
+    `<span style="font-family:var(--mono);font-size:9px;color:var(--text3);white-space:nowrap;">
       <span style="display:inline-block;width:6px;height:6px;background:${PBKT_COLOR[b]};border-radius:1px;margin-right:2px;vertical-align:middle;"></span>${PBKT_LABEL[b]}: <strong style="color:var(--text2);">${buckets[b]}</strong> (${(buckets[b]/total*100).toFixed(0)}%)
     </span>`).join('');
   return `<div style="margin-top:8px;">
@@ -1101,8 +1025,8 @@ function buildProdCard(p, filter) {
         ${p.cbRange && p.cbRange!=='—' ? `<div class="prod-range">📅 CB: ${p.cbRange}</div>` : ''}
       </div>
       <div style="text-align:right;flex-shrink:0;">
-        ${hasRef ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--red);font-weight:700;">${p.refunds.total} refunds</div>` : ''}
-        ${hasCB  ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--amber);font-weight:700;">${p.chargebacks.total} CBs</div>` : ''}
+        ${hasRef ? `<div style="font-family:var(--mono);font-size:12px;color:var(--red);font-weight:700;">${p.refunds.total} refunds</div>` : ''}
+        ${hasCB  ? `<div style="font-family:var(--mono);font-size:12px;color:var(--amber);font-weight:700;">${p.chargebacks.total} CBs</div>` : ''}
       </div>
     </div>
     <div class="prod-body">
@@ -1146,15 +1070,15 @@ function buildProdContent(filter, month) {
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:10px;padding:14px 18px;">
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:5px;padding:14px 18px;">
       <div class="sec-title" style="margin-top:0;border-left-color:var(--red);">Top motivações de reembolso (todos os produtos)</div>
       <div class="prod-reasons">${topRef.map(([r,n])=>`<div class="prod-reason"><span class="prod-reason-n" style="color:var(--red);">${n}×</span><span>${r}</span></div>`).join('')}</div>
-      <div style="margin-top:12px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Intervalo de reembolso (todos)</div>${bucketBar(allRefBkts,totalRef,'var(--red)')}</div>
+      <div style="margin-top:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Intervalo de reembolso (todos)</div>${bucketBar(allRefBkts,totalRef,'var(--red)')}</div>
     </div>
-    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:10px;padding:14px 18px;">
+    <div style="background:var(--bg1);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:5px;padding:14px 18px;">
       <div class="sec-title" style="margin-top:0;border-left-color:var(--amber);">Top motivações de chargeback (todos os produtos)</div>
       <div class="prod-reasons">${topCB.map(([r,n])=>`<div class="prod-reason"><span class="prod-reason-n" style="color:var(--amber);">${n}×</span><span>${r}</span></div>`).join('')}</div>
-      <div style="margin-top:12px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Intervalo de chargeback (todos)</div>${bucketBar(allCBBkts,totalCB,'var(--amber)')}</div>
+      <div style="margin-top:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Intervalo de chargeback (todos)</div>${bucketBar(allCBBkts,totalCB,'var(--amber)')}</div>
     </div>
   </div>
 
@@ -1173,51 +1097,55 @@ function rebuildProd(filter) {
 /* ── PRODUCT MONTHLY DATA ── */
 const prodMonthly = {
   'LipoVive': {
-    ref:{'2025-12':{total:1691,value:252614.89,up:406,dw:75,main:1210,buckets:{'0-3d':121,'4-7d':16,'8-15d':37,'16-30d':73,'45d+':1444},reasons:[[520,'Did not work'],[149,'Chargeback alert'],[140,'No longer interested in the product'],[120,'Experienced side effects after taking it'],[115,'Did not see expected results / Did not work as advertised']]},'2026-01':{total:836,value:123083.23,up:216,dw:33,main:587,buckets:{'0-3d':115,'4-7d':40,'8-15d':77,'16-30d':109,'45d+':495},reasons:[[192,'Did not work'],[112,'Chargeback alert'],[78,'Did not agree to the upsells'],[67,'No longer interested in the product'],[54,'Doctor advised against using it']]},'2026-02':{total:464,value:66797.64,up:95,dw:23,main:346,buckets:{'0-3d':63,'4-7d':15,'8-15d':22,'16-30d':85,'45d+':279},reasons:[[92,'Did not work'],[63,'Chargeback alert'],[49,'No longer interested in the product'],[35,'Did not agree to the upsells'],[29,'Doctor advised against using it']]},'2026-03':{total:472,value:66197.93,up:80,dw:17,main:375,buckets:{'0-3d':47,'4-7d':12,'8-15d':43,'16-30d':106,'45d+':264},reasons:[[72,'Did not work'],[58,'No longer interested in the product'],[47,'Chargeback alert'],[38,'Doctor advised against using it'],[36,'Experienced side effects after taking it']]},'2026-04':{total:170,value:23010.75,up:26,dw:4,main:140,buckets:{'0-3d':2,'4-7d':5,'8-15d':2,'16-30d':19,'45d+':142},reasons:[[35,'Doctor advised against using it'],[24,'Did not work'],[17,'No longer interested in the product'],[17,'Experienced side effects after taking it'],[15,'Did not see expected results / Did not work as advertised']]},'2026-05':{total:22,value:3030.21,up:2,dw:0,main:20,buckets:{'0-3d':1,'4-7d':0,'8-15d':1,'16-30d':0,'45d+':20},reasons:[[7,'Chargeback alert'],[2,'Did not work'],[1,'Doctor advised against using it']]}},
+    ref:{'2025-12':{total:1691,value:252614.89,up:406,dw:75,main:1210,buckets:{'0-3d':121,'4-7d':16,'8-15d':37,'16-30d':73,'45d+':1444},reasons:[[520,'Did not work'],[149,'Chargeback alert'],[140,'No longer interested in the product'],[120,'Experienced side effects after taking it'],[115,'Did not see expected results / Did not work as advertised']]},'2026-01':{total:836,value:123083.23,up:216,dw:33,main:587,buckets:{'0-3d':115,'4-7d':40,'8-15d':77,'16-30d':109,'45d+':495},reasons:[[192,'Did not work'],[112,'Chargeback alert'],[78,'Did not agree to the upsells'],[67,'No longer interested in the product'],[54,'Doctor advised against using it']]},'2026-02':{total:464,value:66797.64,up:95,dw:23,main:346,buckets:{'0-3d':63,'4-7d':15,'8-15d':22,'16-30d':85,'45d+':279},reasons:[[92,'Did not work'],[63,'Chargeback alert'],[49,'No longer interested in the product'],[35,'Did not agree to the upsells'],[29,'Doctor advised against using it']]},'2026-03':{total:472,value:66197.93,up:80,dw:17,main:375,buckets:{'0-3d':47,'4-7d':12,'8-15d':43,'16-30d':106,'45d+':264},reasons:[[72,'Did not work'],[58,'No longer interested in the product'],[47,'Chargeback alert'],[38,'Doctor advised against using it'],[36,'Experienced side effects after taking it']]},'2026-04':{total:170,value:23010.75,up:26,dw:4,main:140,buckets:{'0-3d':2,'4-7d':5,'8-15d':2,'16-30d':19,'45d+':142},reasons:[[35,'Doctor advised against using it'],[24,'Did not work'],[17,'No longer interested in the product'],[17,'Experienced side effects after taking it'],[15,'Did not see expected results / Did not work as advertised']]},'2026-05':{total:26,value:4131.24,up:2,dw:0,main:24,buckets:{'0-3d':2,'4-7d':0,'8-15d':2,'16-30d':0,'45d+':22},reasons:[[9,'Chargeback alert'],[2,'Did not work'],[1,'Chargeback Alert-RDR'],[1,'Chargeback']]}},
     cb:{'2025-12':{total:53,value:13698.03,up:14,dw:1,main:38,buckets:{'0-3d':0,'4-7d':0,'8-15d':3,'16-30d':1,'45d+':49},reasons:[[5,'Fraudulent Transaction (7030)'],[5,'Refund Not Processed (8002)'],[4,'Cardholder Dispute'],[4,'Refund Not Processed (RN2)'],[3,'Cancelled Recurring (C04)']]},'2026-01':{total:23,value:6004.66,up:5,dw:1,main:17,buckets:{'0-3d':0,'4-7d':0,'8-15d':4,'16-30d':2,'45d+':17},reasons:[[5,'Fraudulent Transaction (7030)'],[3,'Cardholder Dispute'],[3,'Fraudulent Transaction (UA01)'],[2,'CREDIT_NOT_PROCESSED'],[1,'Unauthorized Transaction (A02)']]},'2026-02':{total:17,value:4147.55,up:6,dw:0,main:11,buckets:{'0-3d':0,'4-7d':0,'8-15d':2,'16-30d':5,'45d+':10},reasons:[[2,'Fraudulent Transaction (NA)'],[2,'Fraudulent Transaction (7030)'],[1,'credit_not_processed'],[1,'Fraudulent Transaction (10.4)']]},'2026-03':{total:8,value:1901.12,up:1,dw:0,main:7,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':1,'45d+':7},reasons:[[2,'Fraudulent Transaction (7030)'],[1,'Consumer Disputes (13.6)'],[1,'Cancelled Recurring (C05)']]},'2026-04':{total:4,value:550.60,up:0,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':4},reasons:[[3,'credit_not_processed'],[1,'Consumer Disputes (13.7)']]},'2026-05':{total:2,value:536.15,up:0,dw:0,main:2,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':2},reasons:[[1,'Cardholder Dispute'],[1,'fraudulent']]}}
   },
   'Prostafense': {
-    ref:{'2025-12':{total:216,value:34435.83,up:75,dw:2,main:139,buckets:{'0-3d':74,'4-7d':13,'8-15d':19,'16-30d':38,'45d+':72},reasons:[[41,'Did not agree to the upsells'],[35,'Chargeback alert'],[25,'Did not work'],[21,'No longer interested in the product'],[16,'Doctor advised against using it']]},'2026-01':{total:218,value:34913.33,up:72,dw:5,main:141,buckets:{'0-3d':58,'4-7d':21,'8-15d':12,'16-30d':51,'45d+':76},reasons:[[38,'Did not agree to the upsells'],[28,'Chargeback alert'],[27,'No longer interested in the product'],[25,'Did not work'],[21,'Doctor advised against using it']]},'2026-02':{total:241,value:39665.04,up:51,dw:8,main:182,buckets:{'0-3d':58,'4-7d':17,'8-15d':24,'16-30d':54,'45d+':88},reasons:[[45,'Chargeback alert'],[41,'Did not work'],[28,'Doctor advised against using it'],[20,'Partial Refund – Saved Sale'],[19,'Did not agree to the upsells']]},'2026-03':{total:251,value:40286.10,up:36,dw:9,main:206,buckets:{'0-3d':58,'4-7d':14,'8-15d':40,'16-30d':49,'45d+':90},reasons:[[46,'Did not work'],[45,'Doctor advised against using it'],[29,'Chargeback alert'],[17,'Partial Refund – Saved Sale'],[16,'Did not agree to the upsells']]},'2026-04':{total:455,value:67629.93,up:170,dw:10,main:275,buckets:{'0-3d':172,'4-7d':27,'8-15d':53,'16-30d':77,'45d+':126},reasons:[[105,'Did not agree to the upsells'],[55,'Chargeback alert'],[40,'Threatened with a chargeback'],[36,'Doctor advised against using it'],[34,'Did not work']]},'2026-05':{total:51,value:9389.41,up:19,dw:0,main:32,buckets:{'0-3d':13,'4-7d':11,'8-15d':1,'16-30d':12,'45d+':14},reasons:[[20,'Chargeback alert'],[12,'Threatened with a chargeback'],[4,'Regret over spending'],[4,'Experienced side effects']]}},
-    cb:{'2025-12':{total:14,value:3827.39,up:5,dw:0,main:9,buckets:{'0-3d':0,'4-7d':0,'8-15d':4,'16-30d':3,'45d+':7},reasons:[[4,'Fraudulent Transaction (NA)'],[4,'Fraudulent Transaction (6005)'],[2,'Fraudulent Transaction (193)']]},'2026-01':{total:3,value:889.83,up:0,dw:0,main:3,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':0,'45d+':2},reasons:[[1,'fraudulent'],[1,'Fraudulent Transaction (NA)']]},'2026-02':{total:3,value:778.22,up:1,dw:0,main:2,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':1},reasons:[[1,'Consumer Disputes (13.3)'],[1,'Fraudulent Transaction (4)']]},'2026-03':{total:8,value:2134.32,up:1,dw:0,main:7,buckets:{'0-3d':1,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':5},reasons:[[2,'Refund Not Processed (8002)'],[1,'fraudulent'],[1,'Duplicate Processing (P08)']]},'2026-04':{total:9,value:2435.53,up:4,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':5,'16-30d':4,'45d+':0},reasons:[[2,'Fraudulent Transaction (7030)'],[2,'Unauthorized Transaction (4837)'],[2,'Fraudulent Transaction (F29)']]},'2026-05':{total:6,value:1576.85,up:4,dw:0,main:2,buckets:{'0-3d':1,'4-7d':0,'8-15d':1,'16-30d':4,'45d+':0},reasons:[[2,'Consumer Disputes (13.1)'],[2,'Cancelled Recurring (C05)'],[1,'Unauthorized Transaction (4837)']]}}
+    ref:{'2025-12':{total:216,value:34435.83,up:75,dw:2,main:139,buckets:{'0-3d':74,'4-7d':13,'8-15d':19,'16-30d':38,'45d+':72},reasons:[[41,'Did not agree to the upsells'],[35,'Chargeback alert'],[25,'Did not work'],[21,'No longer interested in the product'],[16,'Doctor advised against using it']]},'2026-01':{total:218,value:34913.33,up:72,dw:5,main:141,buckets:{'0-3d':58,'4-7d':21,'8-15d':12,'16-30d':51,'45d+':76},reasons:[[38,'Did not agree to the upsells'],[28,'Chargeback alert'],[27,'No longer interested in the product'],[25,'Did not work'],[21,'Doctor advised against using it']]},'2026-02':{total:241,value:39665.04,up:51,dw:8,main:182,buckets:{'0-3d':58,'4-7d':17,'8-15d':24,'16-30d':54,'45d+':88},reasons:[[45,'Chargeback alert'],[41,'Did not work'],[28,'Doctor advised against using it'],[20,'Partial Refund – Saved Sale'],[19,'Did not agree to the upsells']]},'2026-03':{total:251,value:40286.10,up:36,dw:9,main:206,buckets:{'0-3d':58,'4-7d':14,'8-15d':40,'16-30d':49,'45d+':90},reasons:[[46,'Did not work'],[45,'Doctor advised against using it'],[29,'Chargeback alert'],[17,'Partial Refund – Saved Sale'],[16,'Did not agree to the upsells']]},'2026-04':{total:455,value:67629.93,up:170,dw:10,main:275,buckets:{'0-3d':172,'4-7d':27,'8-15d':53,'16-30d':77,'45d+':126},reasons:[[105,'Did not agree to the upsells'],[55,'Chargeback alert'],[40,'Threatened with a chargeback'],[36,'Doctor advised against using it'],[34,'Did not work']]},'2026-05':{total:71,value:13290.51,up:25,dw:1,main:45,buckets:{'0-3d':20,'4-7d':14,'8-15d':3,'16-30d':14,'45d+':20},reasons:[[23,'Chargeback alert'],[15,'Threatened with a chargeback'],[4,'Too expensive'],[4,'Doctor advised against using it']]}},
+    cb:{'2025-12':{total:14,value:3827.39,up:5,dw:0,main:9,buckets:{'0-3d':0,'4-7d':0,'8-15d':4,'16-30d':3,'45d+':7},reasons:[[4,'Fraudulent Transaction (NA)'],[4,'Fraudulent Transaction (6005)'],[2,'Fraudulent Transaction (193)']]},'2026-01':{total:3,value:889.83,up:0,dw:0,main:3,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':0,'45d+':2},reasons:[[1,'fraudulent'],[1,'Fraudulent Transaction (NA)']]},'2026-02':{total:3,value:778.22,up:1,dw:0,main:2,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':1},reasons:[[1,'Consumer Disputes (13.3)'],[1,'Fraudulent Transaction (4)']]},'2026-03':{total:8,value:2134.32,up:1,dw:0,main:7,buckets:{'0-3d':1,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':5},reasons:[[2,'Refund Not Processed (8002)'],[1,'fraudulent'],[1,'Duplicate Processing (P08)']]},'2026-04':{total:9,value:2435.53,up:4,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':5,'16-30d':4,'45d+':0},reasons:[[2,'Fraudulent Transaction (7030)'],[2,'Unauthorized Transaction (4837)'],[2,'Fraudulent Transaction (F29)']]},'2026-05':{total:11,value:2830.78,up:6,dw:0,main:5,buckets:{'0-3d':1,'4-7d':0,'8-15d':1,'16-30d':8,'45d+':1},reasons:[[3,'Cancelled Recurring (C05)'],[2,'Merchandise Not Received (4555)'],[2,'Consumer Disputes (13.1)'],[1,'Cardholder Dispute (C31)']]}}
   },
   'Marobrain': {
-    ref:{'2025-12':{total:121,value:18135.13,up:25,dw:5,main:91,buckets:{'0-3d':45,'4-7d':7,'8-15d':24,'16-30d':22,'45d+':23},reasons:[[24,'Chargeback alert'],[15,'Did not agree to the upsells'],[14,'No longer interested in the product'],[10,'Did not receive product'],[8,'Misinformed by marketing']]},'2026-01':{total:141,value:23611.63,up:40,dw:2,main:99,buckets:{'0-3d':30,'4-7d':13,'8-15d':23,'16-30d':31,'45d+':44},reasons:[[42,'Chargeback alert'],[13,'No longer interested in the product'],[12,'Doctor advised against using it'],[10,'Threatened with a chargeback'],[9,'Partial Refund – Saved Sale']]},'2026-02':{total:184,value:28709.69,up:43,dw:8,main:133,buckets:{'0-3d':50,'4-7d':12,'8-15d':17,'16-30d':21,'45d+':84},reasons:[[31,'Chargeback alert'],[29,'Doctor advised against using it'],[24,'Did not agree to the upsells'],[15,'No longer interested in the product'],[11,'Did not work']]},'2026-03':{total:336,value:50809.16,up:79,dw:10,main:247,buckets:{'0-3d':106,'4-7d':31,'8-15d':51,'16-30d':73,'45d+':75},reasons:[[76,'Chargeback alert'],[44,'Doctor advised against using it'],[38,'Did not agree to the upsells'],[24,'No longer interested in the product'],[21,'Did not work']]},'2026-04':{total:266,value:40945.37,up:45,dw:6,main:215,buckets:{'0-3d':81,'4-7d':20,'8-15d':44,'16-30d':69,'45d+':52},reasons:[[46,'Chargeback alert'],[32,'Doctor advised against using it'],[27,'Threatened with a chargeback'],[24,'No longer interested in the product'],[16,'Concerned about potential side effects']]},'2026-05':{total:67,value:13618.62,up:17,dw:0,main:50,buckets:{'0-3d':22,'4-7d':5,'8-15d':12,'16-30d':5,'45d+':23},reasons:[[25,'Chargeback alert'],[13,'Threatened with a chargeback'],[6,'Chargeback Alert-RDR'],[4,'Did not agree to the upsells']]}},
-    cb:{'2025-12':{total:7,value:1298.61,up:1,dw:0,main:6,buckets:{'0-3d':0,'4-7d':1,'8-15d':5,'16-30d':1,'45d+':0},reasons:[[2,'Fraudulent Transaction (7030)'],[1,'Fraudulent Transaction (NA)'],[1,'Refund Not Processed (C01)']]},'2026-01':{total:6,value:1887.11,up:1,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':2,'16-30d':1,'45d+':3},reasons:[[2,'credit_not_processed'],[1,'Merchandise Not Received (4755)'],[1,'Unauthorized Transaction (4837)']]},'2026-02':{total:7,value:1340.47,up:2,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':5},reasons:[[2,'Fraudulent Transaction (NA)'],[2,'Other Fraud'],[1,'Cancelled Recurring (C04)']]},'2026-03':{total:9,value:2291.02,up:4,dw:0,main:5,buckets:{'0-3d':0,'4-7d':1,'8-15d':3,'16-30d':5,'45d+':0},reasons:[[3,'Fraudulent Transaction (NA)'],[2,'Fraudulent Transaction (6005)'],[2,'Fraudulent Transaction (F29)']]},'2026-04':{total:17,value:4962.46,up:4,dw:0,main:13,buckets:{'0-3d':0,'4-7d':1,'8-15d':7,'16-30d':2,'45d+':7},reasons:[[2,'Fraudulent Transaction (F29)'],[2,'Cancelled Recurring (C04)'],[2,'fraudulent']]},'2026-05':{total:14,value:3626.15,up:4,dw:1,main:9,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':7,'45d+':7},reasons:[[3,'Fraudulent Transaction (10.4)'],[2,'product_unacceptable'],[2,'Fraudulent Transaction (F29)'],[2,'Refund Not Processed (4560)']]}}
+    ref:{'2025-12':{total:121,value:18135.13,up:25,dw:5,main:91,buckets:{'0-3d':45,'4-7d':7,'8-15d':24,'16-30d':22,'45d+':23},reasons:[[24,'Chargeback alert'],[15,'Did not agree to the upsells'],[14,'No longer interested in the product'],[10,'Did not receive product'],[8,'Misinformed by marketing']]},'2026-01':{total:141,value:23611.63,up:40,dw:2,main:99,buckets:{'0-3d':30,'4-7d':13,'8-15d':23,'16-30d':31,'45d+':44},reasons:[[42,'Chargeback alert'],[13,'No longer interested in the product'],[12,'Doctor advised against using it'],[10,'Threatened with a chargeback'],[9,'Partial Refund – Saved Sale']]},'2026-02':{total:184,value:28709.69,up:43,dw:8,main:133,buckets:{'0-3d':50,'4-7d':12,'8-15d':17,'16-30d':21,'45d+':84},reasons:[[31,'Chargeback alert'],[29,'Doctor advised against using it'],[24,'Did not agree to the upsells'],[15,'No longer interested in the product'],[11,'Did not work']]},'2026-03':{total:336,value:50809.16,up:79,dw:10,main:247,buckets:{'0-3d':106,'4-7d':31,'8-15d':51,'16-30d':73,'45d+':75},reasons:[[76,'Chargeback alert'],[44,'Doctor advised against using it'],[38,'Did not agree to the upsells'],[24,'No longer interested in the product'],[21,'Did not work']]},'2026-04':{total:266,value:40945.37,up:45,dw:6,main:215,buckets:{'0-3d':81,'4-7d':20,'8-15d':44,'16-30d':69,'45d+':52},reasons:[[46,'Chargeback alert'],[32,'Doctor advised against using it'],[27,'Threatened with a chargeback'],[24,'No longer interested in the product'],[16,'Concerned about potential side effects']]},'2026-05':{total:111,value:22141.50,up:25,dw:0,main:86,buckets:{'0-3d':31,'4-7d':7,'8-15d':24,'16-30d':10,'45d+':39},reasons:[[34,'Threatened with a chargeback'],[30,'Chargeback alert'],[10,'Doctor advised against using it'],[8,'Did not agree to the upsells']]}},
+    cb:{'2025-12':{total:7,value:1298.61,up:1,dw:0,main:6,buckets:{'0-3d':0,'4-7d':1,'8-15d':5,'16-30d':1,'45d+':0},reasons:[[2,'Fraudulent Transaction (7030)'],[1,'Fraudulent Transaction (NA)'],[1,'Refund Not Processed (C01)']]},'2026-01':{total:6,value:1887.11,up:1,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':2,'16-30d':1,'45d+':3},reasons:[[2,'credit_not_processed'],[1,'Merchandise Not Received (4755)'],[1,'Unauthorized Transaction (4837)']]},'2026-02':{total:7,value:1340.47,up:2,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':5},reasons:[[2,'Fraudulent Transaction (NA)'],[2,'Other Fraud'],[1,'Cancelled Recurring (C04)']]},'2026-03':{total:9,value:2291.02,up:4,dw:0,main:5,buckets:{'0-3d':0,'4-7d':1,'8-15d':3,'16-30d':5,'45d+':0},reasons:[[3,'Fraudulent Transaction (NA)'],[2,'Fraudulent Transaction (6005)'],[2,'Fraudulent Transaction (F29)']]},'2026-04':{total:17,value:4962.46,up:4,dw:0,main:13,buckets:{'0-3d':0,'4-7d':1,'8-15d':7,'16-30d':2,'45d+':7},reasons:[[2,'Fraudulent Transaction (F29)'],[2,'Cancelled Recurring (C04)'],[2,'fraudulent']]},'2026-05':{total:18,value:4620.11,up:6,dw:1,main:11,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':7,'45d+':10},reasons:[[4,'Fraudulent Transaction (10.4)'],[3,'Fraudulent Transaction (F29)'],[2,'product_unacceptable'],[2,'Refund Not Processed (4560)']]}}
   },
   'Vigorlong': {
-    ref:{'2025-12':{total:269,value:37946.82,up:78,dw:0,main:191,buckets:{'0-3d':60,'4-7d':16,'8-15d':11,'16-30d':61,'45d+':121},reasons:[[48,'Did not work'],[35,'Chargeback alert'],[31,'Did not agree to the upsells'],[27,'No longer interested in the product'],[22,'Partial Refund – Saved Sale']]},'2026-01':{total:203,value:31716.05,up:41,dw:0,main:162,buckets:{'0-3d':15,'4-7d':10,'8-15d':20,'16-30d':35,'45d+':123},reasons:[[60,'Chargeback alert'],[34,'Did not work'],[18,'Did not see expected results'],[10,'Doctor advised against using it'],[10,'Chargeback Alert-RDR']]},'2026-02':{total:227,value:37094.27,up:39,dw:0,main:188,buckets:{'0-3d':26,'4-7d':17,'8-15d':44,'16-30d':48,'45d+':92},reasons:[[60,'Chargeback alert'],[43,'Did not work'],[22,'Threatened with a chargeback'],[17,'Partial Refund – Saved Sale'],[13,'Doctor advised against using it']]},'2026-03':{total:281,value:42820.87,up:32,dw:0,main:249,buckets:{'0-3d':28,'4-7d':6,'8-15d':15,'16-30d':53,'45d+':179},reasons:[[77,'Did not work'],[47,'Chargeback alert'],[26,'No longer interested in the product'],[22,'Did not see expected results'],[17,'Experienced side effects']]},'2026-04':{total:317,value:48521.56,up:98,dw:4,main:215,buckets:{'0-3d':114,'4-7d':27,'8-15d':29,'16-30d':29,'45d+':118},reasons:[[44,'Did not work'],[44,'Did not agree to the upsells'],[38,'Chargeback alert'],[38,'Threatened with a chargeback'],[34,'Partial Refund – Saved Sale']]},'2026-05':{total:54,value:9634.76,up:11,dw:0,main:43,buckets:{'0-3d':7,'4-7d':2,'8-15d':5,'16-30d':20,'45d+':20},reasons:[[13,'Chargeback alert'],[7,'Did not agree to the upsells'],[6,'Did not work'],[6,'Doctor advised against using it']]}},
-    cb:{'2025-12':{total:5,value:1612.43,up:0,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':3},reasons:[[3,'Fraudulent Transaction (7030)'],[1,'Fraudulent Transaction (UA02)'],[1,'Refund Not Processed (C01)']]},'2026-01':{total:7,value:1408.69,up:3,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':3,'45d+':3},reasons:[[2,'Fraudulent Transaction (UA01)'],[1,'Unauthorized Transaction (A02)'],[1,'Refund Not Processed (8002)']]},'2026-02':{total:13,value:3236.41,up:5,dw:0,main:8,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':3,'45d+':9},reasons:[[2,'Fraudulent Transaction (UA01)'],[2,'product_not_received'],[2,'Cancelled Recurring'],[2,'Unauthorized Transaction (A02)']]},'2026-03':{total:15,value:3640.60,up:1,dw:0,main:14,buckets:{'0-3d':0,'4-7d':1,'8-15d':2,'16-30d':6,'45d+':6},reasons:[[4,'Fraudulent Transaction (7030)'],[3,'fraudulent'],[2,'Fraudulent Transaction (F29)']]},'2026-04':{total:16,value:3979.31,up:2,dw:0,main:14,buckets:{'0-3d':0,'4-7d':0,'8-15d':4,'16-30d':3,'45d+':9},reasons:[[3,'fraudulent'],[2,'Other Unspecified'],[2,'Fraudulent Transaction (UA01)'],[2,'Refund Not Processed (C01)']]},'2026-05':{total:6,value:1513.32,up:1,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':4},reasons:[[2,'Consumer Disputes (13.1)'],[1,'Fraudulent Transaction (F29)'],[1,'Fraudulent Transaction (UA01)']]}}
+    ref:{'2025-12':{total:269,value:37946.82,up:78,dw:0,main:191,buckets:{'0-3d':60,'4-7d':16,'8-15d':11,'16-30d':61,'45d+':121},reasons:[[48,'Did not work'],[35,'Chargeback alert'],[31,'Did not agree to the upsells'],[27,'No longer interested in the product'],[22,'Partial Refund – Saved Sale']]},'2026-01':{total:203,value:31716.05,up:41,dw:0,main:162,buckets:{'0-3d':15,'4-7d':10,'8-15d':20,'16-30d':35,'45d+':123},reasons:[[60,'Chargeback alert'],[34,'Did not work'],[18,'Did not see expected results'],[10,'Doctor advised against using it'],[10,'Chargeback Alert-RDR']]},'2026-02':{total:227,value:37094.27,up:39,dw:0,main:188,buckets:{'0-3d':26,'4-7d':17,'8-15d':44,'16-30d':48,'45d+':92},reasons:[[60,'Chargeback alert'],[43,'Did not work'],[22,'Threatened with a chargeback'],[17,'Partial Refund – Saved Sale'],[13,'Doctor advised against using it']]},'2026-03':{total:281,value:42820.87,up:32,dw:0,main:249,buckets:{'0-3d':28,'4-7d':6,'8-15d':15,'16-30d':53,'45d+':179},reasons:[[77,'Did not work'],[47,'Chargeback alert'],[26,'No longer interested in the product'],[22,'Did not see expected results'],[17,'Experienced side effects']]},'2026-04':{total:317,value:48521.56,up:98,dw:4,main:215,buckets:{'0-3d':114,'4-7d':27,'8-15d':29,'16-30d':29,'45d+':118},reasons:[[44,'Did not work'],[44,'Did not agree to the upsells'],[38,'Chargeback alert'],[38,'Threatened with a chargeback'],[34,'Partial Refund – Saved Sale']]},'2026-05':{total:75,value:13471.66,up:15,dw:0,main:60,buckets:{'0-3d':9,'4-7d':3,'8-15d':6,'16-30d':28,'45d+':29},reasons:[[18,'Chargeback alert'],[12,'Did not agree to the upsells'],[8,'Did not receive product'],[6,'Did not work']]}},
+    cb:{'2025-12':{total:5,value:1612.43,up:0,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':3},reasons:[[3,'Fraudulent Transaction (7030)'],[1,'Fraudulent Transaction (UA02)'],[1,'Refund Not Processed (C01)']]},'2026-01':{total:7,value:1408.69,up:3,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':3,'45d+':3},reasons:[[2,'Fraudulent Transaction (UA01)'],[1,'Unauthorized Transaction (A02)'],[1,'Refund Not Processed (8002)']]},'2026-02':{total:13,value:3236.41,up:5,dw:0,main:8,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':3,'45d+':9},reasons:[[2,'Fraudulent Transaction (UA01)'],[2,'product_not_received'],[2,'Cancelled Recurring'],[2,'Unauthorized Transaction (A02)']]},'2026-03':{total:15,value:3640.60,up:1,dw:0,main:14,buckets:{'0-3d':0,'4-7d':1,'8-15d':2,'16-30d':6,'45d+':6},reasons:[[4,'Fraudulent Transaction (7030)'],[3,'fraudulent'],[2,'Fraudulent Transaction (F29)']]},'2026-04':{total:16,value:3979.31,up:2,dw:0,main:14,buckets:{'0-3d':0,'4-7d':0,'8-15d':4,'16-30d':3,'45d+':9},reasons:[[3,'fraudulent'],[2,'Other Unspecified'],[2,'Fraudulent Transaction (UA01)'],[2,'Refund Not Processed (C01)']]},'2026-05':{total:7,value:1843.30,up:1,dw:0,main:6,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':3,'45d+':4},reasons:[[2,'Consumer Disputes (13.1)'],[1,'Fraudulent Transaction (F29)'],[1,'Fraudulent Transaction (UA01)'],[1,'Consumer Disputes (13.7)']]}}
   },
   'Gluco Recover': {
-    ref:{'2025-12':{total:4,value:450.18,up:0,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':2},reasons:[[3,'No longer interested in the product'],[1,'Chargeback alert']]},'2026-01':{total:20,value:3419.51,up:9,dw:0,main:11,buckets:{'0-3d':14,'4-7d':2,'8-15d':3,'16-30d':1,'45d+':0},reasons:[[3,'Chargeback alert'],[2,'Regret over spending'],[2,'Duplicate charge'],[2,'Doctor advised against using it'],[2,'Test order']]},'2026-02':{total:88,value:13614.39,up:27,dw:2,main:59,buckets:{'0-3d':38,'4-7d':11,'8-15d':18,'16-30d':15,'45d+':6},reasons:[[21,'Chargeback alert'],[13,'Misinformed by marketing'],[12,'Did not agree to the upsells'],[10,'No longer interested in the product'],[6,'Partial Refund – Saved Sale']]},'2026-03':{total:272,value:39640.79,up:69,dw:11,main:192,buckets:{'0-3d':95,'4-7d':22,'8-15d':47,'16-30d':63,'45d+':45},reasons:[[43,'Chargeback alert'],[42,'Doctor advised against using it'],[40,'Did not agree to the upsells'],[21,'No longer interested in the product'],[19,'Did not work']]},'2026-04':{total:421,value:68697.51,up:166,dw:8,main:247,buckets:{'0-3d':161,'4-7d':54,'8-15d':75,'16-30d':76,'45d+':55},reasons:[[80,'Did not agree to the upsells'],[64,'Chargeback alert'],[48,'No longer interested in the product'],[48,'Threatened with a chargeback'],[29,'Doctor advised against using it']]},'2026-05':{total:100,value:18633.89,up:37,dw:1,main:62,buckets:{'0-3d':39,'4-7d':9,'8-15d':20,'16-30d':18,'45d+':14},reasons:[[38,'Chargeback alert'],[16,'Threatened with a chargeback'],[8,'Chargeback'],[8,'Experienced side effects'],[5,'Did not agree to the upsells']]}},
-    cb:{'2026-01':{total:1,value:307.42,up:0,dw:0,main:1,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[1,'product_not_received']]},'2026-02':{total:2,value:439.26,up:0,dw:0,main:2,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':1,'45d+':0},reasons:[[1,'Fraudulent Transaction (UA01)'],[1,'Fraudulent Transaction (NA)']]},'2026-03':{total:8,value:2035.75,up:2,dw:0,main:6,buckets:{'0-3d':2,'4-7d':1,'8-15d':1,'16-30d':2,'45d+':2},reasons:[[3,'fraudulent'],[1,'Fraudulent Transaction (6005)'],[1,'Refund Not Processed (RN2)']]},'2026-04':{total:9,value:2774.60,up:2,dw:0,main:7,buckets:{'0-3d':0,'4-7d':0,'8-15d':3,'16-30d':5,'45d+':1},reasons:[[1,'Other Unspecified'],[1,'Consumer Disputes (13.1)'],[1,'Fraudulent Transaction (UA01)'],[1,'duplicate'],[1,'fraudulent']]},'2026-05':{total:6,value:1750.55,up:1,dw:0,main:5,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':4,'45d+':1},reasons:[[1,'Consumer Disputes (13.1)'],[1,'Cardholder Dispute'],[1,'fraudulent'],[1,'Fraudulent Transaction (F29)'],[1,'Fraudulent Transaction (UA01)']]}}
+    ref:{'2025-12':{total:4,value:450.18,up:0,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':2},reasons:[[3,'No longer interested in the product'],[1,'Chargeback alert']]},'2026-01':{total:20,value:3419.51,up:9,dw:0,main:11,buckets:{'0-3d':14,'4-7d':2,'8-15d':3,'16-30d':1,'45d+':0},reasons:[[3,'Chargeback alert'],[2,'Regret over spending'],[2,'Duplicate charge'],[2,'Doctor advised against using it'],[2,'Test order']]},'2026-02':{total:88,value:13614.39,up:27,dw:2,main:59,buckets:{'0-3d':38,'4-7d':11,'8-15d':18,'16-30d':15,'45d+':6},reasons:[[21,'Chargeback alert'],[13,'Misinformed by marketing'],[12,'Did not agree to the upsells'],[10,'No longer interested in the product'],[6,'Partial Refund – Saved Sale']]},'2026-03':{total:272,value:39640.79,up:69,dw:11,main:192,buckets:{'0-3d':95,'4-7d':22,'8-15d':47,'16-30d':63,'45d+':45},reasons:[[43,'Chargeback alert'],[42,'Doctor advised against using it'],[40,'Did not agree to the upsells'],[21,'No longer interested in the product'],[19,'Did not work']]},'2026-04':{total:421,value:68697.51,up:166,dw:8,main:247,buckets:{'0-3d':161,'4-7d':54,'8-15d':75,'16-30d':76,'45d+':55},reasons:[[80,'Did not agree to the upsells'],[64,'Chargeback alert'],[48,'No longer interested in the product'],[48,'Threatened with a chargeback'],[29,'Doctor advised against using it']]},'2026-05':{total:156,value:29320.45,up:53,dw:2,main:101,buckets:{'0-3d':59,'4-7d':13,'8-15d':29,'16-30d':27,'45d+':28},reasons:[[61,'Chargeback alert'],[26,'Threatened with a chargeback'],[14,'Did not agree to the upsells'],[10,'Experienced side effects']]}},
+    cb:{'2026-01':{total:1,value:307.42,up:0,dw:0,main:1,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[1,'product_not_received']]},'2026-02':{total:2,value:439.26,up:0,dw:0,main:2,buckets:{'0-3d':0,'4-7d':1,'8-15d':0,'16-30d':1,'45d+':0},reasons:[[1,'Fraudulent Transaction (UA01)'],[1,'Fraudulent Transaction (NA)']]},'2026-03':{total:8,value:2035.75,up:2,dw:0,main:6,buckets:{'0-3d':2,'4-7d':1,'8-15d':1,'16-30d':2,'45d+':2},reasons:[[3,'fraudulent'],[1,'Fraudulent Transaction (6005)'],[1,'Refund Not Processed (RN2)']]},'2026-04':{total:9,value:2774.60,up:2,dw:0,main:7,buckets:{'0-3d':0,'4-7d':0,'8-15d':3,'16-30d':5,'45d+':1},reasons:[[1,'Other Unspecified'],[1,'Consumer Disputes (13.1)'],[1,'Fraudulent Transaction (UA01)'],[1,'duplicate'],[1,'fraudulent']]},'2026-05':{total:8,value:2348.38,up:2,dw:0,main:6,buckets:{'0-3d':0,'4-7d':0,'8-15d':3,'16-30d':4,'45d+':1},reasons:[[3,'Fraudulent Transaction (F29)'],[1,'Consumer Disputes (13.1)'],[1,'fraudulent'],[1,'Cardholder Dispute']]}}
   },
   'Nervolyn': {
-    ref:{'2025-12':{total:50,value:6957.80,up:20,dw:1,main:29,buckets:{'0-3d':12,'4-7d':2,'8-15d':10,'16-30d':9,'45d+':17},reasons:[[11,'Did not agree to the upsells'],[10,'Doctor advised against using it'],[6,'Chargeback alert'],[4,'Refused Delivery'],[4,'Did not work']]},'2026-01':{total:16,value:1917.55,up:2,dw:0,main:14,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':1,'45d+':15},reasons:[[9,'Did not work'],[3,'Chargeback alert'],[2,'Partial Refund – Saved Sale'],[1,'Experienced side effects'],[1,'Chargeback Alert-RDR']]},'2026-02':{total:42,value:5534.66,up:13,dw:3,main:26,buckets:{'0-3d':18,'4-7d':0,'8-15d':5,'16-30d':3,'45d+':16},reasons:[[10,'Did not agree to the upsells'],[9,'Did not work'],[7,'Doctor advised against using it'],[5,'Did not receive product'],[2,'Chargeback alert']]},'2026-03':{total:161,value:23855.89,up:48,dw:7,main:106,buckets:{'0-3d':66,'4-7d':13,'8-15d':34,'16-30d':38,'45d+':10},reasons:[[32,'Chargeback alert'],[27,'Doctor advised against using it'],[17,'Did not agree to the upsells'],[12,'Partial Refund – Saved Sale'],[8,'Experienced side effects']]},'2026-04':{total:459,value:61334.31,up:170,dw:19,main:270,buckets:{'0-3d':196,'4-7d':32,'8-15d':81,'16-30d':86,'45d+':64},reasons:[[95,'Did not agree to the upsells'],[54,'Chargeback alert'],[53,'No longer interested in the product'],[40,'Doctor advised against using it'],[36,'Threatened with a chargeback']]},'2026-05':{total:118,value:19763.96,up:41,dw:4,main:73,buckets:{'0-3d':44,'4-7d':10,'8-15d':14,'16-30d':27,'45d+':23},reasons:[[31,'Chargeback alert'],[17,'Threatened with a chargeback'],[10,'Chargeback'],[8,'Doctor advised against using it'],[6,'No longer interested in the product']]}},
-    cb:{'2025-12':{total:4,value:823.96,up:0,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':2},reasons:[[2,'Fraudulent Transaction (7030)'],[1,'Fraudulent Transaction (6005)'],[1,'Fraudulent Transaction (UA01)']]},'2026-01':{total:1,value:116.68,up:0,dw:0,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':1},reasons:[[1,'Fraudulent Transaction (6005)']]},'2026-02':{total:2,value:561.27,up:0,dw:0,main:2,buckets:{'0-3d':0,'4-7d':0,'8-15d':2,'16-30d':0,'45d+':0},reasons:[[1,'fraudulent'],[1,'Unauthorized Transaction (6342)']]},'2026-03':{total:4,value:950.11,up:0,dw:0,main:4,buckets:{'0-3d':0,'4-7d':1,'8-15d':1,'16-30d':2,'45d+':0},reasons:[[1,'fraudulent'],[1,'Fraudulent Transaction (NA)'],[1,'Fraudulent Transaction (F29)'],[1,'Merchandise Not Received (4755)']]},'2026-04':{total:29,value:7339.81,up:7,dw:1,main:21,buckets:{'0-3d':1,'4-7d':3,'8-15d':15,'16-30d':7,'45d+':3},reasons:[[3,'fraudulent'],[3,'Fraudulent Transaction (UA01)'],[3,'Merchandise Not Received (4755)'],[3,'Unauthorized Transaction (4868)'],[2,'Fraudulent Transaction (F29)']]},'2026-05':{total:9,value:2322.83,up:4,dw:0,main:5,buckets:{'0-3d':0,'4-7d':1,'8-15d':2,'16-30d':5,'45d+':1},reasons:[[3,'Fraudulent Transaction (10.4)'],[2,'Fraudulent Transaction (UA01)'],[1,'Consumer Disputes (13.7)']]}}
+    ref:{'2025-12':{total:50,value:6957.80,up:20,dw:1,main:29,buckets:{'0-3d':12,'4-7d':2,'8-15d':10,'16-30d':9,'45d+':17},reasons:[[11,'Did not agree to the upsells'],[10,'Doctor advised against using it'],[6,'Chargeback alert'],[4,'Refused Delivery'],[4,'Did not work']]},'2026-01':{total:16,value:1917.55,up:2,dw:0,main:14,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':1,'45d+':15},reasons:[[9,'Did not work'],[3,'Chargeback alert'],[2,'Partial Refund – Saved Sale'],[1,'Experienced side effects'],[1,'Chargeback Alert-RDR']]},'2026-02':{total:42,value:5534.66,up:13,dw:3,main:26,buckets:{'0-3d':18,'4-7d':0,'8-15d':5,'16-30d':3,'45d+':16},reasons:[[10,'Did not agree to the upsells'],[9,'Did not work'],[7,'Doctor advised against using it'],[5,'Did not receive product'],[2,'Chargeback alert']]},'2026-03':{total:161,value:23855.89,up:48,dw:7,main:106,buckets:{'0-3d':66,'4-7d':13,'8-15d':34,'16-30d':38,'45d+':10},reasons:[[32,'Chargeback alert'],[27,'Doctor advised against using it'],[17,'Did not agree to the upsells'],[12,'Partial Refund – Saved Sale'],[8,'Experienced side effects']]},'2026-04':{total:459,value:61334.31,up:170,dw:19,main:270,buckets:{'0-3d':196,'4-7d':32,'8-15d':81,'16-30d':86,'45d+':64},reasons:[[95,'Did not agree to the upsells'],[54,'Chargeback alert'],[53,'No longer interested in the product'],[40,'Doctor advised against using it'],[36,'Threatened with a chargeback']]},'2026-05':{total:193,value:33314.86,up:67,dw:4,main:122,buckets:{'0-3d':62,'4-7d':19,'8-15d':23,'16-30d':44,'45d+':45},reasons:[[55,'Chargeback alert'],[33,'Threatened with a chargeback'],[13,'Doesn\'t remember placing order'],[9,'Doctor advised against using it']]}},
+    cb:{'2025-12':{total:4,value:823.96,up:0,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':2},reasons:[[2,'Fraudulent Transaction (7030)'],[1,'Fraudulent Transaction (6005)'],[1,'Fraudulent Transaction (UA01)']]},'2026-01':{total:1,value:116.68,up:0,dw:0,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':1},reasons:[[1,'Fraudulent Transaction (6005)']]},'2026-02':{total:2,value:561.27,up:0,dw:0,main:2,buckets:{'0-3d':0,'4-7d':0,'8-15d':2,'16-30d':0,'45d+':0},reasons:[[1,'fraudulent'],[1,'Unauthorized Transaction (6342)']]},'2026-03':{total:4,value:950.11,up:0,dw:0,main:4,buckets:{'0-3d':0,'4-7d':1,'8-15d':1,'16-30d':2,'45d+':0},reasons:[[1,'fraudulent'],[1,'Fraudulent Transaction (NA)'],[1,'Fraudulent Transaction (F29)'],[1,'Merchandise Not Received (4755)']]},'2026-04':{total:29,value:7339.81,up:7,dw:1,main:21,buckets:{'0-3d':1,'4-7d':3,'8-15d':15,'16-30d':7,'45d+':3},reasons:[[3,'fraudulent'],[3,'Fraudulent Transaction (UA01)'],[3,'Merchandise Not Received (4755)'],[3,'Unauthorized Transaction (4868)'],[2,'Fraudulent Transaction (F29)']]},'2026-05':{total:14,value:3922.85,up:6,dw:0,main:8,buckets:{'0-3d':0,'4-7d':1,'8-15d':6,'16-30d':6,'45d+':1},reasons:[[2,'Fraudulent Transaction (UA01)'],[2,'fraudulent'],[2,'Consumer Disputes'],[1,'Consumer Disputes (13.3)']]}}
   },
   'VisiumPro': {
-    ref:{'2025-12':{total:126,value:16321.01,up:58,dw:3,main:65,buckets:{'0-3d':49,'4-7d':0,'8-15d':7,'16-30d':18,'45d+':52},reasons:[[32,'Did not agree to the upsells'],[20,'Chargeback alert'],[12,'No longer interested in the product'],[10,'Did not work'],[8,'Ordered by mistake']]},'2026-01':{total:134,value:16617.88,up:56,dw:6,main:72,buckets:{'0-3d':44,'4-7d':5,'8-15d':6,'16-30d':27,'45d+':52},reasons:[[28,'Chargeback alert'],[19,'Did not agree to the upsells'],[15,'Did not work'],[11,'Experienced side effects'],[10,'Concerned about potential side effects']]},'2026-02':{total:115,value:14014.96,up:31,dw:2,main:82,buckets:{'0-3d':17,'4-7d':2,'8-15d':16,'16-30d':34,'45d+':46},reasons:[[21,'Doctor advised against using it'],[17,'Chargeback alert'],[16,'Experienced side effects'],[14,'Did not agree to the upsells'],[9,'Partial Refund – Saved Sale']]},'2026-03':{total:211,value:29984.03,up:20,dw:2,main:189,buckets:{'0-3d':81,'4-7d':13,'8-15d':41,'16-30d':27,'45d+':49},reasons:[[30,'No longer interested in the product'],[26,'Chargeback alert'],[23,'Did not work'],[21,'Did not agree to the upsells'],[19,'Doctor advised against using it']]},'2026-04':{total:321,value:49843.33,up:8,dw:0,main:313,buckets:{'0-3d':138,'4-7d':19,'8-15d':36,'16-30d':59,'45d+':69},reasons:[[77,'Did not agree to the upsells'],[35,'Chargeback alert'],[27,'No longer interested in the product'],[21,'Experienced side effects'],[21,'Doctor advised against using it']]},'2026-05':{total:78,value:13961.52,up:2,dw:0,main:76,buckets:{'0-3d':28,'4-7d':8,'8-15d':11,'16-30d':16,'45d+':15},reasons:[[19,'Chargeback alert'],[10,'Threatened with a chargeback'],[8,'Did not agree to the upsells'],[7,'Did not receive product'],[6,'No longer interested in the product']]}},
-    cb:{}
+    ref:{'2025-12':{total:126,value:16321.01,up:58,dw:3,main:65,buckets:{'0-3d':49,'4-7d':0,'8-15d':7,'16-30d':18,'45d+':52},reasons:[[32,'Did not agree to the upsells'],[20,'Chargeback alert'],[12,'No longer interested in the product'],[10,'Did not work'],[8,'Ordered by mistake']]},'2026-01':{total:134,value:16617.88,up:56,dw:6,main:72,buckets:{'0-3d':44,'4-7d':5,'8-15d':6,'16-30d':27,'45d+':52},reasons:[[28,'Chargeback alert'],[19,'Did not agree to the upsells'],[15,'Did not work'],[11,'Experienced side effects'],[10,'Concerned about potential side effects']]},'2026-02':{total:115,value:14014.96,up:31,dw:2,main:82,buckets:{'0-3d':17,'4-7d':2,'8-15d':16,'16-30d':34,'45d+':46},reasons:[[21,'Doctor advised against using it'],[17,'Chargeback alert'],[16,'Experienced side effects'],[14,'Did not agree to the upsells'],[9,'Partial Refund – Saved Sale']]},'2026-03':{total:211,value:29984.03,up:20,dw:2,main:189,buckets:{'0-3d':81,'4-7d':13,'8-15d':41,'16-30d':27,'45d+':49},reasons:[[30,'No longer interested in the product'],[26,'Chargeback alert'],[23,'Did not work'],[21,'Did not agree to the upsells'],[19,'Doctor advised against using it']]},'2026-04':{total:321,value:49843.33,up:8,dw:0,main:313,buckets:{'0-3d':138,'4-7d':19,'8-15d':36,'16-30d':59,'45d+':69},reasons:[[77,'Did not agree to the upsells'],[35,'Chargeback alert'],[27,'No longer interested in the product'],[21,'Experienced side effects'],[21,'Doctor advised against using it']]},'2026-05':{total:135,value:24449.62,up:3,dw:0,main:132,buckets:{'0-3d':41,'4-7d':11,'8-15d':18,'16-30d':26,'45d+':39},reasons:[[30,'Threatened with a chargeback'],[25,'Chargeback alert'],[12,'No longer interested in the product'],[8,'Did not agree to the upsells']]}},
+    cb:{'2026-05':{total:2,value:668.93,up:0,dw:0,main:2,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':0},reasons:[[1,'Merchandise Not Received (4555)'],[1,'fraudulent']]}}
   },
   'Reduburn': {
-    ref:{'2025-12':{total:123,value:19376.78,up:20,dw:37,main:66,buckets:{'0-3d':27,'4-7d':13,'8-15d':15,'16-30d':26,'45d+':42},reasons:[[23,'Did not agree to the upsells'],[18,'Chargeback alert'],[18,'Did not work'],[13,'No longer interested in the product'],[9,'Doctor advised against using it']]},'2026-01':{total:120,value:19548.17,up:12,dw:28,main:80,buckets:{'0-3d':22,'4-7d':4,'8-15d':2,'16-30d':21,'45d+':71},reasons:[[34,'Did not work'],[19,'Chargeback alert'],[13,'Experienced side effects'],[9,'Doctor advised against using it'],[7,'Does not remember placing order']]},'2026-02':{total:147,value:24634.50,up:10,dw:13,main:124,buckets:{'0-3d':54,'4-7d':15,'8-15d':17,'16-30d':26,'45d+':35},reasons:[[24,'Chargeback alert'],[18,'Partial Refund – Saved Sale'],[14,'Did not work'],[13,'No longer interested in the product'],[12,'Doctor advised against using it']]},'2026-03':{total:265,value:41279.26,up:6,dw:16,main:243,buckets:{'0-3d':46,'4-7d':20,'8-15d':43,'16-30d':75,'45d+':81},reasons:[[37,'Chargeback alert'],[32,'No longer interested in the product'],[28,'Doctor advised against using it'],[23,'Did not work'],[17,'Partial Refund – Saved Sale']]},'2026-04':{total:201,value:31684.86,up:4,dw:7,main:190,buckets:{'0-3d':28,'4-7d':6,'8-15d':21,'16-30d':56,'45d+':90},reasons:[[30,'Chargeback alert'],[24,'Experienced side effects'],[19,'Doctor advised against using it'],[16,'No longer interested in the product'],[14,'Did not work']]},'2026-05':{total:30,value:6703.37,up:0,dw:2,main:28,buckets:{'0-3d':4,'4-7d':0,'8-15d':2,'16-30d':11,'45d+':13},reasons:[[15,'Chargeback alert'],[4,'Doctor advised against using it'],[4,'Chargeback'],[4,'Did not work'],[2,'Third party refund request']]}},
+    ref:{'2025-12':{total:123,value:19376.78,up:20,dw:37,main:66,buckets:{'0-3d':27,'4-7d':13,'8-15d':15,'16-30d':26,'45d+':42},reasons:[[23,'Did not agree to the upsells'],[18,'Chargeback alert'],[18,'Did not work'],[13,'No longer interested in the product'],[9,'Doctor advised against using it']]},'2026-01':{total:120,value:19548.17,up:12,dw:28,main:80,buckets:{'0-3d':22,'4-7d':4,'8-15d':2,'16-30d':21,'45d+':71},reasons:[[34,'Did not work'],[19,'Chargeback alert'],[13,'Experienced side effects'],[9,'Doctor advised against using it'],[7,'Does not remember placing order']]},'2026-02':{total:147,value:24634.50,up:10,dw:13,main:124,buckets:{'0-3d':54,'4-7d':15,'8-15d':17,'16-30d':26,'45d+':35},reasons:[[24,'Chargeback alert'],[18,'Partial Refund – Saved Sale'],[14,'Did not work'],[13,'No longer interested in the product'],[12,'Doctor advised against using it']]},'2026-03':{total:265,value:41279.26,up:6,dw:16,main:243,buckets:{'0-3d':46,'4-7d':20,'8-15d':43,'16-30d':75,'45d+':81},reasons:[[37,'Chargeback alert'],[32,'No longer interested in the product'],[28,'Doctor advised against using it'],[23,'Did not work'],[17,'Partial Refund – Saved Sale']]},'2026-04':{total:201,value:31684.86,up:4,dw:7,main:190,buckets:{'0-3d':28,'4-7d':6,'8-15d':21,'16-30d':56,'45d+':90},reasons:[[30,'Chargeback alert'],[24,'Experienced side effects'],[19,'Doctor advised against using it'],[16,'No longer interested in the product'],[14,'Did not work']]},'2026-05':{total:36,value:8371.73,up:0,dw:2,main:34,buckets:{'0-3d':4,'4-7d':2,'8-15d':4,'16-30d':11,'45d+':15},reasons:[[20,'Chargeback alert'],[4,'Doctor advised against using it'],[4,'Did not work'],[4,'Threatened with a chargeback']]}},
     cb:{'2025-12':{total:2,value:654.15,up:0,dw:1,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':0,'45d+':1},reasons:[[1,'Fraudulent Transaction (193)'],[1,'Merchandise Not Received (C08)']]},'2026-01':{total:1,value:212.76,up:0,dw:1,main:0,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':1},reasons:[[1,'Fraudulent Transaction (UA01)']]},'2026-02':{total:3,value:741.61,up:0,dw:0,main:3,buckets:{'0-3d':0,'4-7d':0,'8-15d':1,'16-30d':1,'45d+':1},reasons:[[1,'Fraudulent Transaction (7030)'],[1,'fraudulent'],[1,'Fraudulent Transaction (F29)']]},'2026-03':{total:10,value:2920.66,up:0,dw:0,main:10,buckets:{'0-3d':0,'4-7d':1,'8-15d':2,'16-30d':5,'45d+':2},reasons:[[2,'fraudulent'],[2,'Fraudulent Transaction (UA01)'],[1,'Fraudulent Transaction (F29)']]},'2026-04':{total:6,value:1507.15,up:0,dw:0,main:6,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':3,'45d+':3},reasons:[[3,'Unauthorized Transaction (4837)'],[1,'Merchandise Not Received (C08)'],[1,'product_unacceptable']]},'2026-05':{total:4,value:1424.35,up:0,dw:1,main:3,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':1,'45d+':3},reasons:[[1,'Unauthorized Transaction (4868)'],[1,'Fraudulent Transaction (F29)'],[1,'Consumer Disputes (13.7)']]}}
   },
   'AudiLeaf': {
-    ref:{'2026-03':{total:37,value:6110.35,up:14,dw:3,main:20,buckets:{'0-3d':25,'4-7d':3,'8-15d':7,'16-30d':2,'45d+':0},reasons:[[14,'Chargeback alert'],[11,'Did not agree to the upsells'],[4,'Threatened with a chargeback'],[3,'Partial Refund – Saved Sale'],[2,'No longer interested in the product']]},'2026-04':{total:297,value:43947.54,up:151,dw:6,main:140,buckets:{'0-3d':199,'4-7d':23,'8-15d':30,'16-30d':32,'45d+':13},reasons:[[85,'Did not agree to the upsells'],[43,'Chargeback alert'],[27,'Threatened with a chargeback'],[23,'No longer interested in the product'],[20,'Doctor advised against using it']]},'2026-05':{total:202,value:33300.47,up:87,dw:5,main:110,buckets:{'0-3d':129,'4-7d':21,'8-15d':31,'16-30d':8,'45d+':13},reasons:[[54,'Chargeback alert'],[38,'Threatened with a chargeback'],[31,'Did not agree to the upsells'],[18,'No longer interested in the product'],[12,'Duplicate order placed by mistake']]}},
-    cb:{'2026-03':{total:2,value:431.36,up:1,dw:0,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':0},reasons:[[2,'credit_not_processed']]},'2026-04':{total:1,value:249.22,up:0,dw:0,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':1,'45d+':0},reasons:[[1,'Cancelled Recurring (C04)']]},'2026-05':{total:5,value:1490.17,up:1,dw:0,main:4,buckets:{'0-3d':0,'4-7d':0,'8-15d':4,'16-30d':1,'45d+':0},reasons:[[1,'Fraudulent Transaction (F29)'],[1,'Other (12.6.2)'],[1,'Unauthorized Transaction (4868)'],[1,'credit_not_processed'],[1,'fraudulent']]}}
+    ref:{'2026-03':{total:37,value:6110.35,up:14,dw:3,main:20,buckets:{'0-3d':25,'4-7d':3,'8-15d':7,'16-30d':2,'45d+':0},reasons:[[14,'Chargeback alert'],[11,'Did not agree to the upsells'],[4,'Threatened with a chargeback'],[3,'Partial Refund – Saved Sale'],[2,'No longer interested in the product']]},'2026-04':{total:297,value:43947.54,up:151,dw:6,main:140,buckets:{'0-3d':199,'4-7d':23,'8-15d':30,'16-30d':32,'45d+':13},reasons:[[85,'Did not agree to the upsells'],[43,'Chargeback alert'],[27,'Threatened with a chargeback'],[23,'No longer interested in the product'],[20,'Doctor advised against using it']]},'2026-05':{total:305,value:51774.68,up:139,dw:6,main:160,buckets:{'0-3d':193,'4-7d':32,'8-15d':35,'16-30d':30,'45d+':15},reasons:[[81,'Chargeback alert'],[62,'Threatened with a chargeback'],[55,'Did not agree to the upsells'],[33,'No longer interested in the product']]}},
+    cb:{'2026-03':{total:2,value:431.36,up:1,dw:0,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':2,'45d+':0},reasons:[[2,'credit_not_processed']]},'2026-04':{total:1,value:249.22,up:0,dw:0,main:1,buckets:{'0-3d':0,'4-7d':0,'8-15d':0,'16-30d':1,'45d+':0},reasons:[[1,'Cancelled Recurring (C04)']]},'2026-05':{total:10,value:2851.15,up:4,dw:0,main:6,buckets:{'0-3d':0,'4-7d':0,'8-15d':8,'16-30d':1,'45d+':1},reasons:[[4,'Fraudulent Transaction (F29)'],[1,'Processing Error (4834)'],[1,'credit_not_processed'],[1,'fraudulent']]}}
   },
   'Booster XT': {
-    ref:{'2026-03':{total:18,value:2702.58,up:5,dw:0,main:13,buckets:{'0-3d':10,'4-7d':2,'8-15d':4,'16-30d':2,'45d+':0},reasons:[[10,'Chargeback alert'],[2,'Duplicate charge'],[1,'Too expensive'],[1,'Refused Delivery – No Prior CS Contact']]},'2026-04':{total:27,value:3896.15,up:6,dw:0,main:21,buckets:{'0-3d':7,'4-7d':0,'8-15d':1,'16-30d':6,'45d+':13},reasons:[[5,'Chargeback alert'],[4,'Worried about interactions with medications'],[4,'Did not receive product'],[4,'Threatened with a chargeback'],[4,'Regret over spending']]},'2026-05':{total:3,value:450.59,up:2,dw:0,main:1,buckets:{'0-3d':2,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':1},reasons:[[2,'Did not agree to the upsells'],[1,'Did not work']]}},
+    ref:{'2026-03':{total:18,value:2702.58,up:5,dw:0,main:13,buckets:{'0-3d':10,'4-7d':2,'8-15d':4,'16-30d':2,'45d+':0},reasons:[[10,'Chargeback alert'],[2,'Duplicate charge'],[1,'Too expensive'],[1,'Refused Delivery – No Prior CS Contact']]},'2026-04':{total:27,value:3896.15,up:6,dw:0,main:21,buckets:{'0-3d':7,'4-7d':0,'8-15d':1,'16-30d':6,'45d+':13},reasons:[[5,'Chargeback alert'],[4,'Worried about interactions with medications'],[4,'Did not receive product'],[4,'Threatened with a chargeback'],[4,'Regret over spending']]},'2026-05':{total:4,value:760.76,up:2,dw:0,main:2,buckets:{'0-3d':2,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':2},reasons:[[2,'Did not agree to the upsells'],[1,'Chargeback alert'],[1,'Did not work']]}},
     cb:{'2026-03':{total:2,value:285.55,up:1,dw:0,main:1,buckets:{'0-3d':0,'4-7d':2,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[2,'Fraudulent Transaction (UA01)']]}}
   },
   'LipoBliss': {
-    ref:{'2026-03':{total:4,value:605.50,up:2,dw:0,main:2,buckets:{'0-3d':4,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[4,"Realized they don't need it"]]},'2026-04':{total:21,value:3931.58,up:9,dw:0,main:12,buckets:{'0-3d':13,'4-7d':7,'8-15d':1,'16-30d':0,'45d+':0},reasons:[[4,'Threatened with a chargeback'],[4,'Did not agree to the upsells'],[3,'Chargeback'],[3,'Chargeback Alert-RDR'],[2,'Test order']]},'2026-05':{total:15,value:1612.29,up:8,dw:0,main:7,buckets:{'0-3d':6,'4-7d':1,'8-15d':4,'16-30d':0,'45d+':4},reasons:[[6,'Threatened with a chargeback'],[4,'No longer interested in the product'],[4,'Experienced side effects'],[1,'Chargeback alert']]}},
+    ref:{'2026-03':{total:4,value:605.50,up:2,dw:0,main:2,buckets:{'0-3d':4,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[4,"Realized they don't need it"]]},'2026-04':{total:21,value:3931.58,up:9,dw:0,main:12,buckets:{'0-3d':13,'4-7d':7,'8-15d':1,'16-30d':0,'45d+':0},reasons:[[4,'Threatened with a chargeback'],[4,'Did not agree to the upsells'],[3,'Chargeback'],[3,'Chargeback Alert-RDR'],[2,'Test order']]},'2026-05':{total:20,value:2254.80,up:8,dw:0,main:12,buckets:{'0-3d':6,'4-7d':1,'8-15d':7,'16-30d':0,'45d+':6},reasons:[[6,'Threatened with a chargeback'],[4,'No longer interested in the product'],[4,'Experienced side effects'],[3,'Doctor advised against using it']]}},
     cb:{}
   },
   'LipoTrine': {
-    ref:{'2026-04':{total:2,value:538.44,up:0,dw:0,main:2,buckets:{'0-3d':2,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[1,'Too expensive'],[1,'Chargeback']]},'2026-05':{total:1,value:252.51,up:1,dw:0,main:0,buckets:{'0-3d':1,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[1,'Chargeback alert']]}},
+    ref:{'2026-04':{total:2,value:538.44,up:0,dw:0,main:2,buckets:{'0-3d':2,'4-7d':0,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[1,'Too expensive'],[1,'Chargeback']]},'2026-05':{total:14,value:2387.61,up:6,dw:0,main:8,buckets:{'0-3d':11,'4-7d':0,'8-15d':3,'16-30d':0,'45d+':0},reasons:[[4,'Threatened with a chargeback'],[4,'Too expensive'],[2,'Did not agree to the upsells'],[1,'Chargeback alert']]}},
+    cb:{}
+  },
+  'BreathEaseX': {
+    ref:{'2026-05':{total:20,value:3822.43,up:12,dw:0,main:8,buckets:{'0-3d':14,'4-7d':6,'8-15d':0,'16-30d':0,'45d+':0},reasons:[[6,'Threatened with a chargeback'],[5,'Chargeback alert'],[4,'Did not agree to the upsells'],[3,'Doctor advised against using it']]}},
     cb:{}
   },
   'Visium Pro': {
@@ -1239,8 +1167,8 @@ function buildMonthMiniCard(prodName, month, type) {
   const label = type==='ref' ? 'refs' : 'CBs';
   return `<div style="background:var(--bg3);border-radius:5px;padding:7px 10px;margin-bottom:6px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:${color};">${m.total} ${label}</span>
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);">$${(m.value/1000).toFixed(1)}K</span>
+      <span style="font-family:var(--mono);font-size:10px;font-weight:600;color:${color};">${m.total} ${label}</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">$${(m.value/1000).toFixed(1)}K</span>
     </div>
     ${typeTag({upsell:m.up||0,downsell:m.dw||0,main:m.main||0})}
     ${bucketBar(m.buckets, m.total, color)}
@@ -1260,8 +1188,8 @@ function buildMonthCard(month) {
       <div class="prod-header">
         <div><div class="prod-name" style="border-left:3px solid ${p.color};padding-left:10px;">${p.name}</div></div>
         <div style="text-align:right;">
-          ${prodMonthly[pName] && prodMonthly[pName].ref[month] ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--red);font-weight:700;">${(prodMonthly[pName].ref[month]||{total:0}).total} refs</div>` : ''}
-          ${prodMonthly[pName] && prodMonthly[pName].cb[month]  ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);font-weight:700;">${(prodMonthly[pName].cb[month]||{total:0}).total} CBs</div>` : ''}
+          ${prodMonthly[pName] && prodMonthly[pName].ref[month] ? `<div style="font-family:var(--mono);font-size:11px;color:var(--red);font-weight:700;">${(prodMonthly[pName].ref[month]||{total:0}).total} refs</div>` : ''}
+          ${prodMonthly[pName] && prodMonthly[pName].cb[month]  ? `<div style="font-family:var(--mono);font-size:11px;color:var(--amber);font-weight:700;">${(prodMonthly[pName].cb[month]||{total:0}).total} CBs</div>` : ''}
         </div>
       </div>
       <div class="prod-body">
@@ -1277,7 +1205,7 @@ function buildMonthCard(month) {
     <div class="metric"><div class="metric-label">Refunds ${MONTH_NAMES[month]}</div><div class="metric-val warn">${totRef}</div></div>
     <div class="metric"><div class="metric-label">Chargebacks ${MONTH_NAMES[month]}</div><div class="metric-val amber">${totCB}</div></div>
   </div></div>
-  <div class="prod-grid">${cards || '<div style="color:var(--text3);font-family:\'IBM Plex Mono\',monospace;font-size:12px;">Sem dados para este mês.</div>'}</div>`;
+  <div class="prod-grid">${cards || '<div style="color:var(--text3);font-family:var(--mono);font-size:12px;">Sem dados para este mês.</div>'}</div>`;
 }
 
 function buildProdFull() { return buildProdContent(currentProdFilter||'all', 'all'); }
@@ -1291,7 +1219,231 @@ function switchProdMonth(month) {
     : `<div class="panel-header">${MONTH_NAMES[month]} <span class="tag tag-blue">${month}</span></div>${buildMonthCard(month)}`;
 }
 
-/* ── FIXED SWITCH FUNCTIONS ── */
+/* ── UPSELL ANALYSIS ── */
+const upData = [
+  { key:'jan', label:'Janeiro',   funil:'Padrão',    color:'var(--blue)',  dot:'#4f8cff',
+    gross:134471, refVal:29666, refs:169, sales:827, total:6043, cbs:11,
+    mainRefRate:9.9,  frontRef:494, frontSales:4977,
+    topReason:'Chargeback alert / Did not work',
+    signal:'🟢', signalLabel:'Estável',
+    note:'Funil padrão com baixa pressão de upsell. Taxa de refund de upsell já estruturalmente 2× maior que o front, mas o net é positivo e controlado.' },
+  { key:'fev', label:'Fevereiro', funil:'Padrão',    color:'var(--blue)',  dot:'#4f8cff',
+    gross:120657, refVal:27325, refs:140, sales:639, total:8151, cbs:7,
+    mainRefRate:10.5, frontRef:771, frontSales:7336,
+    topReason:'Chargeback alert / Did not work',
+    signal:'🟢', signalLabel:'Estável',
+    note:'Menor volume de upsells do período (7,8%). Net upsell menor em absoluto, mas proporção refund estável. Período serve como baseline do funil padrão.' },
+  { key:'mar', label:'Março',     funil:'Padrão',    color:'var(--blue)',  dot:'#4f8cff',
+    gross:259431, refVal:50230, refs:241, sales:1255, total:11253, cbs:12,
+    mainRefRate:10.6, frontRef:1025, frontSales:9688,
+    topReason:'Did not agree to the upsells / Chargeback alert',
+    signal:'🟡', signalLabel:'Atenção',
+    note:'Primeira vez que "Did not agree to the upsells" aparece como razão dominante. Sinal de que o crescimento do volume estava começando a gerar atrito mesmo no funil padrão.' },
+  { key:'abr', label:'Abril',     funil:'Agressivo', color:'var(--amber)', dot:'#f0a020',
+    gross:522684, refVal:113858, refs:492, sales:2292, total:11352, cbs:19,
+    mainRefRate:8.5,  frontRef:746, frontSales:8816,
+    topReason:'Did not agree to the upsells (dominante)',
+    signal:'🟡', signalLabel:'Alerta crescendo',
+    note:'Transição para funil agressivo: upsells quase dobram (13% → 20%). Net explode para $409K. A taxa de refund de upsell permanece estável em 21,5% — o funil funcionou em termos de lucro. Mas "Did not agree to the upsells" ultrapassa 100 ocorrências.' },
+  { key:'mai', label:'Maio (1–17)',funil:'Agressivo', color:'var(--red)',   dot:'#f05252',
+    gross:305595, refVal:107022, refs:357, sales:1304, total:5442, cbs:25,
+    mainRefRate:19.5, frontRef:794, frontSales:4068,
+    topReason:'Chargeback alert / Threatened with a chargeback',
+    signal:'🔴', signalLabel:'Stress detectado',
+    note:'Taxa de refund de upsell sobe para 27,4% (acima da faixa histórica 19–22%). "Threatened with a chargeback" entra como razão dominante — sinal de clientes indo direto ao banco antes do CS. CB de upsell sobe para 1,92%. Período parcial (17 dias), mas a trajetória é preocupante.' },
+];
+
+const upActions = [
+  { status:'done',    label:'Welcome Experience',       desc:'Melhoria do onboarding pós-compra para reduzir arrependimento imediato' },
+  { status:'done',    label:'Material Premium Gratuito', desc:'Conteúdo exclusivo entregue para reforçar o valor percebido da compra' },
+  { status:'done',    label:'App de Acompanhamento',    desc:'Ferramenta de tracking para engajamento e percepção de progresso' },
+  { status:'pending', label:'Sequência Pós-Upsell (D1/D3/D7)', desc:'Emails específicos para quem aceitou upsell, reforçando o ROI da decisão nos primeiros 7 dias — janela crítica de refund' },
+  { status:'pending', label:'Timing do UP2+ (24–48h delay)', desc:'Apresentar UP2 e UP3 por email 24–48h após a compra ao invés de OTO imediato — reduz impulso de cancelamento' },
+  { status:'pending', label:'Segmentação por Afiliado',  desc:'Afiliados de alto refund (Walife 16,5%, José Carlos 15%) recebem versão menos agressiva do funil ou pré-qualificação de tráfego' },
+  { status:'pending', label:'CB Preemption Desk',        desc:'"Chargeback alert" como tag de refund = cliente foi ao banco antes do CS. Protocolo de resposta em 24h para reverter esses casos' },
+  { status:'pending', label:'Review Gate Mensal',        desc:'Análise UP1 vs UP2 vs UP3 por produto mensalmente: cortar etapas de baixo ROI líquido e realocar para produtos com menor taxa de refund' },
+  { status:'pending', label:'UP1 focado vs UP1 expandido', desc:'Em vez de escalar número de upsells, aumentar o ticket do UP1 e reduzir etapas — menos fricção, mesmo ou maior net revenue' },
+];
+
+function buildUpsellContent() {
+  const totalGross = upData.reduce((s,d)=>s+d.gross,0);
+  const totalRefVal= upData.reduce((s,d)=>s+d.refVal,0);
+  const totalNet   = totalGross - totalRefVal;
+  const avgRefRate = upData.reduce((s,d)=>s+(d.refs/d.sales*100),0) / upData.length;
+
+  const fmtD  = v => '$' + v.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
+  const fmtDK = v => '$' + (v/1000).toFixed(0) + 'K';
+  const fmtP  = v => v.toFixed(1) + '%';
+
+  // Month cards
+  const monthCards = upData.map(d => {
+    const net = d.gross - d.refVal;
+    const refRate = d.refs/d.sales*100;
+    const cbRate  = d.cbs/d.sales*100;
+    const netPct  = net/d.gross*100;
+    const diff    = refRate - d.mainRefRate;
+    return `<div style="background:var(--bg1);border:1px solid var(--border);border-radius:6px;padding:0;overflow:hidden;">
+      <div style="padding:14px 16px 10px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div style="font-family:var(--display);font-size:15px;font-weight:700;letter-spacing:-.02em;color:var(--text);">${d.label}</div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.07em;">Funil ${d.funil}</div>
+        </div>
+        <div style="font-size:18px;" title="${d.signalLabel}">${d.signal}</div>
+      </div>
+      <div style="padding:12px 16px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+          <div style="background:var(--bg3);border-radius:4px;padding:8px 10px;">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Gross Up</div>
+            <div style="font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:-.02em;color:var(--blue);">${fmtDK(d.gross)}</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:4px;padding:8px 10px;">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Net Up</div>
+            <div style="font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:-.02em;color:${netPct<65?'var(--red)':'var(--green)'};">${fmtDK(net)}</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:4px;padding:8px 10px;">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">Ref% Up</div>
+            <div style="font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:-.02em;color:${refRate>25?'var(--red)':refRate>22?'var(--amber)':'var(--text)'};">${fmtP(refRate)}</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:4px;padding:8px 10px;">
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">vs Front</div>
+            <div style="font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:-.02em;color:var(--amber);">+${fmtP(diff)}</div>
+          </div>
+        </div>
+        <div style="font-family:var(--mono);font-size:9.5px;color:var(--blue);margin-bottom:4px;letter-spacing:.02em;">↑ ${fN(d.sales)} upsells | ${fmtP(d.sales/d.total*100)} das vendas</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:8px;">CB up: ${d.cbs} (${fmtP(cbRate)})</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em;">Razão dominante</div>
+        <div style="font-family:var(--sans);font-size:11.5px;color:var(--text2);line-height:1.5;">${d.topReason}</div>
+      </div>
+      <div style="background:var(--bg2);border-top:1px solid var(--border);padding:10px 16px;font-family:var(--sans);font-size:11px;color:var(--text2);line-height:1.55;">${d.note}</div>
+    </div>`;
+  }).join('');
+
+  // Action matrix
+  const actionRows = upActions.map(a => {
+    const isDone = a.status === 'done';
+    return `<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);">
+      <div style="width:60px;flex-shrink:0;padding-top:1px;">
+        ${isDone
+          ? `<span style="font-family:var(--mono);font-size:9px;background:var(--green-d);color:var(--green);padding:2px 7px;border-radius:2px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;">Feito</span>`
+          : `<span style="font-family:var(--mono);font-size:9px;background:var(--blue-d);color:var(--blue);padding:2px 7px;border-radius:2px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;">Sugerido</span>`}
+      </div>
+      <div style="flex:1;">
+        <div style="font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:2px;">${a.label}</div>
+        <div style="font-family:var(--sans);font-size:11.5px;color:var(--text2);line-height:1.5;">${a.desc}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Net upsell bar (visual breakdown)
+  const grossPct = 100;
+  const refPct2  = (totalRefVal/totalGross*100).toFixed(1);
+  const netPct2  = (totalNet/totalGross*100).toFixed(1);
+
+  return `
+  <div class="panel-header">Análise de Upsell <span class="tag tag-blue">Jan–Mai 2026</span></div>
+
+  <!-- VERDICT -->
+  <div style="background:linear-gradient(135deg,var(--bg2) 0%,var(--bg1) 100%);border:1px solid var(--border2);border-left:3px solid var(--green);border-radius:0 6px 6px 0;padding:16px 20px;margin-bottom:20px;">
+    <div style="font-family:var(--display);font-size:16px;font-weight:700;color:var(--green);margin-bottom:6px;">✓ Vale a pena manter — com ajustes</div>
+    <div style="font-family:var(--sans);font-size:13px;color:var(--text2);line-height:1.7;">
+      O upsell gerou <strong style="color:var(--text);">${fmtD(totalNet)}</strong> de receita líquida após descontar todos os reembolsos de upsell — uma margem de <strong style="color:var(--green);">75,6%</strong> sobre o gross.
+      O problema não é o upsell em si, é a <strong style="color:var(--text);">fricção no momento da oferta e nos primeiros 7 dias pós-compra</strong>.
+      A taxa de refund de upsell (19–27%) é estruturalmente 2× maior que o front — isso é esperado —
+      mas o sinal de alerta em maio é o surgimento de <em>"Threatened with a chargeback"</em> como razão dominante,
+      indicando clientes indo ao banco antes do CS. Esse é o ponto crítico de ação.
+    </div>
+  </div>
+
+  <!-- KPI SUMMARY -->
+  <div class="metrics-row" style="margin-bottom:20px;">
+    <div class="metric"><div class="metric-label">Gross upsell acumulado</div><div class="metric-val info">${fmtDK(totalGross)}</div><div class="metric-sub">Jan–Mai 2026</div></div>
+    <div class="metric"><div class="metric-label">Net upsell pós-refund</div><div class="metric-val good">${fmtDK(totalNet)}</div><div class="metric-sub">Margem: ${fmtP(totalNet/totalGross*100)}</div></div>
+    <div class="metric"><div class="metric-label">Refunds de upsell</div><div class="metric-val warn">${fmtDK(totalRefVal)}</div><div class="metric-sub">${fmtP(totalRefVal/totalGross*100)} do gross</div></div>
+    <div class="metric"><div class="metric-label">Taxa média de refund up</div><div class="metric-val amber">${fmtP(avgRefRate)}</div><div class="metric-sub">vs ~10% no front/main</div></div>
+  </div>
+
+  <!-- GROSS → NET BAR -->
+  <div style="background:var(--bg1);border:1px solid var(--border);border-radius:6px;padding:16px 18px;margin-bottom:20px;">
+    <div class="chart-title">Composição do gross upsell acumulado</div>
+    <div style="display:flex;height:28px;border-radius:3px;overflow:hidden;margin-bottom:8px;">
+      <div style="width:${netPct2}%;background:var(--green);display:flex;align-items:center;padding-left:10px;font-family:var(--mono);font-size:11px;font-weight:600;color:#fff;">Net ${netPct2}%</div>
+      <div style="width:${refPct2}%;background:var(--red);display:flex;align-items:center;padding-left:8px;font-family:var(--mono);font-size:11px;font-weight:600;color:#fff;">Ref ${refPct2}%</div>
+    </div>
+    <div style="display:flex;gap:16px;font-family:var(--mono);font-size:10px;color:var(--text3);">
+      <span><span style="display:inline-block;width:8px;height:8px;background:var(--green);border-radius:1px;margin-right:4px;vertical-align:middle;"></span>Net retido: ${fmtD(totalNet)}</span>
+      <span><span style="display:inline-block;width:8px;height:8px;background:var(--red);border-radius:1px;margin-right:4px;vertical-align:middle;"></span>Refundado: ${fmtD(totalRefVal)}</span>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-grid" style="margin-bottom:20px;">
+    <div class="chart-card">
+      <div class="chart-title">Receita upsell — gross vs net (por mês)</div>
+      <div style="position:relative;height:200px;"><canvas id="up-chart1"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Taxa de refund: upsell vs front/main</div>
+      <div style="position:relative;height:200px;"><canvas id="up-chart2"></canvas></div>
+    </div>
+  </div>
+
+  <!-- MONTH BY MONTH -->
+  <div class="sec-title">Evolução mês a mês</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:24px;">
+    ${monthCards}
+  </div>
+
+  <!-- TABLE -->
+  <div class="sec-title">Comparativo de lucratividade por mês</div>
+  <div class="table-wrap" style="margin-bottom:24px;">
+    <table>
+      <thead><tr>
+        <th>Mês</th><th>Funil</th><th>Upsells</th><th>Up%</th>
+        <th>Gross Up</th><th>Refund Up</th><th>Net Up</th><th>Margem</th>
+        <th>Ref% Up</th><th>Ref% Front</th><th>Δ</th>
+      </tr></thead>
+      <tbody>
+        ${upData.map(d=>{
+          const net=d.gross-d.refVal, refR=d.refs/d.sales*100, diff=refR-d.mainRefRate, margin=net/d.gross*100;
+          return `<tr>
+            <td class="num">${d.label}</td>
+            <td style="color:${d.funil==='Agressivo'?'var(--amber)':'var(--text3)'};">${d.funil}</td>
+            <td class="num info">${fN(d.sales)}</td>
+            <td>${fmtP(d.sales/d.total*100)}</td>
+            <td class="num info">${fmtDK(d.gross)}</td>
+            <td class="warn">${fmtDK(d.refVal)}</td>
+            <td class="${margin<65?'warn':'good'}">${fmtDK(net)}</td>
+            <td class="${margin<65?'warn':margin<72?'amber':'good'}">${fmtP(margin)}</td>
+            <td class="${refR>25?'warn':refR>22?'amber':'num'}">${fmtP(refR)}</td>
+            <td>${fmtP(d.mainRefRate)}</td>
+            <td class="amber">+${fmtP(diff)}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ACTION MATRIX -->
+  <div class="sec-title">Plano de ação — o que foi feito e o que considerar</div>
+  <div style="background:var(--bg1);border:1px solid var(--border);border-radius:6px;padding:0 18px 4px;">
+    ${actionRows}
+    <div style="height:1px;"></div>
+  </div>
+
+  <!-- AFFILIATES NOTE -->
+  <div class="sec-title" style="margin-top:22px;">Afiliados — atenção aos maiores geradores de refund</div>
+  <div class="insight">
+    <strong>Walife Garcias (ID 379)</strong> — 16,5% de refund | <strong>José Carlos Santos (ID 1490)</strong> — 15,0% | <strong>Vanessa Bertoldo (ID 3294)</strong> — 15,2%.
+    Estes três afiliados combinam alto volume com taxas de refund acima da média geral (~14%).
+    Uma versão menos agressiva do funil (sem UP3+) ou critérios de qualificação de tráfego mais rígidos para esses IDs pode reduzir o refund total sem impactar o net de forma significativa — especialmente se o refund deles está concentrado nos primeiros 3 dias (arrependimento imediato).
+  </div>
+  <div class="insight">
+    <strong>RAFAEL SANTOS (ID 382)</strong> — 5,1% de refund com $36K de faturamento — padrão de tráfego mais qualificado.
+    Analisar de onde vem esse tráfego e replicar para outros afiliados pode ser tão eficaz quanto ajustar o funil.
+  </div>`;
+}
+
+
 function switchMain(btn, tab) {
   document.querySelectorAll('.main-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.main-tab').forEach(b=>b.classList.remove('active'));
@@ -1300,7 +1452,26 @@ function switchMain(btn, tab) {
   if (tab === 'produtos' && !$('prod-content').innerHTML) {
     $('prod-content').innerHTML = buildProdContent('all', 'all');
   }
+  if (tab === 'upsell' && !$('upsell-content').innerHTML) {
+    $('upsell-content').innerHTML = buildUpsellContent();
+    setTimeout(initUpsellCharts, 50);
+  }
 }
+
+function initUpsellCharts() {
+  if (!$('up-chart1')) return;
+  const uMonths = upData.map(d=>d.label.replace(' (1–17)',' ∂'));
+  mk('up-chart1',{type:'bar',data:{labels:uMonths,datasets:[
+    {label:'Gross',data:upData.map(d=>d.gross),backgroundColor:'rgba(79,140,255,0.22)',borderColor:'#4f8cff',borderWidth:1,borderRadius:3},
+    {label:'Net', data:upData.map(d=>d.gross-d.refVal),backgroundColor:'#34c97c',borderRadius:3},
+  ]},options:{...noLeg,scales:{x:{grid:{display:false},ticks:{color:getTick(),font:{family:'JetBrains Mono',size:10}}},y:{grid:{color:getGrid()},ticks:{color:getTick(),font:{family:'JetBrains Mono',size:10},callback:v=>'$'+(v/1000).toFixed(0)+'K'}}}}});
+
+  mk('up-chart2',{type:'line',data:{labels:uMonths,datasets:[
+    {label:'Ref% Up',data:upData.map(d=>parseFloat((d.refs/d.sales*100).toFixed(1))),borderColor:'#f05252',backgroundColor:'rgba(240,82,82,0.08)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#f05252'},
+    {label:'Ref% Front',data:upData.map(d=>d.mainRefRate),borderColor:'#4f8cff',backgroundColor:'rgba(79,140,255,0.06)',fill:true,tension:0.35,pointRadius:5,pointBackgroundColor:'#4f8cff',borderDash:[5,4]},
+  ]},options:{...noLeg,scales:{x:{grid:{display:false},ticks:{color:getTick(),font:{family:'JetBrains Mono',size:10}}},y:{grid:{color:getGrid()},ticks:{color:getTick(),font:{family:'JetBrains Mono',size:10},callback:v=>v+'%'}}}}});
+}
+
 function switchSub(btn, prefix, key) {
   const panel = $('main-'+prefix);
   panel.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
